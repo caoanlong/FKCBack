@@ -1,0 +1,39 @@
+{% extends '../layout.html' %}
+
+{% block main %}
+	{% include 'nav.html' %}
+	<div class="container-fluid">
+		<ol class="breadcrumb">
+		  	<li><a href="/admin">首页</a></li>
+		  	<li><a href="/admin/user">用户管理</a></li>
+		  	<li><a href="/admin/user">用户列表</a></li>
+		  	<li class="active">新增用户</li>
+		</ol>
+		<form class="form-horizontal">
+			<div class="form-group">
+			    <label for="name" class="col-xs-2 control-label">姓名</label>
+			    <div class="col-xs-8">
+			      	<input type="text" class="form-control" id="name" placeholder="姓名">
+			    </div>
+		  	</div>
+		  	<div class="form-group">
+			    <label for="mobile" class="col-xs-2 control-label">手机号</label>
+			    <div class="col-xs-8">
+			      	<input type="text" class="form-control" id="mobile" placeholder="手机号">
+			    </div>
+		  	</div>
+		  	<div class="form-group">
+			    <label for="password" class="col-xs-2 control-label">密码</label>
+			    <div class="col-xs-8">
+			      	<input type="password" class="form-control" id="password" placeholder="密码">
+			    </div>
+		  	</div>
+		  	<div class="form-group">
+			    <div class="col-xs-offset-2 col-xs-8">
+			      	<a href="/admin/user" type="button" class="btn btn-default">返回</a>
+			      	<button type="button" class="btn btn-primary">提交</button>
+			    </div>
+		  	</div>
+		</form>
+	</div>
+{% endblock %}

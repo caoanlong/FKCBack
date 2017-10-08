@@ -1,0 +1,64 @@
+{% extends '../layout.html' %}
+
+{% block main %}
+	{% include 'nav.html' %}
+	<div class="container-fluid">
+		<ol class="breadcrumb">
+		  	<li><a href="/admin">首页</a></li>
+		  	<li><a href="/admin/member">会员管理</a></li>
+		  	<li class="active">会员列表</li>
+		</ol>
+		<form class="form-inline padding-bottom-15" onsubmit="return false">
+		  	<div class="form-group">
+			    <label for="keyword">关键字</label>
+			    <input type="text" class="form-control" id="keyword" placeholder="请输入...">
+		  	</div>
+		  	<div class="form-group">
+			    <label for="endDate">截止日期</label>
+			    <input type="text" class="form-control endDate" id="endDate" placeholder="请选择" data-date-format="yyyy-mm-dd">
+		  	</div>
+		  	<div class="form-group">
+			    <label for="endDate">创建日期</label>
+			    <input type="text" class="form-control endDate" id="endDate" placeholder="请选择" data-date-format="yyyy-mm-dd">
+		  	</div>
+		  	<button type="button" class="btn btn-default"><i class="glyphicon glyphicon-search"></i>查询</button>
+		  	<a href="/admin/member/add" class="btn btn-success"><i class="glyphicon glyphicon-plus"></i>新增会员</a>
+		</form>
+		<table class="table table-bordered table-hover" style="table-layout: fixed;">
+			<thead>
+				<tr>
+					<th class="text-center" width="40">
+						<input type="checkbox" name="">
+					</th>
+					<th>ID</th>
+					<th>会员名称</th>
+					<th width="140">手机号</th>
+					<th width="120">金豆数量</th>
+					<th width="200">创建时间</th>
+					<th width="220">操作</th>
+				</tr>
+			</thead>
+			<tbody>
+				{% set foo = [0, 1, 2, 3, 4, 5] %}{% for num in foo %}
+				<tr>
+					<td class="text-center">
+						<input type="checkbox" name="">
+					</td>
+					<td title="dfcf28d0734569a6a693bc8194de62bf">dfcf28d0734569a6a693bc8194de62bf</td>
+					<td>王五</td>
+					<td>13049497395</td>
+					<td>10000</td>
+					<td>2017年10月1日 18:39:22</td>
+					<td>
+						<button type="button" class="btn btn-info btn-xs">订单详情</button>
+						<button type="button" class="btn btn-primary btn-xs">编辑</button>
+						<button type="button" class="btn btn-warning btn-xs">禁用</button>
+						<button type="button" class="btn btn-danger btn-xs">删除</button>
+					</td>
+				</tr>
+				{% endfor %}
+			</tbody>
+		</table>
+		{% include 'page.html' %}
+	</div>
+{% endblock %}

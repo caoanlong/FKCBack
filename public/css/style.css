@@ -1,0 +1,20 @@
+.text-overflow {
+	overflow:hidden;white-space:nowrap;text-overflow:ellipsis;
+}
+.table tbody tr td {
+	overflow: hidden; 
+	text-overflow: ellipsis;  
+	white-space: nowrap; 
+}
+.padding-vertical-15 {
+	padding: 15px 0
+}
+.padding-top-15 {
+	padding-top: 15px
+}
+.padding-bottom-15 {
+	padding-bottom: 15px
+}
+.min-width-1000 {
+	min-width: 1000px
+}

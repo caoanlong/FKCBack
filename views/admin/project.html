@@ -1,0 +1,62 @@
+{% extends '../layout.html' %}
+
+{% block main %}
+	{% include 'nav.html' %}
+	<div class="container-fluid">
+		<ol class="breadcrumb">
+		  	<li><a href="/admin">首页</a></li>
+		  	<li><a href="/admin">项目管理</a></li>
+		  	<li class="active">项目列表</li>
+		</ol>
+		<form class="form-inline padding-bottom-15" onsubmit="return false">
+		  	<div class="form-group">
+			    <label for="keyword">关键字</label>
+			    <input type="text" class="form-control" id="keyword" placeholder="请输入...">
+		  	</div>
+		  	<div class="form-group">
+			    <label for="endDate">截止日期</label>
+			    <input type="text" class="form-control endDate" id="endDate" placeholder="请选择" data-date-format="yyyy-mm-dd">
+		  	</div>
+		  	<div class="form-group">
+			    <label for="endDate">创建日期</label>
+			    <input type="text" class="form-control endDate" id="endDate" placeholder="请选择" data-date-format="yyyy-mm-dd">
+		  	</div>
+		  	<button type="button" class="btn btn-default"><i class="glyphicon glyphicon-search"></i>查询</button>
+		  	<button type="button" class="btn btn-success"><i class="glyphicon glyphicon-plus"></i>新增项目</button>
+		</form>
+		<table class="table table-bordered table-hover" style="table-layout: fixed;">
+			<thead>
+				<tr>
+					<th class="text-center" width="40">
+						<input type="checkbox" name="">
+					</th>
+					<th>项目名称</th>
+					<th>图片地址</th>
+					<th width="130">截至日期</th>
+					<th width="190">创建时间</th>
+					<th width="110">操作</th>
+				</tr>
+			</thead>
+			<tbody>
+				{% set foo = [0, 1, 2, 3, 4, 5] %}{% for num in foo %}
+				<tr>
+					<td class="text-center">
+						<input type="checkbox" name="">
+					</td>
+					<td>全民踩踩踩</td>
+					<td>
+						<a href="#">https://ss0.baidu.com/6ONWsjip0QIZ8tyhnq/it/u=344189592,862509340&fm=173&s=EF3FA44447FB162C24AB32800300E08B&w=550&h=367&img.JPEG</a>
+					</td>
+					<td>2017年10月7日</td>
+					<td>2017年10月1日 18:39:22</td>
+					<td>
+						<button type="button" class="btn btn-primary btn-xs">编辑</button>
+						<button type="button" class="btn btn-danger btn-xs">删除</button>
+					</td>
+				</tr>
+				{% endfor %}
+			</tbody>
+		</table>
+		{% include 'page.html' %}
+	</div>
+{% endblock %}
