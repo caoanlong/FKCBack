@@ -15,11 +15,11 @@
 		  	</div>
 		  	<div class="form-group">
 			    <label for="endDate">截止日期</label>
-			    <input type="text" class="form-control endDate" id="endDate" placeholder="请选择" data-date-format="yyyy-mm-dd">
+			    {% include 'daterangepicker.html' %}
 		  	</div>
 		  	<div class="form-group">
 			    <label for="endDate">创建日期</label>
-			    <input type="text" class="form-control endDate" id="endDate" placeholder="请选择" data-date-format="yyyy-mm-dd">
+			    {% include 'daterangepicker.html' %}
 		  	</div>
 		  	<button type="button" class="btn btn-default"><i class="glyphicon glyphicon-search"></i>查询</button>
 		  	<a href="/admin/user/add" class="btn btn-success" role="button"><i class="glyphicon glyphicon-plus"></i>新增用户</a>
@@ -32,24 +32,34 @@
 					</th>
 					<th>姓名</th>
 					<th>手机号</th>
+					<th>权限</th>
 					<th>创建时间</th>
 					<th>操作</th>
 				</tr>
 			</thead>
 			<tbody>
-				{% set foo = [0, 1, 2, 3, 4, 5] %}{% for num in foo %}
+				{% for item in data %}
 				<tr>
 					<td class="text-center">
 						<input type="checkbox" name="">
 					</td>
-					<td>王小丫</td>
-					<td>13049497395</td>
-					<td>2017年10月1日 18:39:22</td>
+					<td>{{item.username}}</td>
+					<td>{{item.mobile}}</td>
+					{% if item.isAdmin %}
+					<td>超级管理员</td>
+					{% else %}
+					<td>管理员</td>
+					{% endif %}
+					<td>{{item.addTime|date('Y年m月d日 H:i:s', -8*60)}}</td>
+					{% if item.isAdmin %}
+					<td></td>
+					{% else %}
 					<td>
 						<button type="button" class="btn btn-primary btn-xs">编辑</button>
 						<button type="button" class="btn btn-warning btn-xs">禁用</button>
 						<button type="button" class="btn btn-danger btn-xs">删除</button>
 					</td>
+					{% endif %}
 				</tr>
 				{% endfor %}
 			</tbody>
