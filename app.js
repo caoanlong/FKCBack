@@ -29,6 +29,7 @@ app.set('view engine', 'html');
 swig.setDefaults({cache: false});
 // 设置过滤器
 swig.setFilter('getdatefromtimestamp', require('./common/myFilters').getdatefromtimestamp);
+swig.setFilter('isEnd', require('./common/myFilters').isEnd);
 
 // uncomment after placing your favicon in /public
 // app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));

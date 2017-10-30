@@ -38,7 +38,6 @@ router.get('/', function(req, res) {
 		for (var i = 1; i < pages+1; i++) {
 			pagesArr.push(i)
 		}
-
 		Project.find().sort({_id: -1}).limit(pageSize).skip(skip).populate('projectType').exec(function(error,result) {
 			if (error) {
 				res.render('error',{message: '查找失败'})

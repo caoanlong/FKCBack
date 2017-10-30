@@ -12,6 +12,16 @@ function getdatefromtimestamp(input, bool) {
 		return year+"-"+month+"-"+date+" "+hour+":"+minute+":"+second;
 	}
 }
+function isEnd(input) {
+	var now = Number(new Date().getTime())
+	var end = Number(input)
+	if (end > now) {
+		return '待开奖'
+	}else {
+		return '已开奖'
+	}
+}
 module.exports ={
-	getdatefromtimestamp: getdatefromtimestamp
+	getdatefromtimestamp: getdatefromtimestamp,
+	isEnd: isEnd
 }
