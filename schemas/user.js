@@ -13,6 +13,11 @@ module.exports = new mongoose.Schema({
         type: Boolean,
         default: false
     },
+    //是否被禁用
+    isDisabled: {
+        type: Boolean,
+        default: false
+    },
     //添加时间
     addTime: {
         type: Date,

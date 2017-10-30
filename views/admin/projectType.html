@@ -1,0 +1,76 @@
+{% extends '../layout.html' %}
+
+{% block main %}
+	{% include 'nav.html' %}
+	<div class="container-fluid">
+		<ol class="breadcrumb">
+		  	<li><a href="/admin">首页</a></li>
+		  	<li><a href="/admin/project">项目管理</a></li>
+		  	<li class="active">分类管理</li>
+		</ol>
+		<form class="form-inline padding-bottom-15" onsubmit="return false">
+		  	<div class="form-group">
+			    <label for="keyword">关键字</label>
+			    <input type="text" class="form-control" id="keyword" placeholder="请输入...">
+		  	</div>
+		  	<div class="form-group">
+			    <label for="endDate">创建日期</label>
+			    {% include 'datepicker.html' %}
+		  	</div>
+		  	<button type="button" class="btn btn-default"><i class="glyphicon glyphicon-search"></i>查询</button>
+		  	<a href="/admin/project/projectType/add" type="button" class="btn btn-success"><i class="glyphicon glyphicon-plus"></i>新增分类</a>
+		</form>
+		<table class="table table-bordered table-hover" style="table-layout: fixed;">
+			<thead>
+				<tr>
+					<th class="text-center" width="40">
+						<input type="checkbox" name="">
+					</th>
+					<th>项目分类名称</th>
+					<th>创建时间</th>
+					<th>操作</th>
+				</tr>
+			</thead>
+			<tbody>
+				{% for item in data.projectTypeList %}
+				<tr>
+					<td class="text-center">
+						<input type="checkbox" class="projectTypeId" value="{{item._id.toString()}}">
+					</td>
+					<td>{{item.name}}</td>
+					<td>{{item.addTime|date('Y-m-d H:i:s', -8*60)}}</td>
+					<td>
+						<a href="/admin/project/projectType/edit?id={{item._id.toString()}}" type="button" class="btn btn-primary btn-xs">编辑</a>
+						<button type="button" class="btn btn-danger btn-xs deleteProjectType">删除</button>
+					</td>
+				</tr>
+				{% endfor %}
+			</tbody>
+		</table>
+		{% include 'page.html' %}
+	</div>
+<script type="text/javascript">
+	/**
+	 * 删除项目分类
+	 */
+	$('.deleteProjectType').on('click',function() {
+		var projectTypeId = $(this).parent().parent().find('.projectTypeId').val()
+		var params = {
+			id: projectTypeId
+	    };
+	  	$.ajax({
+		    url: '/admin/project/projectType/delete',
+		    type: 'post',
+		    dataType: 'json',
+		    data: params,
+		    success: function(resbonse,textStatus,jqXHR) {
+		      	console.log(resbonse);
+		      	layer.msg(resbonse.msg)
+		      	if (resbonse.code == 0) {
+		      		location.reload(true)
+		      	}
+		    }
+	  	})
+	})
+</script>
+{% endblock %}

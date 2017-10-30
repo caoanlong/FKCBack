@@ -33,15 +33,16 @@
 					<th>姓名</th>
 					<th>手机号</th>
 					<th>权限</th>
+					<th>状态</th>
 					<th>创建时间</th>
 					<th>操作</th>
 				</tr>
 			</thead>
 			<tbody>
-				{% for item in data %}
+				{% for item in data.userList %}
 				<tr>
 					<td class="text-center">
-						<input type="checkbox" name="">
+						<input type="checkbox" class="userId" value="{{item._id.toString()}}">
 					</td>
 					<td>{{item.username}}</td>
 					<td>{{item.mobile}}</td>
@@ -50,14 +51,23 @@
 					{% else %}
 					<td>管理员</td>
 					{% endif %}
-					<td>{{item.addTime|date('Y年m月d日 H:i:s', -8*60)}}</td>
+					{% if item.isDisabled %}
+					<td class="text-danger">已禁用</td>
+					{% else %}
+					<td>正常</td>
+					{% endif %}
+					<td>{{item.addTime|date('Y-m-d H:i:s', -8*60)}}</td>
 					{% if item.isAdmin %}
 					<td></td>
 					{% else %}
 					<td>
-						<button type="button" class="btn btn-primary btn-xs">编辑</button>
-						<button type="button" class="btn btn-warning btn-xs">禁用</button>
-						<button type="button" class="btn btn-danger btn-xs">删除</button>
+						<a href="/admin/user/edit?id={{item._id.toString()}}" type="button" class="btn btn-primary btn-xs">编辑</a>
+						{% if item.isDisabled %}
+						<button type="button" class="btn btn-success btn-xs enableUser">启用</button>
+						{% else %}
+						<button type="button" class="btn btn-warning btn-xs disableUser">禁用</button>
+						{% endif %}
+						<button type="button" class="btn btn-danger btn-xs deleteUser">删除</button>
 					</td>
 					{% endif %}
 				</tr>
@@ -66,4 +76,72 @@
 		</table>
 		{% include 'page.html' %}
 	</div>
+<script type="text/javascript">
+	/**
+	 * 启用用户
+	 */
+	$('.enableUser').on('click',function() {
+		var userId = $(this).parent().parent().find('.userId').val()
+		var params = {
+			id: userId
+	    };
+	  	$.ajax({
+		    url: '/admin/user/enable',
+		    type: 'post',
+		    dataType: 'json',
+		    data: params,
+		    success: function(resbonse,textStatus,jqXHR) {
+		      	console.log(resbonse);
+		      	layer.msg(resbonse.msg)
+		      	if (resbonse.code == 0) {
+		      		location.reload(true)
+		      	}
+		    }
+	  	})
+	})
+	/**
+	 * 禁用用户
+	 */
+	$('.disableUser').on('click',function() {
+		var userId = $(this).parent().parent().find('.userId').val()
+		var params = {
+			id: userId
+	    };
+	  	$.ajax({
+		    url: '/admin/user/disable',
+		    type: 'post',
+		    dataType: 'json',
+		    data: params,
+		    success: function(resbonse,textStatus,jqXHR) {
+		      	console.log(resbonse);
+		      	layer.msg(resbonse.msg)
+		      	if (resbonse.code == 0) {
+		      		location.reload(true)
+		      	}
+		    }
+	  	})
+	})
+	/**
+	 * 删除用户
+	 */
+	$('.deleteUser').on('click',function() {
+		var userId = $(this).parent().parent().find('.userId').val()
+		var params = {
+			id: userId
+	    };
+	  	$.ajax({
+		    url: '/admin/user/delete',
+		    type: 'post',
+		    dataType: 'json',
+		    data: params,
+		    success: function(resbonse,textStatus,jqXHR) {
+		      	console.log(resbonse);
+		      	layer.msg(resbonse.msg)
+		      	if (resbonse.code == 0) {
+		      		location.reload(true)
+		      	}
+		    }
+	  	})
+	})
+</script>
 {% endblock %}

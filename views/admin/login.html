@@ -1,0 +1,64 @@
+{% extends '../layout.html' %}
+
+{% block main %}
+	<div class="container-fluid login-bg">
+		<form class="form-horizontal" style="width: 600px;margin: 0 auto;padding-top: 150px">
+			<div class="form-group">
+				<h1 class="text-center padding-bottom-50" style="font-size: 48px">疯狂猜后台管理系统</h1>
+			</div>
+		  	<div class="form-group">
+			    <label for="mobile" class="col-xs-3 control-label text-right">手机号</label>
+			    <div class="col-xs-6">
+			      	<input type="text" id="usermobile" class="form-control" name="mobile" placeholder="手机号">
+			    </div>
+		  	</div>
+		  	<div class="form-group">
+			    <label for="password" class="col-xs-3 control-label text-right">密码</label>
+			    <div class="col-xs-6">
+			      	<input type="text" id="userpassword" class="form-control" name="password" placeholder="密码">
+			    </div>
+		  	</div>
+		  	<div class="form-group">
+			    <div class="col-xs-offset-3 col-xs-6">
+			      	<button id="login" type="button" class="btn btn-primary btn-block">登录</button>
+			    </div>
+		  	</div>
+		</form>
+	</div>
+<script type="text/javascript">
+	/**
+	 * 登录
+	 */
+	$('#login').on('click',function() {
+		var mobile = $('#usermobile').val();
+		var password = $('#userpassword').val();
+		if (!mobile) {
+			layer.msg('手机号不能为空');
+			return
+		};
+		if (!password) {
+			layer.msg('密码不能为空');
+			return
+		};
+		var params = {
+	      	mobile: mobile,
+	      	password: password 
+	    };
+	  	$.ajax({
+		    url: '/admin/user/login',
+		    type: 'post',
+		    dataType: 'json',
+		    data: params,
+		    success: function(resbonse,textStatus,jqXHR) {
+		      	console.log(resbonse);
+		      	layer.msg(resbonse.msg)
+		      	if (resbonse.code == 0) {
+		      		setTimeout(function() {
+		      			window.location.href = '/admin'
+		      		},500)
+		      	}
+		    }
+	  	})
+	})
+</script>
+{% endblock %}

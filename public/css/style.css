@@ -6,6 +6,9 @@
 	text-overflow: ellipsis;  
 	white-space: nowrap; 
 }
+.table thead tr {
+	background-color: #f2f2f2
+}
 .padding-vertical-15 {
 	padding: 15px 0
 }
@@ -15,6 +18,116 @@
 .padding-bottom-15 {
 	padding-bottom: 15px
 }
+.padding-bottom-30 {
+	padding-bottom: 30px
+}
+.padding-bottom-50 {
+	padding-bottom: 50px
+}
 .min-width-1000 {
 	min-width: 1000px
+}
+.login-bg {
+	position: absolute;
+	top: 0;
+	left: 0;
+	bottom: 0;
+	right: 0;
+	width: 100%;
+	background-color: #eee;
+}
+.imgUpload .imgLi {
+	float: left;
+	border: 1px solid #f0f0f0;
+	border-radius: 6px;
+	text-align: center;
+	position: relative;
+	margin: 0 5px 5px 0;
+}
+.imgUpload .imgLi .controller {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	border-radius: 6px;
+	background-color: rgba(0, 0, 0, .5);
+	display: none;
+}
+.imgUpload .imgLi .controller .controllerBtn {
+	position: absolute;
+	left: 0;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	margin: auto;
+	width: 80px;
+	height: 40px;
+	cursor: pointer;
+}
+.imgUpload .imgLi .controller .controllerBtn .perviewBtn {
+	float: left;
+	width: 40px;
+	height: 40px;
+	background-image: url('../img/perview.png');
+	background-repeat: no-repeat;
+	background-size: 26px;
+	background-position: center;
+}
+.imgUpload .imgLi .controller .controllerBtn .delBtn {
+	float: left;
+	width: 40px;
+	height: 40px;
+	background-image: url('../img/trush.png');
+	background-repeat: no-repeat;
+	background-size: 26px;
+	background-position: center;
+}
+.imgUpload .imgLi:hover .controller {
+	display: block;
+}
+.imgUpload .imgLi img {
+	display: block;
+	width: 100%;
+	height: 100%;
+	border-radius: 6px;
+}
+.imgUpload .addBtn {
+	float: left;
+	border: 1px dashed #d9d9d9;
+	border-radius: 6px;
+	color: #6cc;
+	position: relative;
+	text-align: center;
+	margin: 0 5px 5px 0;
+}
+.imgUpload .addBtn:hover {
+	border-color: #6cc;
+}
+.imgUpload .addBtn .addIcon {
+	position: absolute;
+	left: 0;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	margin: auto;
+	width: 100%;
+	height: 52px;
+}
+.imgUpload .addBtn .addIcon .ico {
+	width: 26px;
+	height: 26px;
+	margin: 0 auto;
+	background-image: url('../img/add-img.png');
+	background-repeat: no-repeat;
+	background-size: 100%;
+}
+.imgUpload .addBtn .addIcon p {
+	line-height: 26px;
+}
+.imgUpload .addBtn input {
+	display: block;
+	width: 100%;
+	height: 100%;
+	opacity: 0;
 }

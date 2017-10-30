@@ -1,23 +1,43 @@
 <nav aria-label="Page navigation">
-	<p class="col-xs-6 pagination" style="height: 34px;line-height: 34px">一共有 {{count}} 条数据，每页显示 {{pageSize}} 条数据，一共 {{pages}} 页，当前第 {{pageIndex}} 页</p>
+	<p class="col-xs-6 pagination" style="height: 34px;line-height: 34px">一共有 {{data.count}} 条数据，每页显示 {{data.pageSize}} 条数据，一共 {{data.pages}} 页，当前第 {{data.pageIndex}} 页</p>
 	<div class="col-xs-6 text-right">
 		<ul class="pagination">
-		    <li>
+	    	{% if data.pageIndex == 1 %}
+	    	<li class="disabled">
 		      	<a href="#" aria-label="Previous">
 		        	<span aria-hidden="true">&laquo;</span>
 		      	</a>
-		    </li>
-		    <li><a href="#">1</a></li>
-		    <li class="active"><a href="#">2</a></li>
-		    <li><a href="#">3</a></li>
-		    <li><a href="#">4</a></li>
-		    <li><a href="#">5</a></li>
-		    <li>
-		      	<a href="#" aria-label="Next">
+	      	</li>
+	      	{% else %}
+	      	<li>
+		      	<a href="/admin/{{active}}?pageIndex={{data.pageIndex-1}}" aria-label="Previous">
+		        	<span aria-hidden="true">&laquo;</span>
+		      	</a>
+	      	</li>
+	      	{% endif %}
+		    {% for item in data.pagesArr %}
+		    	{% if item == data.pageIndex%}
+			    <li class="active">
+			    	<a href="javascript:;">{{item}}</a>
+			    </li>
+			    {% else %}
+			    <li>
+			    	<a href="/admin/{{active}}?pageIndex={{item}}">{{item}}</a>
+			    </li>
+			    {% endif %}
+	    	{% endfor %}
+	    	{% if data.pageIndex == data.pages %}
+	    	<li class="disabled">
+		      	<a href="#" aria-label="Previous">
 		        	<span aria-hidden="true">&raquo;</span>
 		      	</a>
-		    </li>
+	      	</li>
+	      	{% else %}
+	      	<li>
+		      	<a href="/admin/{{active}}?pageIndex={{data.pageIndex+1}}" aria-label="Previous">
+		        	<span aria-hidden="true">&raquo;</span>
+		      	</a>
+	      	</li>
 	  	</ul>
 	</div>
-	
 </nav>

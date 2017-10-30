@@ -31,29 +31,32 @@
 						<input type="checkbox" name="">
 					</th>
 					<th>ID</th>
-					<th>会员名称</th>
 					<th width="140">手机号</th>
 					<th width="120">金豆数量</th>
 					<th width="200">创建时间</th>
-					<th width="220">操作</th>
+					<th>操作</th>
 				</tr>
 			</thead>
 			<tbody>
-				{% set foo = [0, 1, 2, 3, 4, 5] %}{% for num in foo %}
+				{% for item in data.memberList %}
 				<tr>
 					<td class="text-center">
-						<input type="checkbox" name="">
+						<input type="checkbox" class="memberId" value="{{item._id.toString()}}">
 					</td>
-					<td title="dfcf28d0734569a6a693bc8194de62bf">dfcf28d0734569a6a693bc8194de62bf</td>
-					<td>王五</td>
-					<td>13049497395</td>
-					<td>10000</td>
-					<td>2017年10月1日 18:39:22</td>
+					<td title="{{item._id.toString()}}">{{item._id.toString()}}</td>
+					<td>{{item.mobile}}</td>
+					<td>{{item.goldBean}}</td>
+					<td>{{item.addTime|date('Y-m-d H:i:s', -8*60)}}</td>
 					<td>
-						<button type="button" class="btn btn-info btn-xs">订单详情</button>
-						<button type="button" class="btn btn-primary btn-xs">编辑</button>
-						<button type="button" class="btn btn-warning btn-xs">禁用</button>
-						<button type="button" class="btn btn-danger btn-xs">删除</button>
+						<button type="button" class="btn btn-default btn-xs">竞猜列表</button>
+						<button type="button" class="btn btn-default btn-xs">账户明细</button>
+						{% if item.isDisabled %}
+						<button type="button" class="btn btn-success btn-xs enableMember">启用</button>
+						{% else %}
+						<button type="button" class="btn btn-warning btn-xs disableMember">禁用</button>
+						{% endif %}
+						<a href="/admin/member/edit?id={{item._id.toString()}}" type="button" class="btn btn-primary btn-xs">编辑</a>
+						<button type="button" class="btn btn-danger btn-xs deleteMember">删除</button>
 					</td>
 				</tr>
 				{% endfor %}
@@ -61,4 +64,72 @@
 		</table>
 		{% include 'page.html' %}
 	</div>
+<script type="text/javascript">
+	/**
+	 * 启用会员
+	 */
+	$('.enableMember').on('click',function() {
+		var memberId = $(this).parent().parent().find('.memberId').val()
+		var params = {
+			id: memberId
+	    };
+	  	$.ajax({
+		    url: '/admin/member/enable',
+		    type: 'post',
+		    dataType: 'json',
+		    data: params,
+		    success: function(resbonse,textStatus,jqXHR) {
+		      	console.log(resbonse);
+		      	layer.msg(resbonse.msg)
+		      	if (resbonse.code == 0) {
+		      		location.reload(true)
+		      	}
+		    }
+	  	})
+	})
+	/**
+	 * 禁用会员
+	 */
+	$('.disableMember').on('click',function() {
+		var memberId = $(this).parent().parent().find('.memberId').val()
+		var params = {
+			id: memberId
+	    };
+	  	$.ajax({
+		    url: '/admin/member/disable',
+		    type: 'post',
+		    dataType: 'json',
+		    data: params,
+		    success: function(resbonse,textStatus,jqXHR) {
+		      	console.log(resbonse);
+		      	layer.msg(resbonse.msg)
+		      	if (resbonse.code == 0) {
+		      		location.reload(true)
+		      	}
+		    }
+	  	})
+	})
+	/**
+	 * 删除会员
+	 */
+	$('.deleteMember').on('click',function() {
+		var memberId = $(this).parent().parent().find('.memberId').val()
+		var params = {
+			id: memberId
+	    };
+	  	$.ajax({
+		    url: '/admin/member/delete',
+		    type: 'post',
+		    dataType: 'json',
+		    data: params,
+		    success: function(resbonse,textStatus,jqXHR) {
+		      	console.log(resbonse);
+		      	layer.msg(resbonse.msg)
+		      	if (resbonse.code == 0) {
+		      		location.reload(true)
+		      	}
+		    }
+	  	})
+	})
+</script>
 {% endblock %}

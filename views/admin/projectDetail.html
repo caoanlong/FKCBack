@@ -1,0 +1,225 @@
+{% extends '../layout.html' %}
+
+{% block main %}
+	{% include 'nav.html' %}
+	<div class="container-fluid">
+		<ol class="breadcrumb">
+			<li><a href="/admin">首页</a></li>
+			<li><a href="/admin/project">项目管理</a></li>
+			<li><a href="/admin/project">项目列表</a></li>
+			<li class="active">项目编辑</li>
+		</ol>
+		<form class="form-horizontal">
+			<input type="hidden" id="projectId" value="{{projectDetail._id.toString()}}">
+			<div class="form-group">
+				<label for="name" class="col-xs-2 control-label">名称</label>
+				<div class="col-xs-8">
+					<input type="text" id="name" class="form-control" name="name" placeholder="名称" value="{{projectDetail.name}}">
+				</div>
+			</div>
+			<div class="form-group">
+				<label for="name" class="col-xs-2 control-label">类型</label>
+				<div class="col-xs-8">
+					<select class="form-control" id="projectType">
+						{% for item in projectType %}
+							{%if projectDetail.projectType.id == item.id %}
+						  		<option value="{{item.id}}" selected>{{item.name}}</option>
+						  	{% else %}
+						  		<option value="{{item.id}}">{{item.name}}</option>
+							{% endif %}
+						{% endfor %}
+					</select>
+				</div>
+			</div>
+			<div class="form-group">
+				<label for="endTime" class="col-xs-2 control-label">选项</label>
+				<div class="col-xs-8">
+					<table class="table">
+						<tbody id="tableOption">
+							{% for item in projectDetail.options %}
+							<tr>
+								<td>
+									<div class="input-group">
+										<span class="input-group-addon" id="basic-addon1">内容</span>
+										<input type="text" class="form-control optionContent" placeholder="选项内容" aria-describedby="basic-addon1" value="{{item.content}}">
+									</div>
+								</td>
+								<td width="160">
+									<div class="input-group">
+										<span class="input-group-addon" id="basic-addon1">赔率</span>
+										<input type="number" class="form-control odds" placeholder="赔率" aria-describedby="basic-addon1" value="{{item.odds}}">
+									</div>
+								</td>
+								<td width="70">
+									<button type="button" class="btn btn-danger deleteOption">删除</button>
+								</td>
+							</tr>
+							{% endfor %}
+						</tbody>
+					</table>
+					<button type="button" class="btn btn-success" id="addOption"><i class="glyphicon glyphicon-plus"></i>添加选项</button>
+				</div>
+			</div>
+			<div class="form-group">
+				<label for="endTime" class="col-xs-2 control-label">截止时间</label>
+				<div class="col-xs-8">
+					<input type="text" id="endTime" class="form-control endTimePicker" name="endTime" placeholder="截止时间" style="width:375px" value="{{projectDetail.endTime|getdatefromtimestamp}}">
+				</div>
+			</div>
+			<div class="form-group">
+				<label for="imgUrl" class="col-xs-2 control-label">图片</label>
+				<div class="col-xs-8">
+					<div class="imgUpload clearfix">
+						<div class="imgLi" style="width:375px;height:180px">
+							<img src="{{projectDetail.imgUrl}}">
+							<div class="controller">
+								<div class="controllerBtn">
+									<div class="perviewBtn" id="perviewBtn"></div>
+									<div class="delBtn" id="delBtn"></div>
+								</div>
+							</div>
+						</div>
+						<div class="addBtn" style="width:375px;height:180px;display:none">
+							<div class="addIcon">
+								<div class="ico"></div>
+								<p>添加</p>
+							</div>
+							<input type="file" id="uploadFile"/>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="form-group">
+				<div class="col-xs-offset-2 col-xs-8">
+					<a href="/admin/project" type="button" class="btn btn-default">返回</a>
+					<button id="addProject" type="button" class="btn btn-primary">提交</button>
+				</div>
+			</div>
+		</form>
+	</div>
+<script type="text/javascript">
+	var imgUrl = ''
+	/**
+	 * 添加选项
+	 */
+	$('#addOption').on('click',function() {
+		$('#tableOption').append(`
+			<tr>
+				<td>
+					<div class="input-group">
+						<span class="input-group-addon" id="basic-addon1">内容</span>
+						<input type="text" class="form-control optionContent" placeholder="选项内容" aria-describedby="basic-addon1">
+					</div>
+				</td>
+				<td width="160">
+					<div class="input-group">
+						<span class="input-group-addon" id="basic-addon1">赔率</span>
+						<input type="number" class="form-control odds" placeholder="赔率" aria-describedby="basic-addon1">
+					</div>
+				</td>
+				<td width="70">
+					<button type="button" class="btn btn-danger deleteOption">删除</button>
+				</td>
+			</tr>
+		`)
+	})
+	/**
+	 * 删除选项
+	 */
+	$(document).on('click','.deleteOption',function() {
+		$(this).parent().parent().remove()
+	})
+	/**
+	 * 添加图片
+	 */
+	$('#uploadFile').on('change',function() {
+		var formData = new FormData()
+		formData.append("file",$(this)[0].files[0])
+		$.ajax({
+			url: '/uploadImg',
+			type: 'post',
+			processData: false,
+			async: true,
+			contentType: false,
+			data: formData,
+			success: function(res) {
+				console.log(res)
+				layer.msg(res.msg)
+				if (res.code == 0) {
+					$('.imgLi').show()
+					$('.addBtn').hide()
+					$('.imgLi img').attr('src',res.data)
+					imgUrl = res.data
+				}else {
+					return
+				}
+			}
+		})
+	})
+	/**
+	 * 删除图片
+	 */
+	$('#delBtn').on('click',function() {
+		$('.imgLi').hide()
+		$('.addBtn').show()
+		$('.imgLi img').attr('src','')
+	})
+	/**
+	 * 更新项目
+	 */
+	$('#addProject').on('click',function() {
+		var options = []
+		for (var i = 0; i < $('#tableOption tr').length; i++) {
+			options.push({
+				content: $('#tableOption tr').eq(i).find('.optionContent').val(),
+				odds: $('#tableOption tr').eq(i).find('.odds').val()
+			})
+		}
+		var endTime = String(new Date($('#endTime').val()).getTime()||new Date().getTime())
+		var params = {
+			id: $('#projectId').val(),
+			name: $('#name').val(),
+			projectType: $('#projectType').find("option:selected").val(),
+			options: options,
+			endTime: endTime,
+			imgUrl: $('.imgLi img').attr('src')
+		};
+		console.log(JSON.stringify(params))
+		$.ajax({
+			url: '/admin/project/edit',
+			type: 'post',
+			dataType: 'json',
+			data: params,
+			success: function(res,textStatus,jqXHR) {
+				console.log(res)
+				layer.msg(res.msg)
+				if (res.code == 0) {
+					setTimeout(function() {
+						window.location.href = '/admin/project'
+					},500)
+				}
+			}
+		})
+	})
+	/**
+     * 日期选择（单选）
+     */
+	$('.endTimePicker').daterangepicker({
+			singleDatePicker: true,
+			timePicker: true,
+			timePicker24Hour: true,
+			locale: {
+			format: 'YYYY-MM-DD HH:mm',
+	  		daysOfWeek: ["日", "一", "二", "三", "四", "五", "六"],
+	  		monthNames: ["一月", "二月", "三月", "四月", "五月", "六月", "七月", "八月", "九月", "十月", "十一月", "十二月"],
+		},
+		autoUpdateInput: false,
+	})
+	$('.endTimePicker').on('apply.daterangepicker', function(ev, picker) {
+		$(this).val(picker.startDate.format('YYYY-MM-DD HH:mm'));
+	});
+	$('.endTimePicker').on('cancel.daterangepicker', function(ev, picker) {
+		$(this).val('');
+	});
+</script>
+{% endblock %}
