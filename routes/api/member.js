@@ -109,12 +109,11 @@ router.post('/login',function(req, res, next) {
                 res.json(responseData);
                 return;
             };
-            var token = jwt.encode({
-                iss: data._id,
-                exp: 1000*60*60*24*365
-            },secret.jwtTokenSecret);
-
             if (data) {
+                var token = jwt.encode({
+                    iss: data._id,
+                    exp: 1000*60*60*24*365
+                },secret.jwtTokenSecret);
                 responseData.msg = '登录成功';
                 responseData.data = data;
                 responseData.token = token;
@@ -136,6 +135,10 @@ router.post('/login',function(req, res, next) {
                         res.json(responseData);
                         return;
                     };
+                    var token = jwt.encode({
+                        iss: mem._id,
+                        exp: 1000*60*60*24*365
+                    },secret.jwtTokenSecret);
                     responseData.msg = '登录成功';
                     responseData.data = data;
                     responseData.token = token;

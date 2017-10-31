@@ -26,7 +26,7 @@ var server = http.createServer(app);
  * Listen on provided port, on all network interfaces.
  */
 
-mongoose.connect('mongodb://localhost:27017/fkcDB', {useMongoClient: true}, function(err) {
+mongoose.connect('mongodb://39.108.245.177:27017/fkcDB', {useMongoClient: true}, function(err) {
     if (err) {
         console.log('数据库连接失败');
     } else {
