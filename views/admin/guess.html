@@ -44,7 +44,11 @@
 					<td>{{item.project.name}}</td>
 					<td>{{item.projectOption.content}}</td>
 					<td>{{item.goldBeanNum}}</td>
-					<td>{{item.project.endTime|isEnd}}</td>
+					{% if item.project.resultContent %}
+					<td class="text-success">已开奖</td>
+					{% else %}
+					<td>待开奖</td>
+					{% endif %}
 					<td>{{item.project.endTime|getdatefromtimestamp}}</td>
 					<td>{{item.addTime|date('Y-m-d H:i:s', -8*60)}}</td>
 				</tr>

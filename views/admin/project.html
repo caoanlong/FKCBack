@@ -45,12 +45,21 @@
 					<td class="text-center">
 						<input type="checkbox" class="projectId" value="{{item._id.toString()}}">
 					</td>
+					{% set now = Date.now() %}
+					{% if item.resultContent || item.endTime > now %}
 					<td>{{item.name}}</td>
+					{% else %}
+					<td class="danger">{{item.name}}</td>
+					{% endif %}
 					<td>
 						<a href="#">{{item.imgUrl}}</a>
 					</td>
 					<td>{{item.projectType.name}}</td>
-					<td>{{item.endTime|isEnd}}</td>
+					{% if item.resultContent %}
+					<td class="text-success">已开奖</td>
+					{% else %}
+					<td>待开奖</td>
+					{% endif %}
 					<td>{{item.endTime|getdatefromtimestamp}}</td>
 					<td>{{item.addTime|date('Y-m-d H:i:s', -8*60)}}</td>
 					<td>

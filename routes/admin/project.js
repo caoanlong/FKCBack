@@ -125,7 +125,9 @@ router.post('/edit',function(req, res) {
 		projectType: req.body.projectType,
 		endTime: req.body.endTime,
 		imgUrl: req.body.imgUrl,
-		options: req.body.options
+		options: req.body.options,
+		resultContent: req.body.resultContent,
+		resultOdds: req.body.resultOdds
 	},function(err) {
 		if (err) {
 			responseData.code = 1;

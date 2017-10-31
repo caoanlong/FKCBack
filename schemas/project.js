@@ -18,6 +18,14 @@ module.exports = new mongoose.Schema({
         type: Array,
         default: []
     },
+    resultContent: {
+        type: String,
+        default: ''
+    },
+    resultOdds: {
+        type: Number,
+        default: 0
+    },
     // 状态
     status: {
         type: String,

@@ -32,6 +32,8 @@
 				</div>
 			</div>
 			<div class="form-group">
+				<input type="hidden" class="resultContent" value="{{projectDetail.resultContent}}">
+				<input type="hidden" class="resultOdds" value="{{projectDetail.resultOdds}}">
 				<label for="endTime" class="col-xs-2 control-label">选项</label>
 				<div class="col-xs-8">
 					<table class="table">
@@ -53,6 +55,18 @@
 								<td width="70">
 									<button type="button" class="btn btn-danger deleteOption">删除</button>
 								</td>
+								{% set now = Date.now() %}
+								{% if projectDetail.endTime < now %}
+								<td width="70">
+									<input type="hidden" value="{{item.odds}}">
+									{% if projectDetail.resultContent==item.content %}
+								  	<input type="radio" name="optionsRadios" value="{{item.content}}" class="selectOption" checked>
+								  	{% else %}
+								  	<input type="radio" name="optionsRadios" value="{{item.content}}" class="selectOption">
+								  	{% endif %}
+								  	<span>设为结果</span>
+								</td>
+								{% endif %}
 							</tr>
 							{% endfor %}
 						</tbody>
@@ -99,6 +113,7 @@
 	</div>
 <script type="text/javascript">
 	var imgUrl = ''
+	var result = null
 	/**
 	 * 添加选项
 	 */
@@ -128,6 +143,16 @@
 	 */
 	$(document).on('click','.deleteOption',function() {
 		$(this).parent().parent().remove()
+	})
+	/**
+	 * 设置选项结果
+	 */
+	$(document).on('click','.selectOption',function() {
+		result = {
+			content: $(this).val(),
+			odds: $(this).prev().val()
+		}
+		console.log(JSON.stringify(result))
 	})
 	/**
 	 * 添加图片
@@ -168,6 +193,12 @@
 	 * 更新项目
 	 */
 	$('#addProject').on('click',function() {
+		if (!result) {
+			result = {
+				content: $('.resultContent').val(),
+				odds: $('.resultOdds').val()
+			}
+		}
 		var options = []
 		for (var i = 0; i < $('#tableOption tr').length; i++) {
 			options.push({
@@ -181,6 +212,8 @@
 			name: $('#name').val(),
 			projectType: $('#projectType').find("option:selected").val(),
 			options: options,
+			resultContent: result.content,
+			resultOdds: result.odds,
 			endTime: endTime,
 			imgUrl: $('.imgLi img').attr('src')
 		};
