@@ -260,14 +260,13 @@ router.get('/guess',function(req, res) {
 		for (var i = 1; i < pages+1; i++) {
 			pagesArr.push(i)
 		}
-
 		GuessList.find().sort({_id: -1}).limit(pageSize).skip(skip).populate(['member','project']).exec(function(error,result) {
 			if (error) {
 				res.render('error',{message: '查找失败'})
 			}else {
 				console.log(result)
 				res.render('admin/guess',{
-					active: 'guess',
+					active: 'project/guess',
 					data: {
 						guessList: result,
 						count: count,

@@ -26,11 +26,6 @@ module.exports = new mongoose.Schema({
         type: Number,
         default: 0
     },
-    // 状态
-    status: {
-        type: String,
-        default: '1'
-    },
     // 添加时间
     addTime: {
         type: Date,
