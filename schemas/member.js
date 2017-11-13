@@ -19,11 +19,6 @@ module.exports = new mongoose.Schema({
         type: Number,
         default: 0
     },
-    //账户明细
-    accountDetails: {
-        type: Array,
-        default: []
-    },
     //是否被禁用
     isDisabled: {
         type: Boolean,
