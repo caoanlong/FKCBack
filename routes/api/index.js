@@ -6,18 +6,18 @@ var secret =require('../../config').secret;
 //统一返回格式
 var responseData;
 router.use(function(req, res, next) {
-    responseData = {
-        code: 0,
-        msg: ''
-    }
-    next()
+	responseData = {
+		code: 0,
+		msg: ''
+	}
+	next()
 })
 
 //设置跨域
 router.use(function(req, res, next) {
 	res.header("Access-Control-Allow-Origin", "*");
 	res.header('Access-Control-Allow-Methods', 'PUT, GET, POST, DELETE, OPTIONS');
-    res.header('Access-Control-Allow-Headers', 'Content-Type,Accept,X-Access-Token');
+	res.header('Access-Control-Allow-Headers', 'Content-Type,Accept,X-Access-Token');
 	next();
 })
 

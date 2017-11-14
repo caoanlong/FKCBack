@@ -43,8 +43,15 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/admin', require('./routes/admin'));
 app.use('/api', require('./routes/api'));
 
+//设置跨域
+app.use(function(req, res, next) {
+	res.header("Access-Control-Allow-Origin", "*");
+	res.header('Access-Control-Allow-Methods', 'PUT, GET, POST, DELETE, OPTIONS');
+	res.header('Access-Control-Allow-Headers', 'Content-Type,Accept,X-Access-Token');
+	next();
+})
 /* 上传单个图片 */
-app.post('/uploadImg', upload.single('file'), function(req, res, next) {
+app.all('/uploadImg', upload.single('file'), function(req, res, next) {
 	if (!req.file) {
 		res.json({
 	    	code: 1,
