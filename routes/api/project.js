@@ -131,9 +131,9 @@ router.get('/guess', function(req, res) {
 			//计算总页数
 			pages = Math.ceil(count / pageSize);
 			//取值不能超过pages
-			pageIndex = Math.min( pageIndex, pages );
+			pageIndex = Math.min(pageIndex, pages);
 			//取值不能小于1
-			pageIndex = Math.max( pageIndex, 1 );
+			pageIndex = Math.max(pageIndex, 1);
 			var skip = (pageIndex - 1) * pageSize;
 			GuessList.find({
 				member: memberId
