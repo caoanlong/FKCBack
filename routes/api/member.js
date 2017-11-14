@@ -176,7 +176,7 @@ router.post('/info', function(req, res) {
 router.post('/accountDetails',function(req, res) {
 	var token = (req.body && req.body.token) || (req.query && req.query.token) || req.headers['x-access-token']
 	var memberId = jwt.decode(token,secret.jwtTokenSecret).iss
-	AccountDetail.find({member: memberId}).exec(function(err, result) {
+	AccountDetail.find({member: memberId}).sort({_id: -1}).exec(function(err, result) {
 		if (err) {
 			responseData.code = 1
 			responseData.msg = '获取失败'

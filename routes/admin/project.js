@@ -5,6 +5,8 @@ var crypto = require('crypto');
 var Project = require('../../models/Project');
 var ProjectType = require('../../models/ProjectType');
 var GuessList = require('../../models/GuessList');
+var Member = require('../../models/Member');
+var AccountDetail = require('../../models/AccountDetail');
 
 //统一返回格式
 var responseData;
@@ -120,7 +122,7 @@ router.get('/edit',function(req, res) {
 	})
 })
 router.post('/edit',function(req, res) {
-	Project.update({_id:req.body.id},{
+	Project.update({_id: req.body.id},{
 		name: req.body.name,
 		projectType: req.body.projectType,
 		endTime: req.body.endTime,
@@ -134,6 +136,29 @@ router.post('/edit',function(req, res) {
 			responseData.msg = '修改失败';
 			res.json(responseData);
 		}else {
+			// 如果开奖
+			if (req.body.resultContent) {
+				GuessList.find({
+					project: req.body.id
+				}).populate(['project','member']).exec(function(error, guess) {
+					for (let i = 0; i < guess.length; i++) {
+						if (guess[i].projectOption.content == guess[i].project.resultContent) {
+							// 更新会员账户
+							Member.update({_id: guess[i].member._id},{
+								goldBean: Number(guess[i].member.goldBean) + Number(guess[i].projectOption.odds)*Number(guess[i].goldBeanNum)
+							},function(error1) {
+								// 生成账单
+								new AccountDetail({
+									member: guess[i].member._id,
+									goldBeanChange: '+' + Number(guess[i].projectOption.odds)*Number(guess[i].goldBeanNum),
+									type: '中奖',
+									info: guess[i].projectOption.content
+								}).save()
+							})
+						}
+					}
+				})
+			}
 			responseData.msg = '修改成功';
 			res.json(responseData);
 		}
