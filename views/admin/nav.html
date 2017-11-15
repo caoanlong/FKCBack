@@ -1,110 +1,148 @@
 <nav class="navbar navbar-default">
-    <div class="container-fluid">
-        <div class="navbar-header">
-            <a class="navbar-brand" href="/admin"><strong>疯狂猜后台管理</strong></a>
-        </div>
+	<div class="container-fluid">
+		<div class="navbar-header">
+			<a class="navbar-brand" href="/admin"><strong>疯狂猜后台管理</strong></a>
+		</div>
 
-        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-            <ul class="nav navbar-nav">
-                {% if active == "index" %}
-                <li class="active">
-                    <a href="/admin">首页</a>
-                </li>
-                {% else %}
-                <li>
-                    <a href="/admin">首页</a>
-                </li>
-                {% endif %}
-                {% if active == "member" %}
-                <li class="active">
-                    <a href="/admin/member">会员管理</a>
-                </li>
-                {% else %}
-                <li>
-                    <a href="/admin/member">会员管理</a>
-                </li>
-                {% endif %}
-                {% if active == "project" || active == "projectType" %}
-                <li class="dropdown active">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">项目管理 <span class="caret"></span></a>
-                    <ul class="dropdown-menu">
-                        {% if active == "project" %}
-                        <li class="active">
-                            <a href="/admin/project">项目列表</a>
-                        </li>
-                        {% else %}
-                        <li>
-                            <a href="/admin/project">项目列表</a>
-                        </li>
-                        {% endif %}
-                        {% if active == "projectType" %}
-                        <li class="active">
-                            <a href="/admin/project/projectType">分类管理</a>
-                        </li>
-                        {% else %}
-                        <li>
-                            <a href="/admin/project/projectType">分类管理</a>
-                        </li>
-                        {% endif %}
-                    </ul>
-                </li>
-                {% else %}
-                <li class="dropdown">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">项目管理 <span class="caret"></span></a>
-                    <ul class="dropdown-menu">
-                        {% if active == "project" %}
-                        <li class="active">
-                            <a href="/admin/project">项目列表</a>
-                        </li>
-                        {% else %}
-                        <li>
-                            <a href="/admin/project">项目列表</a>
-                        </li>
-                        {% endif %}
-                        {% if active == "projectType" %}
-                        <li class="active">
-                            <a href="/admin/project/projectType">分类管理</a>
-                        </li>
-                        {% else %}
-                        <li>
-                            <a href="/admin/project/projectType">分类管理</a>
-                        </li>
-                        {% endif %}
-                    </ul>
-                </li>
-                {% endif %}
-                {% if userInfo.isAdmin %}
-                    {% if active == "project/guess" %}
-                    <li class="active">
-                        <a href="/admin/project/guess">竞猜管理</a>
-                    </li>
-                    {% else %}
-                    <li>
-                        <a href="/admin/project/guess">竞猜管理</a>
-                    </li>
-                    {% endif %}
-                {% endif %}
-                {% if userInfo.isAdmin %}
-                    {% if active == "user" %}
-                    <li class="active">
-                        <a href="/admin/user">用户管理</a>
-                    </li>
-                    {% else %}
-                    <li>
-                        <a href="/admin/user">用户管理</a>
-                    </li>
-                    {% endif %}
-                {% endif %}
-            </ul>
+		<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+			<ul class="nav navbar-nav">
+				{% if active == "index" %}
+				<li class="active">
+					<a href="/admin">首页</a>
+				</li>
+				{% else %}
+				<li>
+					<a href="/admin">首页</a>
+				</li>
+				{% endif %}
+				{% if active == "member" %}
+				<li class="active">
+					<a href="/admin/member">会员管理</a>
+				</li>
+				{% else %}
+				<li>
+					<a href="/admin/member">会员管理</a>
+				</li>
+				{% endif %}
+				{% if active == "project" || active == "projectType" %}
+				<li class="dropdown active">
+					<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">项目管理 <span class="caret"></span></a>
+					<ul class="dropdown-menu">
+						{% if active == "project" %}
+						<li class="active">
+							<a href="/admin/project">项目列表</a>
+						</li>
+						{% else %}
+						<li>
+							<a href="/admin/project">项目列表</a>
+						</li>
+						{% endif %}
+						{% if active == "projectType" %}
+						<li class="active">
+							<a href="/admin/project/projectType">分类管理</a>
+						</li>
+						{% else %}
+						<li>
+							<a href="/admin/project/projectType">分类管理</a>
+						</li>
+						{% endif %}
+					</ul>
+				</li>
+				{% else %}
+				<li class="dropdown">
+					<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">项目管理 <span class="caret"></span></a>
+					<ul class="dropdown-menu">
+						{% if active == "project" %}
+						<li class="active">
+							<a href="/admin/project">项目列表</a>
+						</li>
+						{% else %}
+						<li>
+							<a href="/admin/project">项目列表</a>
+						</li>
+						{% endif %}
+						{% if active == "projectType" %}
+						<li class="active">
+							<a href="/admin/project/projectType">分类管理</a>
+						</li>
+						{% else %}
+						<li>
+							<a href="/admin/project/projectType">分类管理</a>
+						</li>
+						{% endif %}
+					</ul>
+				</li>
+				{% endif %}
+				{% if active == "project/guess" %}
+				<li class="active">
+					<a href="/admin/project/guess">竞猜管理</a>
+				</li>
+				{% else %}
+				<li>
+					<a href="/admin/project/guess">竞猜管理</a>
+				</li>
+				{% endif %}
+				{% if active == "goldBeanType" %}
+				<li class="dropdown active">
+					<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">商城管理 <span class="caret"></span></a>
+					<ul class="dropdown-menu">
+						{% if active == "goldBean" %}
+						<li class="active">
+							<a href="/admin/goldBeanType">金豆列表</a>
+						</li>
+						{% else %}
+						<li>
+							<a href="/admin/goldBeanType">金豆列表</a>
+						</li>
+						{% endif %}
+					</ul>
+				</li>
+				{% else %}
+				<li class="dropdown">
+					<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">项目管理 <span class="caret"></span></a>
+					<ul class="dropdown-menu">
+						{% if active == "project" %}
+						<li class="active">
+							<a href="/admin/project">项目列表</a>
+						</li>
+						{% else %}
+						<li>
+							<a href="/admin/project">项目列表</a>
+						</li>
+						{% endif %}
+						{% if active == "projectType" %}
+						<li class="active">
+							<a href="/admin/project/projectType">分类管理</a>
+						</li>
+						{% else %}
+						<li>
+							<a href="/admin/project/projectType">分类管理</a>
+						</li>
+						{% endif %}
+					</ul>
+				</li>
+				{% endif %}
+				{% if userInfo.isAdmin %}
+					{% if active == "user" %}
+					<li class="active">
+						<a href="/admin/user">用户管理</a>
+					</li>
+					{% else %}
+					<li>
+						<a href="/admin/user">用户管理</a>
+					</li>
+					{% endif %}
+				{% endif %}
+			</ul>
 
-            <ul class="nav navbar-nav navbar-right">
-                <li class="dropdown">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">你好！{{userInfo.username}} <span class="caret"></span></a>
-                    <ul class="dropdown-menu">
-                        <li><a href="/admin/user/logout">退出</a></li>
-                    </ul>
-                </li>
-            </ul>
-        </div>
-    </div>
+			<ul class="nav navbar-nav navbar-right">
+				<li class="dropdown">
+					<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">你好！{{userInfo.username}} <span class="caret"></span></a>
+					<ul class="dropdown-menu">
+						<li><a href="/admin/user/logout">退出</a></li>
+					</ul>
+				</li>
+			</ul>
+		</div>
+	</div>
 </nav>

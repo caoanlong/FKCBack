@@ -32,5 +32,6 @@ router.get('/',function(req, res) {
 router.use('/user', require('./user'));
 router.use('/member', require('./member'));
 router.use('/project', require('./project'));
+router.use('/shop', require('./shop'));
 
 module.exports = router;
