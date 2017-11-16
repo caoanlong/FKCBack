@@ -1,0 +1,53 @@
+{% extends '../layout.html' %}
+
+{% block main %}
+	{% include 'nav.html' %}
+	<div class="container-fluid">
+		<ol class="breadcrumb">
+			<li><a href="/admin">首页</a></li>
+			<li><a href="/admin/shop/goldBeanType">商城管理</a></li>
+			<li><a href="/admin/shop/goldBeanType">金豆管理</a></li>
+			<li class="active">新增金豆分类</li>
+		</ol>
+		<form class="form-horizontal">
+			<div class="form-group">
+				<label for="name" class="col-xs-3 control-label">金豆面额</label>
+				<div class="col-xs-6">
+					<input type="number" id="name" class="form-control" name="name" placeholder="金豆面额">
+				</div>
+			</div>
+			<div class="form-group">
+				<div class="col-xs-offset-3 col-xs-6">
+					<a href="/admin/shop/goldBeanType" type="button" class="btn btn-default">返回</a>
+					<button id="addGoldBeanType" type="button" class="btn btn-primary">提交</button>
+				</div>
+			</div>
+		</form>
+	</div>
+<script type="text/javascript">
+	/**
+	 * 添加金豆分类
+	 */
+	$('#addGoldBeanType').on('click',function() {
+		var params = {
+			num: $('#name').val()
+		};
+		console.log(JSON.stringify(params))
+		$.ajax({
+			url: '/admin/shop/goldBeanType/add',
+			type: 'post',
+			dataType: 'json',
+			data: params,
+			success: function(res,textStatus,jqXHR) {
+				console.log(res)
+				layer.msg(res.msg)
+				if (res.code == 0) {
+					setTimeout(function() {
+						window.location.href = '/admin/shop/goldBeanType'
+					},500)
+				}
+			}
+		})
+	})
+</script>
+{% endblock %}

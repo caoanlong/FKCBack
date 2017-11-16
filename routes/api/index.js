@@ -54,5 +54,6 @@ router.use(function(req, res, next) {
 
 router.use('/member', require('./member'));
 router.use('/project', require('./project'));
+router.use('/shop', require('./shop'));
 
 module.exports = router;

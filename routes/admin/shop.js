@@ -57,14 +57,10 @@ router.get('/goldBeanType', function(req, res) {
 })
 /* 金豆类型添加 */
 router.get('/goldBeanType/add', function(req, res) {
-	GoldBeanType.find(function(err, result) {
-		res.render('admin/projectAdd',{
-			projectType: result,
-			active: 'project',
-			userInfo: req.session.userInfo
-		})
+	res.render('admin/goldBeanTypeAdd',{
+		active: 'goldBeanType',
+		userInfo: req.session.userInfo
 	})
-	
 })
 router.post('/goldBeanType/add',function(req, res) {
 	new GoldBeanType({
@@ -88,19 +84,18 @@ router.post('/goldBeanType/delete',function(req, res) {
 })
 /* 金豆类型修改 */
 router.get('/goldBeanType/edit',function(req, res) {
-	GoldBeanType.findOne({_id:req.query.id}).exec(function(err,projectDetail) {
+	GoldBeanType.findOne({_id:req.query.id}).exec(function(err,goldBeanTypeDetail) {
 		if (err) {
 			res.render('error', {message: '不存在'});
 		}else {
-			ProjectType.find(function(error,projectType) {
+			GoldBeanType.find(function(error,projectType) {
 				if (error) {
 					res.render('error', {message: '分类错误'});
 					return
 				}
-				res.render('admin/projectDetail',{
-					active: 'project',
-					projectDetail: projectDetail,
-					projectType: projectType,
+				res.render('admin/goldBeanTypeDetail',{
+					active: 'goldBeanType',
+					goldBeanTypeDetail: goldBeanTypeDetail,
 					userInfo: req.session.userInfo
 				})
 			})
@@ -108,43 +103,14 @@ router.get('/goldBeanType/edit',function(req, res) {
 	})
 })
 router.post('/goldBeanType/edit',function(req, res) {
-	goldBeanType.update({_id: req.body.id},{
-		name: req.body.name,
-		projectType: req.body.projectType,
-		endTime: req.body.endTime,
-		imgUrl: req.body.imgUrl,
-		options: req.body.options,
-		resultContent: req.body.resultContent,
-		resultOdds: req.body.resultOdds
+	GoldBeanType.update({_id: req.body.id},{
+		num: req.body.num
 	},function(err) {
 		if (err) {
 			responseData.code = 1;
 			responseData.msg = '修改失败';
 			res.json(responseData);
 		}else {
-			// 如果开奖
-			if (req.body.resultContent) {
-				GuessList.find({
-					project: req.body.id
-				}).populate(['project','member']).exec(function(error, guess) {
-					for (let i = 0; i < guess.length; i++) {
-						if (guess[i].projectOption.content == guess[i].project.resultContent) {
-							// 更新会员账户
-							Member.update({_id: guess[i].member._id},{
-								goldBean: Number(guess[i].member.goldBean) + Number(guess[i].projectOption.odds)*Number(guess[i].goldBeanNum)
-							},function(error1) {
-								// 生成账单
-								new AccountDetail({
-									member: guess[i].member._id,
-									goldBeanChange: '+' + Number(guess[i].projectOption.odds)*Number(guess[i].goldBeanNum),
-									type: '中奖',
-									info: guess[i].projectOption.content
-								}).save()
-							})
-						}
-					}
-				})
-			}
 			responseData.msg = '修改成功';
 			res.json(responseData);
 		}

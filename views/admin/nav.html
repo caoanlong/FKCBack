@@ -86,37 +86,28 @@
 				<li class="dropdown active">
 					<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">商城管理 <span class="caret"></span></a>
 					<ul class="dropdown-menu">
-						{% if active == "goldBean" %}
+						{% if active == "goldBeanType" %}
 						<li class="active">
-							<a href="/admin/goldBeanType">金豆列表</a>
+							<a href="/admin/shop/goldBeanType">金豆列表</a>
 						</li>
 						{% else %}
 						<li>
-							<a href="/admin/goldBeanType">金豆列表</a>
+							<a href="/admin/shop/goldBeanType">金豆列表</a>
 						</li>
 						{% endif %}
 					</ul>
 				</li>
 				{% else %}
 				<li class="dropdown">
-					<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">项目管理 <span class="caret"></span></a>
+					<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">商城管理 <span class="caret"></span></a>
 					<ul class="dropdown-menu">
-						{% if active == "project" %}
+						{% if active == "goldBeanType" %}
 						<li class="active">
-							<a href="/admin/project">项目列表</a>
+							<a href="/admin/shop/goldBeanType">金豆列表</a>
 						</li>
 						{% else %}
 						<li>
-							<a href="/admin/project">项目列表</a>
-						</li>
-						{% endif %}
-						{% if active == "projectType" %}
-						<li class="active">
-							<a href="/admin/project/projectType">分类管理</a>
-						</li>
-						{% else %}
-						<li>
-							<a href="/admin/project/projectType">分类管理</a>
+							<a href="/admin/shop/goldBeanType">金豆列表</a>
 						</li>
 						{% endif %}
 					</ul>

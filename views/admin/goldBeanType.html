@@ -5,11 +5,11 @@
 	<div class="container-fluid">
 		<ol class="breadcrumb">
 		  	<li><a href="/admin">首页</a></li>
-		  	<li><a href="/admin/goldBeanType">商城管理</a></li>
+		  	<li><a href="/admin/shop/goldBeanType">商城管理</a></li>
 		  	<li class="active">金豆列表</li>
 		</ol>
 		<form class="form-inline padding-bottom-15" onsubmit="return false">
-		  	<a href="/admin/goldBeanType/add" type="button" class="btn btn-success"><i class="glyphicon glyphicon-plus"></i>新增项目</a>
+		  	<a href="/admin/shop/goldBeanType/add" type="button" class="btn btn-success"><i class="glyphicon glyphicon-plus"></i>新增金豆面额</a>
 		</form>
 		<table class="table table-bordered table-hover" style="table-layout: fixed;">
 			<thead>
@@ -18,8 +18,8 @@
 						<input type="checkbox" name="">
 					</th>
 					<th>金豆面额</th>
-					<th width="190">创建时间</th>
-					<th width="120">操作</th>
+					<th>创建时间</th>
+					<th>操作</th>
 				</tr>
 			</thead>
 			<tbody>
@@ -31,7 +31,7 @@
 					<td>{{item.num}}</td>
 					<td>{{item.addTime|date('Y-m-d H:i:s', -8*60)}}</td>
 					<td>
-						<a href="/admin/goldBeanType/edit?id={{item._id.toString()}}" type="button" class="btn btn-primary btn-xs">编辑</a>
+						<a href="/admin/shop/goldBeanType/edit?id={{item._id.toString()}}" type="button" class="btn btn-primary btn-xs">编辑</a>
 						<button type="button" class="btn btn-danger btn-xs deleteGoldBeanType">删除</button>
 					</td>
 				</tr>
