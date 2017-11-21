@@ -39,15 +39,30 @@ router.post('/buyGoldBean', function(req, res) {
 	let memberId = jwt.decode(token, secret.jwtTokenSecret).iss
 	let goldBeanNum = Number(req.body.goldBeanNum)
 	Member.findOne({_id: memberId}).exec(function(err, member) {
+		if (err) {
+			responseData.code = 1
+			responseData.msg = '失败'
+			res.json(responseData)
+			return
+		}
 		Member.update({_id: memberId},{
 			goldBean: member.goldBean + goldBeanNum
+		},function(error) {
+			if (err) {
+				responseData.code = 2
+				responseData.msg = '充值失败'
+				res.json(responseData)
+				return
+			}
+			new AccountDetail({
+				member: memberId,
+				goldBeanChange: '+' + goldBeanNum,
+				type: '充值',
+				info: '金豆'
+			}).save()
+			responseData.msg = '充值成功'
+			res.json(responseData)
 		})
-		new AccountDetail({
-			member: memberId,
-			goldBeanChange: +goldBeanNum,
-			type: '充值',
-			info: ''
-		}).save()
 	})
 })
 
