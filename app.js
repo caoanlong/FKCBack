@@ -12,13 +12,13 @@ var app = express();
 
 var storage = multer.diskStorage({
 	destination: function (req, file, cb) {
-    	cb(null, './public/uploads')
-  	},
-  	filename: function (req, file, cb) {
-    	cb(null, file.fieldname + '-' + Date.now() + '.' + file.mimetype.split('/')[1])
-  	}
+		cb(null, './public/uploads')
+	},
+	filename: function (req, file, cb) {
+		cb(null, file.fieldname + '-' + Date.now() + '.' + file.mimetype.split('/')[1])
+	}
 })
-var upload = multer({storage: storage});
+var upload = multer({ storage: storage });
 
 // view engine setup
 app.engine('html', swig.renderFile);
@@ -26,7 +26,7 @@ app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'html');
 
 // 在开发过程中，需要取消模板缓存
-swig.setDefaults({cache: false});
+swig.setDefaults({ cache: false });
 // 设置过滤器
 swig.setFilter('getdatefromtimestamp', require('./common/myFilters').getdatefromtimestamp);
 swig.setFilter('isEnd', require('./common/myFilters').isEnd);
@@ -44,44 +44,44 @@ app.use('/admin', require('./routes/admin'));
 app.use('/api', require('./routes/api'));
 
 //设置跨域
-app.use(function(req, res, next) {
+app.use(function (req, res, next) {
 	res.header("Access-Control-Allow-Origin", "*");
 	res.header('Access-Control-Allow-Methods', 'PUT, GET, POST, DELETE, OPTIONS');
 	res.header('Access-Control-Allow-Headers', 'Content-Type,Accept,X-Access-Token');
 	next();
 })
 /* 上传单个图片 */
-app.all('/uploadImg', upload.single('file'), function(req, res, next) {
+app.all('/uploadImg', upload.single('file'), function (req, res, next) {
 	if (!req.file) {
 		res.json({
-	    	code: 1,
-	    	msg: '图片为空'
-	    })
+			code: 1,
+			msg: '图片为空'
+		})
 		return
 	}
-    res.json({
-    	code: 0,
-    	msg: '上传成功',
-    	data: '/' + req.file.path.slice(7)
-    })
+	res.json({
+		code: 0,
+		msg: '上传成功',
+		data: '/' + req.file.path.slice(7)
+	})
 })
 
 // catch 404 and forward to error handler
-app.use(function(req, res, next) {
-  	var err = new Error('Not Found');
-  	err.status = 404;
-  	next(err);
+app.use(function (req, res, next) {
+	var err = new Error('Not Found');
+	err.status = 404;
+	next(err);
 });
 
 // error handler
-app.use(function(err, req, res, next) {
-  	// set locals, only providing error in development
-  	res.locals.message = err.message;
-  	res.locals.error = req.app.get('env') === 'development' ? err : {};
+app.use(function (err, req, res, next) {
+	// set locals, only providing error in development
+	res.locals.message = err.message;
+	res.locals.error = req.app.get('env') === 'development' ? err : {};
 
-  	// render the error page
-  	res.status(err.status || 500);
-  	res.render('error');
+	// render the error page
+	res.status(err.status || 500);
+	res.render('error');
 });
 
 

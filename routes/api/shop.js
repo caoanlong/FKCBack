@@ -1,15 +1,15 @@
-var express = require('express');
-var router = express.Router();
-var jwt = require('jwt-simple');
-var secret =require('../../config').secret;
+const express = require('express')
+const router = express.Router()
+const jwt = require('jwt-simple')
+const secret = require('../../config').secret
 
-var GoldBeanType = require('../../models/GoldBeanType');
-var Member = require('../../models/Member');
-var AccountDetail = require('../../models/AccountDetail');
+const GoldBeanType = require('../../models/GoldBeanType')
+const Member = require('../../models/Member')
+const AccountDetail = require('../../models/AccountDetail')
 
 //统一返回格式
-var responseData;
-router.use(function(req, res, next) {
+let responseData
+router.use(function (req, res, next) {
 	responseData = {
 		code: 0,
 		msg: ''
@@ -18,8 +18,8 @@ router.use(function(req, res, next) {
 })
 
 /* 金豆列表 */
-router.get('/goldBeanType', function(req, res) {
-	GoldBeanType.find().sort({num: -1}).exec(function(error,result) {
+router.get('/goldBeanType', function (req, res) {
+	GoldBeanType.find().sort({ num: -1 }).exec(function (error, result) {
 		if (error) {
 			responseData.code = 1
 			responseData.msg = '获取失败'
@@ -34,20 +34,36 @@ router.get('/goldBeanType', function(req, res) {
 	})
 })
 /* 购买金豆 */
-router.post('/buyGoldBean', function(req, res) {
+router.post('/buyGoldBean', function (req, res) {
 	let token = (req.body && req.body.token) || (req.query && req.query.token) || req.headers['x-access-token']
 	let memberId = jwt.decode(token, secret.jwtTokenSecret).iss
 	let goldBeanNum = Number(req.body.goldBeanNum)
-	Member.findOne({_id: memberId}).exec(function(err, member) {
+	// 支付对接参数
+	let URL = 'http://pay.e-mac.com.cn/pay/v1/order'
+	let merNo = '10029'
+	let appId = '21'
+	let key = '02791ec15c0b0fde86d194694a2da436'
+	let transType = req.body.transType // 支付方式
+	let transAmt = req.body.transAmt // 支付金额
+	let transTime = Date.now() // 支付时间(yyyyMMddHHmmss)
+	let orderNo = '19890204' // 订单号，不可重复
+	let returnUrl = '' // 公众号返回页面，可不填，不参与加密（以http://开头）
+	let showQR = 0 // 0:返回链接1:直接显示二维码(扫码接口有效，默认为0，不参与加密)
+	let sign = '' /* 加密信息，加密规则如下：
+				   * MD5(merNo|appId|transType|transAmt|transTime|orderNo|KEY)
+				   * KEY在对接时申请发放 
+				   */
+		
+	Member.findOne({ _id: memberId }).exec(function (err, member) {
 		if (err) {
 			responseData.code = 1
 			responseData.msg = '失败'
 			res.json(responseData)
 			return
 		}
-		Member.update({_id: memberId},{
+		Member.update({ _id: memberId }, {
 			goldBean: member.goldBean + goldBeanNum
-		},function(error) {
+		}, function (error) {
 			if (err) {
 				responseData.code = 2
 				responseData.msg = '充值失败'
@@ -66,4 +82,4 @@ router.post('/buyGoldBean', function(req, res) {
 	})
 })
 
-module.exports = router;
+module.exports = router
