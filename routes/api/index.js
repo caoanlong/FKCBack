@@ -21,6 +21,31 @@ router.use(function(req, res, next) {
 	next();
 })
 
+/* 支付同步回调 */
+router.post('/paymentSync', function (req, res) {
+	if (req.body.orderId && req.body.orderNo && req.body.transaction_id && req.body.merNo && req.body.appId && req.body.transAmt && req.body.orderDate && req.body.respCode && req.body.timeEnd && req.body.sign) {
+		let params = {
+			orderId: req.body.orderId,
+			orderNo: req.body.orderNo,
+			transaction_id: req.body.transaction_id,
+			merNo: req.body.merNo,
+			appId: req.body.appId,
+			transAmt: req.body.transAmt,
+			orderDate: req.body.orderDate,
+			respCode: req.body.respCode,
+			timeEnd: req.body.timeEnd,
+			sign: req.body.sign
+		}
+		responseData.msg = '成功'
+		responseData.data = 'SUCCESS'
+		res.json(responseData)
+	} else {
+		responseData.code = 1
+		responseData.msg = '失败'
+		responseData.data = 'EORROR'
+		res.json(responseData)
+	}
+})
 router.use(function(req, res, next) {
 	if (req.url.indexOf('verCode') > -1 || req.url.indexOf('login') > -1) {
 		next()

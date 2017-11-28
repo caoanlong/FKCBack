@@ -32,7 +32,7 @@ router.get('/goldBeanType', function (req, res) {
 
 		var skip = (pageIndex - 1) * pageSize
 		var pagesArr = []
-		for (var i = 1 i < pages+ 1 i++) {
+		for (var i = 1; i < pages+ 1; i++) {
 			pagesArr.push(i)
 		}
 		GoldBeanType.find().sort({ _id: -1 }).limit(pageSize).skip(skip).exec(function (error, result) {
