@@ -2,42 +2,58 @@
 	<p class="col-xs-6 pagination" style="height: 34px;line-height: 34px">一共有 {{data.count}} 条数据，每页显示 {{data.pageSize}} 条数据，一共 {{data.pages}} 页，当前第 {{data.pageIndex}} 页</p>
 	<div class="col-xs-6 text-right">
 		<ul class="pagination">
-	    	{% if data.pageIndex == 1 %}
-	    	<li class="disabled">
-		      	<a href="#" aria-label="Previous">
-		        	<span aria-hidden="true">&laquo;</span>
-		      	</a>
-	      	</li>
-	      	{% else %}
-	      	<li>
-		      	<a href="/admin/{{active}}?pageIndex={{data.pageIndex-1}}" aria-label="Previous">
-		        	<span aria-hidden="true">&laquo;</span>
-		      	</a>
-	      	</li>
-	      	{% endif %}
-		    {% for item in data.pagesArr %}
-		    	{% if item == data.pageIndex%}
-			    <li class="active">
-			    	<a href="javascript:;">{{item}}</a>
-			    </li>
-			    {% else %}
-			    <li>
-			    	<a href="/admin/{{active}}?pageIndex={{item}}">{{item}}</a>
-			    </li>
-			    {% endif %}
-	    	{% endfor %}
-	    	{% if data.pageIndex == data.pages %}
-	    	<li class="disabled">
-		      	<a href="#" aria-label="Previous">
-		        	<span aria-hidden="true">&raquo;</span>
-		      	</a>
-	      	</li>
-	      	{% else %}
-	      	<li>
-		      	<a href="/admin/{{active}}?pageIndex={{data.pageIndex+1}}" aria-label="Previous">
-		        	<span aria-hidden="true">&raquo;</span>
-		      	</a>
-	      	</li>
-	  	</ul>
+			{% if data.pageIndex == 1 %}
+			<li class="disabled">
+				<a href="#" aria-label="Previous">
+					<span aria-hidden="true">&laquo;</span>
+				</a>
+			</li>
+			{% else %}
+			<li>
+				{% if active == "goldBeanType"%}
+				<a href="/admin/shop/{{active}}?pageIndex={{data.pageIndex-1}}" aria-label="Previous">
+					<span aria-hidden="true">&laquo;</span>
+				</a>
+				{% else %}
+				<a href="/admin/{{active}}?pageIndex={{data.pageIndex-1}}" aria-label="Previous">
+					<span aria-hidden="true">&laquo;</span>
+				</a>
+				{% endif %}
+			</li>
+			{% endif %}
+			{% for item in data.pagesArr %}
+				{% if item == data.pageIndex%}
+				<li class="active">
+					<a href="javascript:;">{{item}}</a>
+				</li>
+				{% else %}
+				<li>
+					{% if active == "goldBeanType"%}
+					<a href="/admin/shop/{{active}}?pageIndex={{item}}">{{item}}</a>
+					{% else %}
+					<a href="/admin/{{active}}?pageIndex={{item}}">{{item}}</a>
+					{% endif %}
+				</li>
+				{% endif %}
+			{% endfor %}
+			{% if data.pageIndex == data.pages %}
+			<li class="disabled">
+				<a href="#" aria-label="Previous">
+					<span aria-hidden="true">&raquo;</span>
+				</a>
+			</li>
+			{% else %}
+			<li>
+				{% if active == "goldBeanType"%}
+				<a href="/admin/shop/{{active}}?pageIndex={{data.pageIndex+1}}" aria-label="Previous">
+					<span aria-hidden="true">&raquo;</span>
+				</a>
+				{% else %}
+				<a href="/admin/{{active}}?pageIndex={{data.pageIndex+1}}" aria-label="Previous">
+					<span aria-hidden="true">&raquo;</span>
+				</a>
+				{% endif %}
+			</li>
+		</ul>
 	</div>
 </nav>

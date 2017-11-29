@@ -7,6 +7,7 @@ const secret = require('../../config').secret
 const GoldBeanType = require('../../models/GoldBeanType')
 const Member = require('../../models/Member')
 const AccountDetail = require('../../models/AccountDetail')
+const TemporaryOrder = require('../../models/TemporaryOrder')
 const common = require('../../common/index')
 
 //统一返回格式
@@ -47,24 +48,13 @@ router.post('/buyGoldBean', function (req, res) {
 			res.json(responseData)
 			return
 		}
-		Member.update({ _id: memberId }, {
-			goldBean: member.goldBean + goldBeanNum
-		}, function (error) {
-			if (err) {
-				responseData.code = 2
-				responseData.msg = '充值失败'
-				res.json(responseData)
-				return
-			}
-			new AccountDetail({
-				member: memberId,
-				goldBeanChange: '+' + goldBeanNum,
-				type: '充值',
-				info: '金豆'
-			}).save()
-			responseData.msg = '充值成功'
-			res.json(responseData)
-		})
+		new TemporaryOrder({
+			member: memberId,
+			goldBeanNum: req.body.goldBeanNum,
+			orderNo: req.body.orderNo
+		}).save()
+		responseData.msg = '等待平台...'
+		res.json(responseData)
 	})
 })
 

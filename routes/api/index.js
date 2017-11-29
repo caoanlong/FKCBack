@@ -1,7 +1,11 @@
-var express = require('express');
-var router = express.Router();
-var jwt = require('jwt-simple');
-var secret =require('../../config').secret;
+const express = require('express');
+const router = express.Router();
+const jwt = require('jwt-simple');
+const secret =require('../../config').secret
+
+const TemporaryOrder = require('../../models/TemporaryOrder')
+const Member = require('../../models/Member')
+const AccountDetail = require('../../models/AccountDetail')
 
 //统一返回格式
 var responseData;
@@ -36,9 +40,25 @@ router.post('/paymentSync', function (req, res) {
 			timeEnd: req.body.timeEnd,
 			sign: req.body.sign
 		}
-		responseData.msg = '成功'
-		responseData.data = 'SUCCESS'
-		res.json(responseData)
+		// 如果成功，则给对应用户写入其支付的金额-金币
+		TemporaryOrder.findOne({ orderNo: req.body.orderNo }).exec(function (err, temporaryOrder) {
+			Member.findOne({_id: temporaryOrder.member}).exec(function (error, member) {
+				Member.update({ _id: member._id }, {
+					goldBean: member.goldBean + temporaryOrder.goldBeanNum
+				}, function (error) {
+					new AccountDetail({
+						member: member._id,
+						goldBeanChange: '+' + temporaryOrder.goldBeanNum,
+						type: '充值',
+						info: '金豆'
+					}).save()
+					responseData.msg = '成功'
+					responseData.data = 'SUCCESS'
+					res.json(responseData)
+				})
+			})
+
+		})
 	} else {
 		responseData.code = 1
 		responseData.msg = '失败'
