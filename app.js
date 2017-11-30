@@ -12,7 +12,8 @@ var app = express();
 
 var storage = multer.diskStorage({
 	destination: function (req, file, cb) {
-		cb(null, './public/uploads')
+		// cb(null, './public/uploads')
+		cb(null, '/mydatadisk/images')
 	},
 	filename: function (req, file, cb) {
 		cb(null, file.fieldname + '-' + Date.now() + '.' + file.mimetype.split('/')[1])
@@ -62,7 +63,7 @@ app.all('/uploadImg', upload.single('file'), function (req, res, next) {
 	res.json({
 		code: 0,
 		msg: '上传成功',
-		data: '/' + req.file.path.slice(7)
+		data: 'http://39.108.245.177:4000'+req.file.path.slice(18)
 	})
 })
 
