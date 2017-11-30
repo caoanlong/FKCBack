@@ -18,7 +18,7 @@ router.use(function(req, res, next) {
 
 /* 会员列表 */
 router.get('/', (req, res, next) => {
-	if (!req.session.userInfo.isAdmin) {
+	if (!req.session.userInfo) {
 		res.redirect('/admin')
 		return
 	}
@@ -156,7 +156,7 @@ router.post('/enable', (req, res) => {
 })
 /* 会员竞猜列表 */
 router.get('/guess', (req, res) => {
-	if (!req.session.userInfo.isAdmin) {
+	if (!req.session.userInfo) {
 		res.redirect('/admin')
 		return
 	}
@@ -201,7 +201,7 @@ router.get('/guess', (req, res) => {
 })
 /* 会员账户明细列表 */
 router.get('/accountDetails', (req, res) => {
-	if (!req.session.userInfo.isAdmin) {
+	if (!req.session.userInfo) {
 		res.redirect('/admin')
 		return
 	}

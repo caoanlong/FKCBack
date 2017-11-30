@@ -15,7 +15,7 @@ router.use(function (req, res, next) {
 
 /* 金豆列表 */
 router.get('/goldBeanType', function (req, res) {
-	if (!req.session.userInfo.isAdmin) {
+	if (!req.session.userInfo) {
 		res.redirect('/admin')
 		return
 	}

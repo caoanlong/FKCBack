@@ -15,7 +15,7 @@ router.use(function(req, res, next) {
 
 /* 用户列表 */
 router.get('/',function(req, res) {
-    if (!req.session.userInfo.isAdmin) {
+    if (!req.session.userInfo) {
         res.redirect('/admin');
         return;
     };

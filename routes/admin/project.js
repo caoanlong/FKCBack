@@ -19,7 +19,7 @@ router.use((req, res, next) => {
 
 /* 项目列表 */
 router.get('/', function(req, res) {
-	if (!req.session.userInfo.isAdmin) {
+	if (!req.session.userInfo) {
 		res.redirect('/admin')
 		return
 	}
@@ -165,7 +165,7 @@ router.post('/edit',function(req, res) {
 })
 /* 项目分类列表 */
 router.get('/projectType',function(req, res) {
-	if (!req.session.userInfo.isAdmin) {
+	if (!req.session.userInfo) {
 		res.redirect('/admin')
 		return
 	}
@@ -264,7 +264,7 @@ router.post('/projectType/edit',function(req, res) {
 })
 /* 竞猜列表 */
 router.get('/guess',function(req, res) {
-	if (!req.session.userInfo.isAdmin) {
+	if (!req.session.userInfo) {
 		res.redirect('/admin')
 		return
 	}
