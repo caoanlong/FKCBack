@@ -164,7 +164,7 @@ router.post('/login',function(req, res, next) {
         mobile: req.body.mobile,
         password: req.body.password
     },function(err, result) {
-        if (err) {
+        if (err||!result) {
             responseData.code = 1;
             responseData.msg = '用户名或密码错误';
             res.json(responseData);

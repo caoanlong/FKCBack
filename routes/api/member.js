@@ -167,6 +167,12 @@ router.post('/info', function(req, res) {
 			res.json(responseData)
 			return
 		}
+		if (!result) {
+			responseData.code = 2
+			responseData.msg = '获取失败'
+			res.json(responseData)
+			return
+		}
 		responseData.msg = '获取成功'
 		responseData.data = result
 		res.json(responseData)
