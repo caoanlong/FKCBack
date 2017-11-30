@@ -1,37 +1,75 @@
-{% extends '../layout.html' %}
+{% extends '../../layout.html' %}
 
 {% block main %}
-	{% include 'nav.html' %}
+	{% include '../nav.html' %}
 	<div class="container-fluid">
 		<ol class="breadcrumb">
 			<li><a href="/admin">首页</a></li>
 			<li><a href="/admin/project">项目管理</a></li>
 			<li><a href="/admin/project">项目列表</a></li>
-			<li class="active">新增项目</li>
+			<li class="active">项目编辑</li>
 		</ol>
 		<form class="form-horizontal">
+			<input type="hidden" id="projectId" value="{{projectDetail._id.toString()}}">
 			<div class="form-group">
 				<label for="name" class="col-xs-2 control-label">名称</label>
 				<div class="col-xs-8">
-					<input type="text" id="name" class="form-control" name="name" placeholder="名称">
+					<input type="text" id="name" class="form-control" name="name" placeholder="名称" value="{{projectDetail.name}}">
 				</div>
 			</div>
 			<div class="form-group">
 				<label for="name" class="col-xs-2 control-label">类型</label>
 				<div class="col-xs-8">
 					<select class="form-control" id="projectType">
-						<option value="">请选择</option>
 						{% for item in projectType %}
-					  	<option value="{{item.id}}">{{item.name}}</option>
+							{%if projectDetail.projectType.id == item.id %}
+						  		<option value="{{item.id}}" selected>{{item.name}}</option>
+						  	{% else %}
+						  		<option value="{{item.id}}">{{item.name}}</option>
+							{% endif %}
 						{% endfor %}
 					</select>
 				</div>
 			</div>
 			<div class="form-group">
+				<input type="hidden" class="resultContent" value="{{projectDetail.resultContent}}">
+				<input type="hidden" class="resultOdds" value="{{projectDetail.resultOdds}}">
 				<label for="endTime" class="col-xs-2 control-label">选项</label>
 				<div class="col-xs-8">
 					<table class="table">
-						<tbody id="tableOption"></tbody>
+						<tbody id="tableOption">
+							{% for item in projectDetail.options %}
+							<tr>
+								<td>
+									<div class="input-group">
+										<span class="input-group-addon" id="basic-addon1">内容</span>
+										<input type="text" class="form-control optionContent" placeholder="选项内容" aria-describedby="basic-addon1" value="{{item.content}}">
+									</div>
+								</td>
+								<td width="160">
+									<div class="input-group">
+										<span class="input-group-addon" id="basic-addon1">赔率</span>
+										<input type="number" class="form-control odds" placeholder="赔率" aria-describedby="basic-addon1" value="{{item.odds}}">
+									</div>
+								</td>
+								<td width="70">
+									<button type="button" class="btn btn-danger deleteOption">删除</button>
+								</td>
+								{% set now = Date.now() %}
+								{% if projectDetail.endTime < now %}
+								<td width="70">
+									<input type="hidden" value="{{item.odds}}">
+									{% if projectDetail.resultContent==item.content %}
+								  	<input type="radio" name="optionsRadios" value="{{item.content}}" class="selectOption" checked>
+								  	{% else %}
+								  	<input type="radio" name="optionsRadios" value="{{item.content}}" class="selectOption">
+								  	{% endif %}
+								  	<span>设为结果</span>
+								</td>
+								{% endif %}
+							</tr>
+							{% endfor %}
+						</tbody>
 					</table>
 					<button type="button" class="btn btn-success" id="addOption"><i class="glyphicon glyphicon-plus"></i>添加选项</button>
 				</div>
@@ -39,15 +77,15 @@
 			<div class="form-group">
 				<label for="endTime" class="col-xs-2 control-label">截止时间</label>
 				<div class="col-xs-8">
-					<input type="text" id="endTime" class="form-control endTimePicker" name="endTime" placeholder="截止时间" style="width:375px">
+					<input type="text" id="endTime" class="form-control endTimePicker" name="endTime" placeholder="截止时间" style="width:375px" value="{{projectDetail.endTime|getdatefromtimestamp}}">
 				</div>
 			</div>
 			<div class="form-group">
 				<label for="imgUrl" class="col-xs-2 control-label">图片</label>
 				<div class="col-xs-8">
 					<div class="imgUpload clearfix">
-						<div class="imgLi" style="width:375px;height:180px;display:none">
-							<img src="#">
+						<div class="imgLi" style="width:375px;height:180px">
+							<img src="{{projectDetail.imgUrl}}">
 							<div class="controller">
 								<div class="controllerBtn">
 									<div class="perviewBtn" id="perviewBtn"></div>
@@ -55,7 +93,7 @@
 								</div>
 							</div>
 						</div>
-						<div class="addBtn" style="width:375px;height:180px">
+						<div class="addBtn" style="width:375px;height:180px;display:none">
 							<div class="addIcon">
 								<div class="ico"></div>
 								<p>添加</p>
@@ -75,6 +113,7 @@
 	</div>
 <script type="text/javascript">
 	var imgUrl = ''
+	var result = null
 	/**
 	 * 添加选项
 	 */
@@ -104,6 +143,16 @@
 	 */
 	$(document).on('click','.deleteOption',function() {
 		$(this).parent().parent().remove()
+	})
+	/**
+	 * 设置选项结果
+	 */
+	$(document).on('click','.selectOption',function() {
+		result = {
+			content: $(this).val(),
+			odds: $(this).prev().val()
+		}
+		console.log(JSON.stringify(result))
 	})
 	/**
 	 * 添加图片
@@ -141,9 +190,15 @@
 		$('.imgLi img').attr('src','')
 	})
 	/**
-	 * 添加项目
+	 * 更新项目
 	 */
 	$('#addProject').on('click',function() {
+		if (!result) {
+			result = {
+				content: $('.resultContent').val(),
+				odds: $('.resultOdds').val()
+			}
+		}
 		var options = []
 		for (var i = 0; i < $('#tableOption tr').length; i++) {
 			options.push({
@@ -151,17 +206,20 @@
 				odds: $('#tableOption tr').eq(i).find('.odds').val()
 			})
 		}
-		var endTime = String(new Date($('#endTime').val()).getTime())
+		var endTime = String(new Date($('#endTime').val()).getTime()||new Date().getTime())
 		var params = {
+			id: $('#projectId').val(),
 			name: $('#name').val(),
 			projectType: $('#projectType').find("option:selected").val(),
 			options: options,
+			resultContent: result.content,
+			resultOdds: result.odds,
 			endTime: endTime,
-			imgUrl: imgUrl
+			imgUrl: $('.imgLi img').attr('src')
 		};
 		console.log(JSON.stringify(params))
 		$.ajax({
-			url: '/admin/project/add',
+			url: '/admin/project/edit',
 			type: 'post',
 			dataType: 'json',
 			data: params,

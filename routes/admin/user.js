@@ -40,7 +40,7 @@ router.get('/',function(req, res) {
             if (error) {
                 res.render('error',{message: '查找失败'})
             }else {
-                res.render('admin/user',{
+                res.render('admin/user/user',{
                     active: 'user',
                     data: {
                         userList: result,
@@ -58,7 +58,7 @@ router.get('/',function(req, res) {
 })
 /* 用户添加 */
 router.get('/add',function(req, res) {
-	res.render('admin/userAdd',{
+	res.render('admin/user/userAdd',{
         active: 'user',
         userInfo: req.session.userInfo
     })
@@ -104,7 +104,7 @@ router.get('/edit',function(req, res) {
         if (err) {
             res.render('error', {message: '用户不存在'});
         }else {
-            res.render('admin/userDetail',{
+            res.render('admin/user/userDetail',{
                 active: 'user',
                 userDetail: result,
                 userInfo: req.session.userInfo

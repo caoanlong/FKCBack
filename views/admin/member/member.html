@@ -1,7 +1,7 @@
-{% extends '../layout.html' %}
+{% extends '../../layout.html' %}
 
 {% block main %}
-	{% include 'nav.html' %}
+	{% include '../nav.html' %}
 	<div class="container-fluid">
 		<ol class="breadcrumb">
 		  	<li><a href="/admin">首页</a></li>
@@ -14,12 +14,8 @@
 			    <input type="text" class="form-control" id="keyword" placeholder="请输入...">
 		  	</div>
 		  	<div class="form-group">
-			    <label for="endDate">截止日期</label>
-			    {% include 'daterangepicker.html' %}
-		  	</div>
-		  	<div class="form-group">
 			    <label for="endDate">创建日期</label>
-			    {% include 'daterangepicker.html' %}
+			    {% include '../daterangepicker.html' %}
 		  	</div>
 		  	<button type="button" class="btn btn-default"><i class="glyphicon glyphicon-search"></i>查询</button>
 		  	<a href="/admin/member/add" class="btn btn-success"><i class="glyphicon glyphicon-plus"></i>新增会员</a>
@@ -48,8 +44,8 @@
 					<td>{{item.goldBean}}</td>
 					<td>{{item.addTime|date('Y-m-d H:i:s', -8*60)}}</td>
 					<td>
-						<button type="button" class="btn btn-default btn-xs">竞猜列表</button>
-						<button type="button" class="btn btn-default btn-xs">账户明细</button>
+						<a href="/admin/member/guess?memberId={{item._id.toString()}}&memberMobile={{item.mobile}}" type="button" class="btn btn-default btn-xs">竞猜列表</a>
+						<a href="/admin/member/accountDetails?memberId={{item._id.toString()}}&memberMobile={{item.mobile}}" type="button" class="btn btn-default btn-xs">账户明细</a>
 						{% if item.isDisabled %}
 						<button type="button" class="btn btn-success btn-xs enableMember">启用</button>
 						{% else %}
@@ -62,7 +58,7 @@
 				{% endfor %}
 			</tbody>
 		</table>
-		{% include 'page.html' %}
+		{% include '../page.html' %}
 	</div>
 <script type="text/javascript">
 	/**

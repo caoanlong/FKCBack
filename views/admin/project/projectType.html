@@ -1,12 +1,12 @@
-{% extends '../layout.html' %}
+{% extends '../../layout.html' %}
 
 {% block main %}
-	{% include 'nav.html' %}
+	{% include '../nav.html' %}
 	<div class="container-fluid">
 		<ol class="breadcrumb">
 		  	<li><a href="/admin">首页</a></li>
-		  	<li><a href="/admin">竞猜管理</a></li>
-		  	<li class="active">竞猜列表</li>
+		  	<li><a href="/admin/project">项目管理</a></li>
+		  	<li class="active">分类管理</li>
 		</ol>
 		<form class="form-inline padding-bottom-15" onsubmit="return false">
 		  	<div class="form-group">
@@ -15,9 +15,10 @@
 		  	</div>
 		  	<div class="form-group">
 			    <label for="endDate">创建日期</label>
-			    {% include 'datepicker.html' %}
+			    {% include '../datepicker.html' %}
 		  	</div>
 		  	<button type="button" class="btn btn-default"><i class="glyphicon glyphicon-search"></i>查询</button>
+		  	<a href="/admin/project/projectType/add" type="button" class="btn btn-success"><i class="glyphicon glyphicon-plus"></i>新增分类</a>
 		</form>
 		<table class="table table-bordered table-hover" style="table-layout: fixed;">
 			<thead>
@@ -25,49 +26,40 @@
 					<th class="text-center" width="40">
 						<input type="checkbox" name="">
 					</th>
-					<th>竞猜人</th>
-					<th>竞猜题目</th>
-					<th>竞猜内容</th>
-					<th>投注金额</th>
-					<th>状态</th>
-					<th>截止时间</th>
-					<th>投注时间</th>
+					<th>项目分类名称</th>
+					<th>创建时间</th>
+					<th>操作</th>
 				</tr>
 			</thead>
 			<tbody>
-				{% for item in data.guessList %}
+				{% for item in data.projectTypeList %}
 				<tr>
 					<td class="text-center">
-						<input type="checkbox" class="projectId" value="{{item._id.toString()}}">
+						<input type="checkbox" class="projectTypeId" value="{{item._id.toString()}}">
 					</td>
-					<td>{{item.member.mobile}}</td>
-					<td>{{item.project.name}}</td>
-					<td>{{item.projectOption.content}}</td>
-					<td>{{item.goldBeanNum}}</td>
-					{% if item.project.resultContent %}
-					<td class="text-success">已开奖</td>
-					{% else %}
-					<td>待开奖</td>
-					{% endif %}
-					<td>{{item.project.endTime|getdatefromtimestamp}}</td>
+					<td>{{item.name}}</td>
 					<td>{{item.addTime|date('Y-m-d H:i:s', -8*60)}}</td>
+					<td>
+						<a href="/admin/project/projectType/edit?id={{item._id.toString()}}" type="button" class="btn btn-primary btn-xs">编辑</a>
+						<button type="button" class="btn btn-danger btn-xs deleteProjectType">删除</button>
+					</td>
 				</tr>
 				{% endfor %}
 			</tbody>
 		</table>
-		{% include 'page.html' %}
+		{% include '../page.html' %}
 	</div>
 <script type="text/javascript">
 	/**
-	 * 删除项目
+	 * 删除项目分类
 	 */
-	$('.deleteProject').on('click',function() {
-		var projectId = $(this).parent().parent().find('.projectId').val()
+	$('.deleteProjectType').on('click',function() {
+		var projectTypeId = $(this).parent().parent().find('.projectTypeId').val()
 		var params = {
-			id: projectId
+			id: projectTypeId
 	    };
 	  	$.ajax({
-		    url: '/admin/project/delete',
+		    url: '/admin/project/projectType/delete',
 		    type: 'post',
 		    dataType: 'json',
 		    data: params,

@@ -39,8 +39,8 @@ router.get('/goldBeanType', function (req, res) {
 			if (error) {
 				res.render('error', { message: '查找失败' })
 			} else {
-				res.render('admin/goldBeanType', {
-					active: 'goldBeanType',
+				res.render('admin/shop/goldBeanType', {
+					active: 'shop/goldBeanType',
 					data: {
 						goldBeanTypeList: result,
 						count: count,
@@ -57,8 +57,8 @@ router.get('/goldBeanType', function (req, res) {
 })
 /* 金豆类型添加 */
 router.get('/goldBeanType/add', function (req, res) {
-	res.render('admin/goldBeanTypeAdd', {
-		active: 'goldBeanType',
+	res.render('admin/shop/goldBeanTypeAdd', {
+		active: 'shop/goldBeanType',
 		userInfo: req.session.userInfo
 	})
 })
@@ -93,8 +93,8 @@ router.get('/goldBeanType/edit', function (req, res) {
 					res.render('error', { message: '分类错误' })
 					return
 				}
-				res.render('admin/goldBeanTypeDetail', {
-					active: 'goldBeanType',
+				res.render('admin/shop/goldBeanTypeDetail', {
+					active: 'shop/goldBeanType',
 					goldBeanTypeDetail: goldBeanTypeDetail,
 					userInfo: req.session.userInfo
 				})

@@ -10,15 +10,9 @@
 			</li>
 			{% else %}
 			<li>
-				{% if active == "goldBeanType"%}
-				<a href="/admin/shop/{{active}}?pageIndex={{data.pageIndex-1}}" aria-label="Previous">
-					<span aria-hidden="true">&laquo;</span>
-				</a>
-				{% else %}
 				<a href="/admin/{{active}}?pageIndex={{data.pageIndex-1}}" aria-label="Previous">
 					<span aria-hidden="true">&laquo;</span>
 				</a>
-				{% endif %}
 			</li>
 			{% endif %}
 			{% for item in data.pagesArr %}
@@ -28,11 +22,7 @@
 				</li>
 				{% else %}
 				<li>
-					{% if active == "goldBeanType"%}
-					<a href="/admin/shop/{{active}}?pageIndex={{item}}">{{item}}</a>
-					{% else %}
 					<a href="/admin/{{active}}?pageIndex={{item}}">{{item}}</a>
-					{% endif %}
 				</li>
 				{% endif %}
 			{% endfor %}
@@ -44,15 +34,9 @@
 			</li>
 			{% else %}
 			<li>
-				{% if active == "goldBeanType"%}
-				<a href="/admin/shop/{{active}}?pageIndex={{data.pageIndex+1}}" aria-label="Previous">
-					<span aria-hidden="true">&raquo;</span>
-				</a>
-				{% else %}
 				<a href="/admin/{{active}}?pageIndex={{data.pageIndex+1}}" aria-label="Previous">
 					<span aria-hidden="true">&raquo;</span>
 				</a>
-				{% endif %}
 			</li>
 		</ul>
 	</div>
