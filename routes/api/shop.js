@@ -22,7 +22,7 @@ router.use(function (req, res, next) {
 
 /* 金豆列表 */
 router.get('/goldBeanType', function (req, res) {
-	GoldBeanType.find().sort({ num: -1 }).exec(function (error, result) {
+	GoldBeanType.find().sort({ num: 1 }).exec(function (error, result) {
 		if (error) {
 			responseData.code = 1
 			responseData.msg = '获取失败'
