@@ -1,43 +1,77 @@
 {% extends '../../layout.html' %}
-
 {% block main %}
-	{% include '../nav.html' %}
-	<div class="container-fluid">
-		<ol class="breadcrumb">
-		  	<li><a href="/admin">首页</a></li>
-		  	<li><a href="/admin/member">会员管理</a></li>
-		  	<li>{{memberMobile}}</li>
-		  	<li class="active">会员账户明细</li>
-		</ol>
-		<form class="form-inline padding-bottom-15" onsubmit="return false">
-		  	<div class="form-group">
-			    <label for="endDate">创建日期</label>
-			    {% include '../daterangepicker.html' %}
-		  	</div>
-		  	<button type="button" class="btn btn-default"><i class="glyphicon glyphicon-search"></i>查询</button>
-		</form>
-		<table class="table table-bordered table-hover" style="table-layout: fixed;">
-			<thead>
-				<tr>
-					<th>类型</th>
-					<th>详情</th>
-					<th>金豆变化</th>
-					<th>创建时间</th>
-				</tr>
-			</thead>
-			<tbody>
-				{% for item in data.accountList %}
-				<tr>
-					<td>{{item.type}}</td>
-					<td>{{item.info}}</td>
-					<td>{{item.goldBeanChange}}</td>
-					<td>{{item.addTime|date('Y-m-d H:i:s', -8*60)}}</td>
-				</tr>
-				{% endfor %}
-			</tbody>
-		</table>
-		{% include '../page.html' %}
-	</div>
-<script type="text/javascript">
-</script>
-{% endblock %}
+{% include '../nav.html' %}
+<div class="container-fluid">
+	<ol class="breadcrumb">
+		<li><a href="/admin">首页</a></li>
+		<li><a href="/admin/member">会员管理</a></li>
+		<li>{{memberMobile}}</li>
+		<li class="active">会员账户明细</li>
+	</ol>
+	<form class="form-inline padding-bottom-15" onsubmit="return false">
+		<div class="form-group">
+			<label for="endDate">创建日期</label>
+			{% include '../daterangepicker.html' %}
+		</div>
+		<button type="button" class="btn btn-default"><i class="glyphicon glyphicon-search"></i>查询</button>
+	</form>
+	<table class="table table-bordered table-hover" style="table-layout: fixed;">
+		<thead>
+			<tr>
+				<th>类型</th>
+				<th>详情</th>
+				<th>金豆变化</th>
+				<th>创建时间</th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for item in data.accountList %}
+			<tr>
+				<td>{{item.type}}</td>
+				<td>{{item.info}}</td>
+				<td>{{item.goldBeanChange}}</td>
+				<td>{{item.addTime|date('Y-m-d H:i:s', -8*60)}}</td>
+			</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+	<nav aria-label="Page navigation">
+		<p class="col-xs-6 pagination" style="height: 34px;line-height: 34px">一共有 {{data.count}} 条数据，每页显示 {{data.pageSize}} 条数据，一共 {{data.pages}} 页，当前第 {{data.pageIndex}} 页</p>
+		<div class="col-xs-6 text-right">
+			<ul class="pagination">
+				{% if data.pageIndex == 1 %}
+				<li class="disabled">
+					<a href="#" aria-label="Previous">
+						<span aria-hidden="true">&laquo;</span>
+					</a>
+				</li>
+				{% else %}
+				<li>
+					<a href="/admin/{{active}}/accountDetails?memberId={{String(data.accountList[0].member)}}&memberMobile={{memberMobile}}&pageIndex={{data.pageIndex-1}}" aria-label="Previous">
+						<span aria-hidden="true">&laquo;</span>
+					</a>
+				</li>
+				{% endif %} {% for item in data.pagesArr %} {% if item == data.pageIndex%}
+				<li class="active">
+					<a href="javascript:;">{{item}}</a>
+				</li>
+				{% else %}
+				<li>
+					<a href="/admin/{{active}}/accountDetails?memberId={{String(data.accountList[0].member)}}&memberMobile={{memberMobile}}&pageIndex={{item}}">{{item}}</a>
+				</li>
+				{% endif %} {% endfor %} {% if data.pageIndex == data.pages %}
+				<li class="disabled">
+					<a href="#" aria-label="Previous">
+						<span aria-hidden="true">&raquo;</span>
+					</a>
+				</li>
+				{% else %}
+				<li>
+					<a href="/admin/{{active}}/accountDetails?memberId={{String(data.accountList[0].member)}}&memberMobile={{memberMobile}}&pageIndex={{data.pageIndex+1}}" aria-label="Previous">
+						<span aria-hidden="true">&raquo;</span>
+					</a>
+				</li>
+			</ul>
+		</div>
+	</nav>
+</div>

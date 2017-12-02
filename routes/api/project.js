@@ -1,47 +1,47 @@
-var express = require('express');
-var router = express.Router();
-var jwt = require('jwt-simple');
-var secret =require('../../config').secret;
+const express = require('express')
+const router = express.Router()
+const jwt = require('jwt-simple')
+const secret =require('../../config').secret
 
-var Project = require('../../models/Project');
-var GuessList = require('../../models/GuessList');
-var Member = require('../../models/Member');
-var AccountDetail = require('../../models/AccountDetail');
+const Project = require('../../models/Project')
+const ProjectType = require('../../models/ProjectType')
+const GuessList = require('../../models/GuessList')
+const Member = require('../../models/Member')
+const AccountDetail = require('../../models/AccountDetail')
 
 //统一返回格式
-var responseData;
-router.use(function(req, res, next) {
+let responseData
+router.use((req, res, next) => {
 	responseData = {
 		code: 0,
 		msg: ''
 	}
 	next()
 })
-
 /* 项目列表 */
-router.get('/', function(req, res) {
-	var pageIndex = Number(req.query.pageIndex || 1);
-	var pageSize = 10;
-	var pages = 0;
+router.get('/', (req, res) => {
+	let pageIndex = Number(req.query.pageIndex || 1)
+	let pageSize = 10
+	let pages = 0
 	Project.count({
 			endTime: {
 				$gt: Date.now()
 			}
-		},function(err,count) {
+		}, (err, count) => {
 		//计算总页数
-		pages = Math.ceil(count / pageSize);
+		pages = Math.ceil(count / pageSize)
 		//取值不能超过pages
-		pageIndex = Math.min( pageIndex, pages );
+		pageIndex = Math.min( pageIndex, pages )
 		//取值不能小于1
-		pageIndex = Math.max( pageIndex, 1 );
+		pageIndex = Math.max( pageIndex, 1 )
 
-		var skip = (pageIndex - 1) * pageSize;
+		let skip = (pageIndex - 1) * pageSize
 
 		Project.find({
 			endTime: {
 				$gt: Date.now()
 			}
-		}).sort({_id: -1}).limit(pageSize).skip(skip).exec(function(error,result) {
+		}).sort({endTime: 1}).limit(pageSize).skip(skip).exec((error, result) => {
 			if (error) {
 				responseData.code = 1
 				responseData.msg = '获取失败'
@@ -60,14 +60,28 @@ router.get('/', function(req, res) {
 		})
 	})
 })
+/* 项目分类列表 */
+router.get('/type', (req, res) => {
+	ProjectType.find().exec((err, projectType) => {
+		if (err) {
+			responseData.code = 1
+			responseData.msg = '服务器错误'
+			res.json(responseData)
+			return
+		}
+		responseData.msg = '成功'
+		responseData.data = projectType
+		res.json(responseData)
+	})
+})
 /* 投注 */
-router.post('/betting', function(req, res) {
-	var token = (req.body && req.body.token) || (req.query && req.query.token) || req.headers['x-access-token'];
-	var memberId = jwt.decode(token,secret.jwtTokenSecret).iss;
-	var goldBeanNum = req.body.goldBeanNum;
-	var projectId = req.body.projectId;
-	var projectOption = req.body.projectOption;
-	Member.findOne({_id: memberId},function(err, member) {
+router.post('/betting', (req, res) => {
+	let token = (req.body && req.body.token) || (req.query && req.query.token) || req.headers['x-access-token']
+	let memberId = jwt.decode(token,secret.jwtTokenSecret).iss
+	let goldBeanNum = req.body.goldBeanNum
+	let projectId = req.body.projectId
+	let projectOption = req.body.projectOption
+	Member.findOne({_id: memberId}, (err, member) => {
 		if (err) {
 			responseData.code = 1
 			responseData.msg = '服务器错误'
@@ -80,7 +94,7 @@ router.post('/betting', function(req, res) {
 			res.json(responseData)
 			return
 		}
-		Project.findOne({_id: projectId},function(error1, project) {
+		Project.findOne({_id: projectId}, (error1, project) => {
 			if (error1) {
 				responseData.code = 3
 				responseData.msg = '服务器错误'
@@ -89,7 +103,7 @@ router.post('/betting', function(req, res) {
 			}
 			Member.update({_id: member._id},{
 				goldBean: member.goldBean - Number(goldBeanNum)
-			},function(error2) {
+			}, (error2) => {
 				if (error2) {
 					responseData.code = 4
 					responseData.msg = '服务器错误'
@@ -117,31 +131,31 @@ router.post('/betting', function(req, res) {
 	})
 })
 /* 会员竞猜列表 */
-router.get('/guess', function(req, res) {
-	var token = (req.body && req.body.token) || (req.query && req.query.token) || req.headers['x-access-token']
-	var memberId = jwt.decode(token,secret.jwtTokenSecret).iss
+router.get('/guess', (req, res) => {
+	let token = (req.body && req.body.token) || (req.query && req.query.token) || req.headers['x-access-token']
+	let memberId = jwt.decode(token,secret.jwtTokenSecret).iss
 	// 是否开奖
-	var isLottery = Number(req.query.isLottery || 1);
+	let isLottery = Number(req.query.isLottery || 1)
 	// 是否中奖
-	var isWin = req.query.isWin;
-	var pageIndex = Number(req.query.pageIndex || 1);
-	var pageSize = 10;
-	var pages = 0;
-	var projectMatch = null;
+	let isWin = req.query.isWin
+	let pageIndex = Number(req.query.pageIndex || 1)
+	let pageSize = 10
+	let pages = 0
+	let projectMatch = null
 	if (isLottery == 1) {
 		GuessList.count({
 			member: memberId
-		},function(err,count) {
+		}, (err,count) => {
 			//计算总页数
-			pages = Math.ceil(count / pageSize);
+			pages = Math.ceil(count / pageSize)
 			//取值不能超过pages
-			pageIndex = Math.min(pageIndex, pages);
+			pageIndex = Math.min(pageIndex, pages)
 			//取值不能小于1
-			pageIndex = Math.max(pageIndex, 1);
-			var skip = (pageIndex - 1) * pageSize;
+			pageIndex = Math.max(pageIndex, 1)
+			let skip = (pageIndex - 1) * pageSize
 			GuessList.find({
 				member: memberId
-			}).populate('project').sort({_id: -1}).limit(pageSize).skip(skip).exec(function(error,guess) {
+			}).populate('project').sort({_id: -1}).limit(pageSize).skip(skip).exec((error, guess) => {
 				responseData.msg = '获取成功'
 				responseData.data = {
 					guessList: guess,
@@ -156,26 +170,26 @@ router.get('/guess', function(req, res) {
 	}else if (isLottery == 2) {
 		Project.find({
 			resultOdds: 0
-		}).exec(function(err,project) {
+		}).exec((err, project) => {
 			GuessList.count({
 				member: memberId,
 				project: {
 					$in: project.map((item) => item._id)
 				}
-			},function(error,count) {
+			},(error,count) => {
 				//计算总页数
-				pages = Math.ceil(count / pageSize);
+				pages = Math.ceil(count / pageSize)
 				//取值不能超过pages
-				pageIndex = Math.min( pageIndex, pages );
+				pageIndex = Math.min( pageIndex, pages )
 				//取值不能小于1
-				pageIndex = Math.max( pageIndex, 1 );
-				var skip = (pageIndex - 1) * pageSize;
+				pageIndex = Math.max( pageIndex, 1 )
+				let skip = (pageIndex - 1) * pageSize
 				GuessList.find({
 					member: memberId,
 					project: {
 						$in: project.map((item) => item._id)
 					}
-				}).populate('project').sort({_id: -1}).limit(pageSize).skip(skip).exec(function(error1,guess) {
+				}).populate('project').sort({_id: -1}).limit(pageSize).skip(skip).exec((error1, guess) => {
 					responseData.msg = '获取成功'
 					responseData.data = {
 						guessList: guess,
@@ -193,22 +207,22 @@ router.get('/guess', function(req, res) {
 			resultOdds: {
 				$ne: 0
 			}
-		}).exec(function(err,project) {
+		}).exec((err, project) => {
 			GuessList.find({
 				member: memberId,
 				project: {
 					$in: project.map((item) => item._id)
 				}
-			}).populate('project').exec(function(error,guess) {
-				var count = guess.length;
+			}).populate('project').exec((error, guess) => {
+				let count = guess.length
 				//计算总页数
-				pages = Math.ceil(count / pageSize);
+				pages = Math.ceil(count / pageSize)
 				//取值不能超过pages
-				pageIndex = Math.min(pageIndex, pages);
+				pageIndex = Math.min(pageIndex, pages)
 				//取值不能小于1
-				pageIndex = Math.max(pageIndex, 1);
-				var skip = (pageIndex - 1) * pageSize;
-				var filterGuess = guess.filter((item) => {
+				pageIndex = Math.max(pageIndex, 1)
+				let skip = (pageIndex - 1) * pageSize
+				let filterGuess = guess.filter((item) => {
 					if (isWin == 'true') {
 						return item.project.resultContent == item.projectOption.content
 					}else {
@@ -223,7 +237,7 @@ router.get('/guess', function(req, res) {
 					_id: {
 						$in: filterGuess.map((item) => item._id)
 					}
-				}).populate('project').sort({_id: -1}).limit(pageSize).skip(skip).exec(function(error1,guessResult) {
+				}).populate('project').sort({_id: -1}).limit(pageSize).skip(skip).exec((error1, guessResult) => {
 					responseData.msg = '获取成功'
 					responseData.data = {
 						guessList: guessResult,
@@ -239,4 +253,4 @@ router.get('/guess', function(req, res) {
 	}
 })
 
-module.exports = router;
+module.exports = router
