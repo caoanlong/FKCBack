@@ -157,6 +157,7 @@ router.post('/info', function(req, res) {
 	Member.findOne({_id: memberId}, [
 			'mobile',
 			'avatar',
+			'charm',
 			'goldBean',
 			'isDisabled',
 			'addTime'

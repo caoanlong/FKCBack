@@ -20,14 +20,26 @@ router.use((req, res, next) => {
 })
 /* 项目列表 */
 router.get('/', (req, res) => {
+	let projectType = req.query.projectType
 	let pageIndex = Number(req.query.pageIndex || 1)
 	let pageSize = 10
 	let pages = 0
-	Project.count({
+	let condition = null
+	if (projectType) {
+		condition = {
+			projectType: projectType,
 			endTime: {
 				$gt: Date.now()
 			}
-		}, (err, count) => {
+		}
+	} else {
+		condition = {
+			endTime: {
+				$gt: Date.now()
+			}
+		}
+	}
+	Project.count(condition, (err, count) => {
 		//计算总页数
 		pages = Math.ceil(count / pageSize)
 		//取值不能超过pages
@@ -37,11 +49,7 @@ router.get('/', (req, res) => {
 
 		let skip = (pageIndex - 1) * pageSize
 
-		Project.find({
-			endTime: {
-				$gt: Date.now()
-			}
-		}).sort({endTime: 1}).limit(pageSize).skip(skip).exec((error, result) => {
+		Project.find(condition).sort({endTime: 1}).limit(pageSize).skip(skip).exec((error, result) => {
 			if (error) {
 				responseData.code = 1
 				responseData.msg = '获取失败'
@@ -142,6 +150,7 @@ router.get('/guess', (req, res) => {
 	let pageSize = 10
 	let pages = 0
 	let projectMatch = null
+	// 全部
 	if (isLottery == 1) {
 		GuessList.count({
 			member: memberId
@@ -167,87 +176,61 @@ router.get('/guess', (req, res) => {
 				res.json(responseData)
 			})
 		})
+	// 待开奖
 	}else if (isLottery == 2) {
-		Project.find({
-			resultOdds: 0
-		}).exec((err, project) => {
-			GuessList.count({
-				member: memberId,
-				project: {
-					$in: project.map((item) => item._id)
-				}
-			},(error,count) => {
-				//计算总页数
-				pages = Math.ceil(count / pageSize)
-				//取值不能超过pages
-				pageIndex = Math.min( pageIndex, pages )
-				//取值不能小于1
-				pageIndex = Math.max( pageIndex, 1 )
-				let skip = (pageIndex - 1) * pageSize
-				GuessList.find({
-					member: memberId,
-					project: {
-						$in: project.map((item) => item._id)
-					}
-				}).populate('project').sort({_id: -1}).limit(pageSize).skip(skip).exec((error1, guess) => {
-					responseData.msg = '获取成功'
-					responseData.data = {
-						guessList: guess,
-						count: count,
-						pageSize: pageSize,
-						pageIndex: pageIndex,
-						pages: pages
-					}
-					res.json(responseData)
-				})
-			})
-		})
-	}else if (isLottery == 3) {
-		Project.find({
-			resultOdds: {
-				$ne: 0
-			}
-		}).exec((err, project) => {
+		GuessList.count({
+			member: memberId,
+			isLottery: false
+		},(error, count) => {
+			//计算总页数
+			pages = Math.ceil(count / pageSize)
+			//取值不能超过pages
+			pageIndex = Math.min( pageIndex, pages )
+			//取值不能小于1
+			pageIndex = Math.max( pageIndex, 1 )
+			let skip = (pageIndex - 1) * pageSize
 			GuessList.find({
 				member: memberId,
-				project: {
-					$in: project.map((item) => item._id)
+				isLottery: false
+			}).populate('project').sort({_id: -1}).limit(pageSize).skip(skip).exec((error1, guess) => {
+				responseData.msg = '获取成功'
+				responseData.data = {
+					guessList: guess,
+					count: count,
+					pageSize: pageSize,
+					pageIndex: pageIndex,
+					pages: pages
 				}
-			}).populate('project').exec((error, guess) => {
-				let count = guess.length
-				//计算总页数
-				pages = Math.ceil(count / pageSize)
-				//取值不能超过pages
-				pageIndex = Math.min(pageIndex, pages)
-				//取值不能小于1
-				pageIndex = Math.max(pageIndex, 1)
-				let skip = (pageIndex - 1) * pageSize
-				let filterGuess = guess.filter((item) => {
-					if (isWin == 'true') {
-						return item.project.resultContent == item.projectOption.content
-					}else {
-						return item.project.resultContent != item.projectOption.content
-					}
-				})
-				GuessList.find({
-					member: memberId,
-					project: {
-						$in: project.map((item) => item._id)
-					},
-					_id: {
-						$in: filterGuess.map((item) => item._id)
-					}
-				}).populate('project').sort({_id: -1}).limit(pageSize).skip(skip).exec((error1, guessResult) => {
-					responseData.msg = '获取成功'
-					responseData.data = {
-						guessList: guessResult,
-						count: count,
-						pageSize: pageSize,
-						pageIndex: pageIndex,
-						pages: pages
-					}
-					res.json(responseData)
-				})
+				res.json(responseData)
+			})
+		})
+	// 已开奖
+	}else if (isLottery == 3) {
+		GuessList.count({
+			member: memberId,
+			isLottery: false
+		},(error, count) => {
+			//计算总页数
+			pages = Math.ceil(count / pageSize)
+			//取值不能超过pages
+			pageIndex = Math.min(pageIndex, pages)
+			//取值不能小于1
+			pageIndex = Math.max(pageIndex, 1)
+			let skip = (pageIndex - 1) * pageSize
+			GuessList.find({
+				member: memberId,
+				isLottery: true,
+				isWin: isWin == 'true' ? true : false
+			}).populate('project').sort({_id: -1}).limit(pageSize).skip(skip).exec((error1, guessResult) => {
+				responseData.msg = '获取成功'
+				responseData.data = {
+					guessList: guessResult,
+					count: count,
+					pageSize: pageSize,
+					pageIndex: pageIndex,
+					pages: pages
+				}
+				res.json(responseData)
 			})
 		})
 	}

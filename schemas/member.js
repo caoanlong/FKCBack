@@ -19,6 +19,11 @@ module.exports = new mongoose.Schema({
         type: Number,
         default: 0
     },
+    // 魅力
+    charm: {
+        type: Number,
+        default: 0
+    },
     //是否被禁用
     isDisabled: {
         type: Boolean,

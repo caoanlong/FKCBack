@@ -44,6 +44,7 @@ router.post('/paymentSync', function (req, res) {
 		TemporaryOrder.findOne({ orderNo: req.body.orderNo }).exec(function (err, temporaryOrder) {
 			Member.findOne({_id: temporaryOrder.member}).exec(function (error, member) {
 				Member.update({ _id: member._id }, {
+					charm: member.charm + (temporaryOrder.goldBeanNum / 100),
 					goldBean: member.goldBean + temporaryOrder.goldBeanNum
 				}, function (error) {
 					new AccountDetail({

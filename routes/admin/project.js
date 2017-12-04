@@ -136,23 +136,38 @@ router.post('/edit',function(req, res) {
 			res.json(responseData)
 		}else {
 			// 如果开奖
-			if (req.body.resultContent) {
+			if (req.body.resultContent && req.body.resultOdds) {
 				GuessList.find({
-					project: req.body.id
-				}).populate(['project','member']).exec(function(error, guess) {
+					project: req.body.id,
+					isLottery: false // 选择未开奖的竞猜
+				}).populate('member').exec(function(error, guess) {
 					for (let i = 0; i < guess.length; i++) {
-						if (guess[i].projectOption.content == guess[i].project.resultContent) {
-							// 更新会员账户
-							Member.update({_id: guess[i].member._id},{
-								goldBean: Number(guess[i].member.goldBean) + Number(guess[i].projectOption.odds)*Number(guess[i].goldBeanNum)
-							},function(error1) {
-								// 生成账单
-								new AccountDetail({
-									member: guess[i].member._id,
-									goldBeanChange: '+' + Number(guess[i].projectOption.odds)*Number(guess[i].goldBeanNum),
-									type: '中奖',
-									info: guess[i].projectOption.content
-								}).save()
+						// 判断是否中奖(如果中奖)
+						if (guess[i].projectOption.content == req.body.resultContent && guess[i].projectOption.odds == req.body.resultOdds) {
+							// 更新所有未开奖的竞猜
+							GuessList.update({_id: guess[i]._id}, {
+								isLottery: true,
+								isWin: true,
+								bonus: Number(guess[i].projectOption.odds)*Number(guess[i].goldBeanNum)
+							}, (error1) => {
+								// 更新会员账户
+								Member.update({_id: guess[i].member._id},{
+									goldBean: Number(guess[i].member.goldBean) + Number(guess[i].projectOption.odds)*Number(guess[i].goldBeanNum)
+								}, (error2) => {
+									// 生成账单
+									new AccountDetail({
+										member: guess[i].member._id,
+										goldBeanChange: '+' + Number(guess[i].projectOption.odds)*Number(guess[i].goldBeanNum),
+										type: '中奖',
+										info: guess[i].projectOption.content
+									}).save()
+								})
+							})
+						} else {
+							GuessList.update({_id: guess[i]._id}, {
+								isLottery: true
+							}, () => {
+								console.log('nonononono')
 							})
 						}
 					}

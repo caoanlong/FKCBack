@@ -19,6 +19,21 @@ module.exports = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Project'
     },
+    // 是否开奖
+    isLottery: {
+        type: Boolean,
+        default: false
+    },
+    // 是否中奖
+    isWin: {
+        type: Boolean,
+        default: false
+    },
+    // 奖金
+    bonus: {
+        type: Number,
+        default: 0
+    },
     // 添加时间
     addTime: {
         type: Date,
