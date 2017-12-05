@@ -12,23 +12,23 @@
 		<form class="form-horizontal">
 			<input type="hidden" id="prizeId" value="{{prizeDetail._id.toString()}}">
 			<div class="form-group">
-				<label for="name" class="col-xs-2 control-label">奖品名称</label>
-				<div class="col-xs-8">
-					<input type="number" id="prizeName" class="form-control" name="name" placeholder="奖品名称" value="{{prizeDetail.prizeName}}">
+				<label for="name" class="col-xs-3 control-label">奖品名称</label>
+				<div class="col-xs-6">
+					<input type="text" id="prizeName" class="form-control" name="name" placeholder="奖品名称" value="{{prizeDetail.prizeName}}">
 				</div>
 			</div>
 			<div class="form-group">
 				<label for="name" class="col-xs-3 control-label">奖品描述</label>
 				<div class="col-xs-6">
-					<textarea id="prizeInfo" class="form-control" placeholder="奖品描述" rows="5" value="{{prizeDetail.prizeInfo}}"></textarea>
+					<textarea id="prizeInfo" class="form-control" placeholder="奖品描述" rows="5">{{prizeDetail.prizeInfo}}</textarea>
 				</div>
 			</div>
 			<div class="form-group">
 				<label for="imgUrl" class="col-xs-3 control-label">图片</label>
 				<div class="col-xs-6">
 					<div class="imgUpload clearfix">
-						<div class="imgLi" style="width:200px;height:200px;display:none">
-							<img src="{{prizeDetail.prizeImg}">
+						<div class="imgLi" style="width:200px;height:200px;">
+							<img src="{{prizeDetail.prizeImg}}">
 							<div class="controller">
 								<div class="controllerBtn">
 									<div class="perviewBtn" id="perviewBtn"></div>
@@ -36,7 +36,7 @@
 								</div>
 							</div>
 						</div>
-						<div class="addBtn" style="width:200px;height:200px">
+						<div class="addBtn" style="width:200px;height:200px;display:none">
 							<div class="addIcon">
 								<div class="ico"></div>
 								<p>添加</p>
@@ -59,8 +59,8 @@
 				</div>
 			</div>
 			<div class="form-group">
-				<div class="col-xs-offset-2 col-xs-8">
-					<a href="/admin/shop/goldBeanType" type="button" class="btn btn-default">返回</a>
+				<div class="col-xs-offset-3 col-xs-6">
+					<a href="/admin/shop/prize" type="button" class="btn btn-default">返回</a>
 					<button id="updatePrize" type="button" class="btn btn-primary">提交</button>
 				</div>
 			</div>
@@ -113,7 +113,7 @@
 			prizeInfo: $('#prizeInfo').val(),
 			prizeRefPrice: $('#prizeRefPrice').val(),
 			prizeGoldBeanPrice: $('#prizeGoldBeanPrice').val(),
-			prizeImg: imgUrl
+			prizeImg: $('.imgLi img').attr('src')
 		};
 		console.log(JSON.stringify(params))
 		$.ajax({

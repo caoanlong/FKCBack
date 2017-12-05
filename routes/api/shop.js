@@ -8,6 +8,7 @@ const GoldBeanType = require('../../models/GoldBeanType')
 const Member = require('../../models/Member')
 const AccountDetail = require('../../models/AccountDetail')
 const TemporaryOrder = require('../../models/TemporaryOrder')
+const Prize = require('../../models/Prize')
 const common = require('../../common/index')
 
 //统一返回格式
