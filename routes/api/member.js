@@ -181,18 +181,36 @@ router.post('/info', function(req, res) {
 })
 /* 查看会员帐户明细 */
 router.post('/accountDetails',function(req, res) {
-	var token = (req.body && req.body.token) || (req.query && req.query.token) || req.headers['x-access-token']
-	var memberId = jwt.decode(token,secret.jwtTokenSecret).iss
-	AccountDetail.find({member: memberId}).sort({_id: -1}).exec(function(err, result) {
-		if (err) {
-			responseData.code = 1
-			responseData.msg = '获取失败'
+	let token = (req.body && req.body.token) || (req.query && req.query.token) || req.headers['x-access-token']
+	let memberId = jwt.decode(token,secret.jwtTokenSecret).iss
+	let pageIndex = Number(req.query.pageIndex || 1)
+	let pageSize = 15
+	let pages = 0
+	AccountDetail.count({member: memberId}, (error, count) => {
+		//计算总页数
+		pages = Math.ceil(count / pageSize)
+		//取值不能超过pages
+		pageIndex = Math.min(pageIndex, pages)
+		//取值不能小于1
+		pageIndex = Math.max(pageIndex, 1)
+		let skip = (pageIndex - 1) * pageSize
+		AccountDetail.find({member: memberId}).sort({_id: -1}).limit(pageSize).skip(skip).exec(function(err, accountDetail) {
+			if (err) {
+				responseData.code = 1
+				responseData.msg = '获取失败'
+				res.json(responseData)
+				return;
+			}
+			responseData.msg = '获取成功'
+			responseData.data = {
+				accountDetail: accountDetail,
+				count: count,
+				pageSize: pageSize,
+				pageIndex: pageIndex,
+				pages: pages
+			}
 			res.json(responseData)
-			return;
-		}
-		responseData.msg = '获取成功'
-		responseData.data = result
-		res.json(responseData)
+		})
 	})
 })
 /* 上传头像 */

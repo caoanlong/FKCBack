@@ -149,7 +149,6 @@ router.get('/guess', (req, res) => {
 	let pageIndex = Number(req.query.pageIndex || 1)
 	let pageSize = 10
 	let pages = 0
-	let projectMatch = null
 	// 全部
 	if (isLottery == 1) {
 		GuessList.count({

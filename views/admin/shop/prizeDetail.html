@@ -1,0 +1,136 @@
+{% extends '../../layout.html' %}
+
+{% block main %}
+	{% include '../nav.html' %}
+	<div class="container-fluid">
+		<ol class="breadcrumb">
+			<li><a href="/admin">首页</a></li>
+			<li><a href="/admin/shop/goldBeanType">商城管理</a></li>
+			<li><a href="/admin/shop/prize">奖品管理</a></li>
+			<li class="active">奖品编辑</li>
+		</ol>
+		<form class="form-horizontal">
+			<input type="hidden" id="prizeId" value="{{prizeDetail._id.toString()}}">
+			<div class="form-group">
+				<label for="name" class="col-xs-2 control-label">奖品名称</label>
+				<div class="col-xs-8">
+					<input type="number" id="prizeName" class="form-control" name="name" placeholder="奖品名称" value="{{prizeDetail.prizeName}}">
+				</div>
+			</div>
+			<div class="form-group">
+				<label for="name" class="col-xs-3 control-label">奖品描述</label>
+				<div class="col-xs-6">
+					<textarea id="prizeInfo" class="form-control" placeholder="奖品描述" rows="5" value="{{prizeDetail.prizeInfo}}"></textarea>
+				</div>
+			</div>
+			<div class="form-group">
+				<label for="imgUrl" class="col-xs-3 control-label">图片</label>
+				<div class="col-xs-6">
+					<div class="imgUpload clearfix">
+						<div class="imgLi" style="width:200px;height:200px;display:none">
+							<img src="{{prizeDetail.prizeImg}">
+							<div class="controller">
+								<div class="controllerBtn">
+									<div class="perviewBtn" id="perviewBtn"></div>
+									<div class="delBtn" id="delBtn"></div>
+								</div>
+							</div>
+						</div>
+						<div class="addBtn" style="width:200px;height:200px">
+							<div class="addIcon">
+								<div class="ico"></div>
+								<p>添加</p>
+							</div>
+							<input type="file" id="uploadFile"/>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="form-group">
+				<label for="name" class="col-xs-3 control-label">奖品参考价格</label>
+				<div class="col-xs-6">
+					<input type="number" id="prizeRefPrice" class="form-control" name="name" placeholder="奖品参考价格" value="{{prizeDetail.prizeRefPrice}}">
+				</div>
+			</div>
+			<div class="form-group">
+				<label for="name" class="col-xs-3 control-label">奖品金豆价格</label>
+				<div class="col-xs-6">
+					<input type="number" id="prizeGoldBeanPrice" class="form-control" name="name" placeholder="奖品金豆价格" value="{{prizeDetail.prizeGoldBeanPrice}}">
+				</div>
+			</div>
+			<div class="form-group">
+				<div class="col-xs-offset-2 col-xs-8">
+					<a href="/admin/shop/goldBeanType" type="button" class="btn btn-default">返回</a>
+					<button id="updatePrize" type="button" class="btn btn-primary">提交</button>
+				</div>
+			</div>
+		</form>
+	</div>
+<script type="text/javascript">
+	var imgUrl = ''
+	/**
+	 * 添加图片
+	 */
+	$('#uploadFile').on('change',function() {
+		var formData = new FormData()
+		formData.append("file",$(this)[0].files[0])
+		$.ajax({
+			url: '/uploadImg',
+			type: 'post',
+			processData: false,
+			async: true,
+			contentType: false,
+			data: formData,
+			success: function(res) {
+				console.log(res)
+				layer.msg(res.msg)
+				if (res.code == 0) {
+					$('.imgLi').show()
+					$('.addBtn').hide()
+					$('.imgLi img').attr('src',res.data)
+					imgUrl = res.data
+				}else {
+					return
+				}
+			}
+		})
+	})
+	/**
+	 * 删除图片
+	 */
+	$('#delBtn').on('click',function() {
+		$('.imgLi').hide()
+		$('.addBtn').show()
+		$('.imgLi img').attr('src','')
+	})
+	/**
+	 * 更新奖品
+	 */
+	$('#updatePrize').on('click',function() {
+		var params = {
+			id: $('#prizeId').val(),
+			prizeName: $('#prizeName').val(),
+			prizeInfo: $('#prizeInfo').val(),
+			prizeRefPrice: $('#prizeRefPrice').val(),
+			prizeGoldBeanPrice: $('#prizeGoldBeanPrice').val(),
+			prizeImg: imgUrl
+		};
+		console.log(JSON.stringify(params))
+		$.ajax({
+			url: '/admin/shop/prize/edit',
+			type: 'post',
+			dataType: 'json',
+			data: params,
+			success: function(res,textStatus,jqXHR) {
+				console.log(res)
+				layer.msg(res.msg)
+				if (res.code == 0) {
+					setTimeout(function() {
+						window.location.href = '/admin/shop/prize'
+					},500)
+				}
+			}
+		})
+	})
+</script>
+{% endblock %}

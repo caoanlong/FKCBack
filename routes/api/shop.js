@@ -57,5 +57,37 @@ router.post('/buyGoldBean', function (req, res) {
 		res.json(responseData)
 	})
 })
+/* 奖品列表 */
+router.get('/prize', (req, res) => {
+	let pageIndex = Number(req.query.pageIndex || 1)
+	let pageSize = 10
+	let pages = 0
+	Prize.count((err, count) => {
+		//计算总页数
+		pages = Math.ceil(count / pageSize)
+		//取值不能超过pages
+		pageIndex = Math.min(pageIndex, pages)
+		//取值不能小于1
+		pageIndex = Math.max(pageIndex, 1)
+		let skip = (pageIndex - 1) * pageSize
+		Prize.find().sort({ _id: -1 }).limit(pageSize).skip(skip).exec((error, prizeList) => {
+			if (error) {
+				responseData.code = 1
+				responseData.msg = '获取失败'
+				res.json(responseData)
+				return
+			}
+			responseData.msg = '获取成功'
+			responseData.data = {
+				prizeList: prizeList,
+				count: count,
+				pageSize: pageSize,
+				pageIndex: pageIndex,
+				pages: pages
+			}
+			res.json(responseData)
+		})
+	})
+})
 
 module.exports = router
