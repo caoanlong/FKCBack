@@ -1,14 +1,14 @@
-var express = require('express');
-var swig = require('swig');
-var path = require('path');
-// var favicon = require('serve-favicon');
-var logger = require('morgan');
-var cookieParser = require('cookie-parser');
-var bodyParser = require('body-parser');
-var multer = require('multer');
-var session = require('express-session');
+var express = require('express')
+var swig = require('swig')
+var path = require('path')
+// var favicon = require('serve-favicon')
+var logger = require('morgan')
+var cookieParser = require('cookie-parser')
+var bodyParser = require('body-parser')
+var multer = require('multer')
+var session = require('express-session')
 
-var app = express();
+var app = express()
 
 var storage = multer.diskStorage({
 	destination: function (req, file, cb) {
@@ -19,40 +19,40 @@ var storage = multer.diskStorage({
 		cb(null, file.fieldname + '-' + Date.now() + '.' + file.mimetype.split('/')[1])
 	}
 })
-var upload = multer({ storage: storage });
+var upload = multer({ storage: storage })
 
 // view engine setup
-app.engine('html', swig.renderFile);
-app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'html');
+app.engine('html', swig.renderFile)
+app.set('views', path.join(__dirname, 'views'))
+app.set('view engine', 'html')
 
 // 在开发过程中，需要取消模板缓存
-swig.setDefaults({ cache: false });
+swig.setDefaults({ cache: false })
 // 设置过滤器
-swig.setFilter('getdatefromtimestamp', require('./common/myFilters').getdatefromtimestamp);
-swig.setFilter('isEnd', require('./common/myFilters').isEnd);
+swig.setFilter('getdatefromtimestamp', require('./common/myFilters').getdatefromtimestamp)
+swig.setFilter('isEnd', require('./common/myFilters').isEnd)
 
 // uncomment after placing your favicon in /public
-// app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
-app.use(logger('dev'));
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(cookieParser());
+// app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')))
+app.use(logger('dev'))
+app.use(bodyParser.json())
+app.use(bodyParser.urlencoded({ extended: true }))
+app.use(cookieParser())
 
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, 'public')))
 
 app.get('/', function (req, res) {
 	res.redirect('/admin')
 })
-app.use('/admin', require('./routes/admin'));
-app.use('/api', require('./routes/api'));
+app.use('/admin', require('./routes/admin'))
+app.use('/api', require('./routes/api'))
 
 //设置跨域
 app.use(function (req, res, next) {
-	res.header("Access-Control-Allow-Origin", "*");
-	res.header('Access-Control-Allow-Methods', 'PUT, GET, POST, DELETE, OPTIONS');
-	res.header('Access-Control-Allow-Headers', 'Content-Type,Accept,X-Access-Token');
-	next();
+	res.header("Access-Control-Allow-Origin", "*")
+	res.header('Access-Control-Allow-Methods', 'PUT, GET, POST, DELETE, OPTIONS')
+	res.header('Access-Control-Allow-Headers', 'Content-Type,Accept,X-Access-Token')
+	next()
 })
 /* 上传单个图片 */
 app.all('/uploadImg', upload.single('file'), function (req, res, next) {
@@ -72,21 +72,21 @@ app.all('/uploadImg', upload.single('file'), function (req, res, next) {
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
-	var err = new Error('Not Found');
-	err.status = 404;
-	next(err);
-});
+	var err = new Error('Not Found')
+	err.status = 404
+	next(err)
+})
 
 // error handler
 app.use(function (err, req, res, next) {
 	// set locals, only providing error in development
-	res.locals.message = err.message;
-	res.locals.error = req.app.get('env') === 'development' ? err : {};
+	res.locals.message = err.message
+	res.locals.error = req.app.get('env') === 'development' ? err : {}
 
 	// render the error page
-	res.status(err.status || 500);
-	res.render('error');
-});
+	res.status(err.status || 500)
+	res.render('error')
+})
 
 
-module.exports = app;
+module.exports = app
