@@ -90,5 +90,20 @@ router.get('/prize', (req, res) => {
 		})
 	})
 })
+/* 奖品详情 */
+router.get('/prizeDetail', (req, res) => {
+	let prizeId = req.query.prizeId
+	Prize.findOne({_id: prizeId}).exec((err, prize) => {
+		if (err) {
+			responseData.code = 1
+			responseData.msg = '获取失败'
+			res.json(responseData)
+			return
+		}
+		responseData.msg = '获取成功'
+		responseData.data = prize
+		res.json(responseData)
+	})
+})
 
 module.exports = router
