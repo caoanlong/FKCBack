@@ -49,7 +49,7 @@ function getResult (param, to) {
             }
         },
         headers: {
-            "Content-Type": "application/jsoncharset=utf-8",
+            "Content-Type": "application/json;charset=utf-8",
             "Accept": "application/json",
             "Authorization": Authorization
         }

@@ -35,7 +35,8 @@ router.post('/verCode', (req, res) => {
 			return
 		}
 		let newVerCode = common.getVerCode(4)
-		common.getResult(newVerCode, mobile).then(res => {
+		common.getResult(newVerCode, mobile).then(response => {
+			console.log(response.data)
 			if (response.data.resp.respCode == '000000') {
 				if (result) {
 					VerCode.update({_id: result._id},{
@@ -68,6 +69,11 @@ router.post('/verCode', (req, res) => {
 				responseData.msg = '获取失败'
 				res.json(responseData)
 			}
+		}, response => {
+			console.log(response.data)
+			responseData.code = 4
+			responseData.msg = '获取失败'
+			res.json(responseData)
 		})
 	}) 
 })
@@ -103,7 +109,7 @@ router.post('/login', (req, res, next) => {
 		}
 		let curTime = new Date().getTime()
 		let addTime = result.addTime
-		let time = 60*1000
+		let time = 120*1000
 		if (curTime - addTime > time) {
 			responseData.code = 3
 			responseData.msg = '验证码已失效'
@@ -149,7 +155,7 @@ router.post('/login', (req, res, next) => {
 						exp: 1000*60*60*24*365
 					},secret.jwtTokenSecret)
 					responseData.msg = '登录成功'
-					responseData.data = data
+					responseData.data = mem
 					responseData.token = token
 					res.json(responseData)
 				})
