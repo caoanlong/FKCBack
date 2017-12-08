@@ -1,6 +1,6 @@
-const express = require('express');
-const router = express.Router();
-const jwt = require('jwt-simple');
+const express = require('express')
+const router = express.Router()
+const jwt = require('jwt-simple')
 const secret =require('../../config').secret
 
 const TemporaryOrder = require('../../models/TemporaryOrder')
@@ -8,8 +8,8 @@ const Member = require('../../models/Member')
 const AccountDetail = require('../../models/AccountDetail')
 
 //统一返回格式
-var responseData;
-router.use(function(req, res, next) {
+let responseData
+router.use((req, res, next) => {
 	responseData = {
 		code: 0,
 		msg: ''
@@ -18,15 +18,15 @@ router.use(function(req, res, next) {
 })
 
 //设置跨域
-router.use(function(req, res, next) {
-	res.header("Access-Control-Allow-Origin", "*");
-	res.header('Access-Control-Allow-Methods', 'PUT, GET, POST, DELETE, OPTIONS');
-	res.header('Access-Control-Allow-Headers', 'Content-Type,Accept,X-Access-Token');
-	next();
+router.use((req, res, next) => {
+	res.header("Access-Control-Allow-Origin", "*")
+	res.header('Access-Control-Allow-Methods', 'PUT, GET, POST, DELETE, OPTIONS')
+	res.header('Access-Control-Allow-Headers', 'Content-Type,Accept,X-Access-Token')
+	next()
 })
 
 /* 支付同步回调 */
-router.post('/paymentSync', function (req, res) {
+router.post('/paymentSync', (req, res) => {
 	if (req.body.orderId && req.body.orderNo && req.body.transaction_id && req.body.merNo && req.body.appId && req.body.transAmt && req.body.orderDate && req.body.respCode && req.body.timeEnd && req.body.sign) {
 		let params = {
 			orderId: req.body.orderId,
@@ -41,12 +41,12 @@ router.post('/paymentSync', function (req, res) {
 			sign: req.body.sign
 		}
 		// 如果成功，则给对应用户写入其支付的金额-金币
-		TemporaryOrder.findOne({ orderNo: req.body.orderNo }).exec(function (err, temporaryOrder) {
-			Member.findOne({_id: temporaryOrder.member}).exec(function (error, member) {
+		TemporaryOrder.findOne({ orderNo: req.body.orderNo }).exec((err, temporaryOrder) => {
+			Member.findOne({_id: temporaryOrder.member}).exec((error, member) => {
 				Member.update({ _id: member._id }, {
 					charm: member.charm + (temporaryOrder.goldBeanNum / 100),
 					goldBean: member.goldBean + temporaryOrder.goldBeanNum
-				}, function (error) {
+				}, (error) => {
 					new AccountDetail({
 						member: member._id,
 						goldBeanChange: '+' + temporaryOrder.goldBeanNum,
@@ -67,16 +67,16 @@ router.post('/paymentSync', function (req, res) {
 		res.json(responseData)
 	}
 })
-router.use(function(req, res, next) {
+router.use((req, res, next) => {
 	if (req.url.indexOf('verCode') > -1 || req.url.indexOf('login') > -1) {
 		next()
 		return
 	}
 
-	var token = (req.body && req.body.token) || (req.query && req.query.token) || req.headers['x-access-token']
+	let token = (req.body && req.body.token) || (req.query && req.query.token) || req.headers['x-access-token']
 	if (token) {
 		try {
-			var decoded = jwt.decode(token, secret.jwtTokenSecret)
+			let decoded = jwt.decode(token, secret.jwtTokenSecret)
 			if (decoded) {
 				next()
 			}else {
@@ -98,8 +98,8 @@ router.use(function(req, res, next) {
 	}
 })
 
-router.use('/member', require('./member'));
-router.use('/project', require('./project'));
-router.use('/shop', require('./shop'));
+router.use('/member', require('./member'))
+router.use('/project', require('./project'))
+router.use('/shop', require('./shop'))
 
-module.exports = router;
+module.exports = router

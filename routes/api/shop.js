@@ -9,6 +9,7 @@ const Member = require('../../models/Member')
 const AccountDetail = require('../../models/AccountDetail')
 const TemporaryOrder = require('../../models/TemporaryOrder')
 const Prize = require('../../models/Prize')
+const MemberPrize = require('../../models/MemberPrize')
 const common = require('../../common/index')
 
 //统一返回格式
@@ -103,6 +104,59 @@ router.get('/prizeDetail', (req, res) => {
 		responseData.msg = '获取成功'
 		responseData.data = prize
 		res.json(responseData)
+	})
+})
+/* 抽奖 */
+router.post('/prizeDraw', (req, res) => {
+	let token = (req.body && req.body.token) || (req.query && req.query.token) || req.headers['x-access-token']
+	let memberId = jwt.decode(token, secret.jwtTokenSecret).iss
+	let prizeId = req.body.prizeId
+	let prizeGoldBeanPrice = req.body.prizeGoldBeanPrice
+	Member.findOne({_id: memberId}).exec((error, member) => {
+		if (error) {
+			responseData.code = 1
+			responseData.msg = '服务器错误'
+			res.json(responseData)
+			return
+		}
+		if (member.goldBean < Number(prizeGoldBeanPrice)) {
+			responseData.code = 2
+			responseData.msg = '金豆数量不够'
+			res.json(responseData)
+			return
+		}
+		Prize.findOne({_id: prizeId}).exec((err, prize) => {
+			if (err) {
+				responseData.code = 3
+				responseData.msg = '未找到对应奖品'
+				res.json(responseData)
+				return
+			}
+			Member.update({_id: memberId}, {
+				goldBean: member.goldBean - Number(prize.prizeGoldBeanPrice)
+			}, error2 => {
+				if (error2) {
+					responseData.code = 4
+					responseData.msg = '服务器错误'
+					res.json(responseData)
+					return
+				}
+				// 生成会员奖品
+				new MemberPrize({
+					member: memberId,
+					prize: prizeId
+				}).save()
+				// 生成账单
+				new AccountDetail({
+					member: memberId,
+					goldBeanChange: -Number(prize.prizeGoldBeanPrice),
+					type: '抽奖',
+					info: prize.prizeName
+				}).save()
+				responseData.msg = '抽奖成功'
+				res.json(responseData)
+			})
+		})
 	})
 })
 

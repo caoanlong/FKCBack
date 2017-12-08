@@ -227,7 +227,7 @@ router.get('/accountDetails', (req, res) => {
 			if (error) {
 				res.render('error',{message: '查找失败'})
 			}else {
-				res.render('admin/member/memberAccountDetail',{
+				res.render('admin/member/memberAccountDetail', {
 					active: 'member',
 					data: {
 						accountList: accountList,

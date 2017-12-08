@@ -194,7 +194,7 @@ router.post('/info', function(req, res) {
 	})
 })
 /* 查看会员帐户明细 */
-router.post('/accountDetails',function(req, res) {
+router.get('/accountDetails',function(req, res) {
 	let token = (req.body && req.body.token) || (req.query && req.query.token) || req.headers['x-access-token']
 	let memberId = jwt.decode(token,secret.jwtTokenSecret).iss
 	let pageIndex = Number(req.query.pageIndex || 1)

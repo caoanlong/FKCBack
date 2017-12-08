@@ -1,4 +1,4 @@
-var mongoose = require('mongoose');
+const mongoose = require('mongoose')
 
 // 奖品的表结构
 module.exports = new mongoose.Schema({
