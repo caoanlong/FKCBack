@@ -178,7 +178,7 @@ router.get('/guess', (req, res) => {
 		for (let i = 1; i < pages+1; i++) {
 			pagesArr.push(i)
 		}
-		GuessList.find({member: memberId}).sort({_id: -1}).limit(pageSize).skip(skip).populate(['member','project']).exec((error, guessList) => {
+		GuessList.find({member: memberId}).sort({_id: -1}).limit(pageSize).skip(skip).populate('project').exec((error, guessList) => {
 			if (error) {
 				res.render('error',{message: '查找失败'})
 			}else {

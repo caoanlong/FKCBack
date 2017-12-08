@@ -47,6 +47,7 @@
 			{% endfor %}
 		</tbody>
 	</table>
+	{% if data.guessList.length !=0 %}
 	<nav aria-label="Page navigation">
 		<p class="col-xs-6 pagination" style="height: 34px;line-height: 34px">一共有 {{data.count}} 条数据，每页显示 {{data.pageSize}} 条数据，一共 {{data.pages}} 页，当前第 {{data.pageIndex}} 页</p>
 		<div class="col-xs-6 text-right">
@@ -59,7 +60,7 @@
 				</li>
 				{% else %}
 				<li>
-					<a href="/admin/{{active}}/guess?memberId={{String(data.accountList[0].member)}}&memberMobile={{memberMobile}}&pageIndex={{data.pageIndex-1}}" aria-label="Previous">
+					<a href="/admin/{{active}}/guess?memberId={{String(data.guessList[0].member)}}&memberMobile={{memberMobile}}&pageIndex={{data.pageIndex-1}}" aria-label="Previous">
 						<span aria-hidden="true">&laquo;</span>
 					</a>
 				</li>
@@ -69,7 +70,7 @@
 				</li>
 				{% else %}
 				<li>
-					<a href="/admin/{{active}}/guess?memberId={{String(data.accountList[0].member)}}&memberMobile={{memberMobile}}&pageIndex={{item}}">{{item}}</a>
+					<a href="/admin/{{active}}/guess?memberId={{String(data.guessList[0].member)}}&memberMobile={{memberMobile}}&pageIndex={{item}}">{{item}}</a>
 				</li>
 				{% endif %} {% endfor %} {% if data.pageIndex == data.pages %}
 				<li class="disabled">
@@ -79,11 +80,12 @@
 				</li>
 				{% else %}
 				<li>
-					<a href="/admin/{{active}}/guess?memberId={{String(data.accountList[0].member)}}&memberMobile={{memberMobile}}&pageIndex={{data.pageIndex+1}}" aria-label="Previous">
+					<a href="/admin/{{active}}/guess?memberId={{String(data.guessList[0].member)}}&memberMobile={{memberMobile}}&pageIndex={{data.pageIndex+1}}" aria-label="Previous">
 						<span aria-hidden="true">&raquo;</span>
 					</a>
 				</li>
 			</ul>
 		</div>
 	</nav>
+	{% endif %}
 </div>
