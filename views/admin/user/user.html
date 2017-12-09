@@ -52,7 +52,7 @@
 					{% else %}
 					<td>正常</td>
 					{% endif %}
-					<td>{{item.addTime|date('Y-m-d H:i:s', -8*60)}}</td>
+					<td>{{item.addTime|getdatefromtimestamp}}</td>
 					{% if item.isAdmin %}
 					<td></td>
 					{% else %}

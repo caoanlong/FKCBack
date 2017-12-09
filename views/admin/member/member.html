@@ -42,7 +42,7 @@
 					<td title="{{item._id.toString()}}">{{item._id.toString()}}</td>
 					<td>{{item.mobile}}</td>
 					<td>{{item.goldBean}}</td>
-					<td>{{item.addTime|date('Y-m-d H:i:s', -8*60)}}</td>
+					<td>{{item.addTime|getdatefromtimestamp}}</td>
 					<td>
 						<a href="/admin/member/guess?memberId={{item._id.toString()}}&memberMobile={{item.mobile}}" type="button" class="btn btn-default btn-xs">竞猜列表</a>
 						<a href="/admin/member/accountDetails?memberId={{item._id.toString()}}&memberMobile={{item.mobile}}" type="button" class="btn btn-default btn-xs">账户明细</a>

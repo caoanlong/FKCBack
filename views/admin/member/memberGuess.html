@@ -42,7 +42,7 @@
 				<td>待开奖</td>
 				{% endif %}
 				<td>{{item.project.endTime|getdatefromtimestamp}}</td>
-				<td>{{item.addTime|date('Y-m-d H:i:s', -8*60)}}</td>
+				<td>{{item.addTime|getdatefromtimestamp}}</td>
 			</tr>
 			{% endfor %}
 		</tbody>

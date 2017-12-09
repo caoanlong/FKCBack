@@ -37,7 +37,7 @@
 					<td><a href="#">{{item.prizeImg}}</a></td>
 					<td>{{item.prizeRefPrice}}元</td>
 					<td>{{item.prizeGoldBeanPrice}}</td>
-					<td>{{item.addTime|date('Y-m-d H:i:s', -8*60)}}</td>
+					<td>{{item.addTime|getdatefromtimestamp}}</td>
 					<td>
 						<a href="/admin/shop/prize/edit?id={{item._id.toString()}}" type="button" class="btn btn-primary btn-xs">编辑</a>
 						<button type="button" class="btn btn-danger btn-xs deletePrize">删除</button>

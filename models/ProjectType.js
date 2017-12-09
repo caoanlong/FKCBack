@@ -1,4 +1,14 @@
-var mongoose = require('mongoose');
-var projectTypesSchema = require('../schemas/projectType');
+const mongoose = require('mongoose')
 
-module.exports = mongoose.model('ProjectType', projectTypesSchema);
+// 项目分类的表结构
+let ProjectTypeSchema = new mongoose.Schema({
+    // 项目分类名称
+    name: String,
+    // 添加时间
+    addTime: {
+		type: String,
+		default: new Date().getTime()
+	}
+})
+
+module.exports = mongoose.model('ProjectType', ProjectTypeSchema)
