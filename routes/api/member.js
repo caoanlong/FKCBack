@@ -7,6 +7,7 @@ const Member = require('../../models/Member')
 const VerCode = require('../../models/VerCode')
 const AccountDetail = require('../../models/AccountDetail')
 const MemberPrize = require('../../models/MemberPrize')
+const Address = require('../../models/Address')
 const secret = require('../../config').secret
 
 //统一返回格式
@@ -175,7 +176,8 @@ router.post('/info', (req, res) => {
 			'charm',
 			'goldBean',
 			'isDisabled',
-			'addTime'
+			'addTime',
+			'defaultAddress'
 		], (err, result) => {
 		if (err) {
 			responseData.code = 1
@@ -229,43 +231,10 @@ router.get('/accountDetails', (req, res) => {
 	})
 })
 /* 查看会员奖品列表 */
-router.get('/memberPrizeList', (req, res) => {
+router.get('/memberPrize', (req, res) => {
 	let token = (req.body && req.body.token) || (req.query && req.query.token) || req.headers['x-access-token']
 	let memberId = jwt.decode(token,secret.jwtTokenSecret).iss
-	let pageIndex = Number(req.query.pageIndex || 1)
-	let pageSize = 15
-	let pages = 0
-	MemberPrize.count({member: memberId}, (error, count) => {
-		//计算总页数
-		pages = Math.ceil(count / pageSize)
-		//取值不能超过pages
-		pageIndex = Math.min(pageIndex, pages)
-		//取值不能小于1
-		pageIndex = Math.max(pageIndex, 1)
-		let skip = (pageIndex - 1) * pageSize
-		MemberPrize.find({member: memberId}).populate('prize').sort({_id: -1}).limit(pageSize).skip(skip).exec((err, memberPrizelist) => {
-			if (err) {
-				responseData.code = 1
-				responseData.msg = '获取失败'
-				res.json(responseData)
-				return
-			}
-			responseData.msg = '获取成功'
-			responseData.data = {
-				memberPrizelist: memberPrizelist,
-				count: count,
-				pageSize: pageSize,
-				pageIndex: pageIndex,
-				pages: pages
-			}
-			res.json(responseData)
-		})
-	})
-})
-/* 查看会员奖品详情 */
-router.get('/memberPrizeDetail', (req, res) => {
-	let memberPrizeId = req.query.memberPrizeId
-	MemberPrize.findOne({_id: memberPrizeId}).populate('prize').exec((err, memberPrize) => {
+	MemberPrize.find({member: memberId}).populate('prize').sort({_id: -1}).exec((err, memberPrizelist) => {
 		if (err) {
 			responseData.code = 1
 			responseData.msg = '获取失败'
@@ -273,24 +242,175 @@ router.get('/memberPrizeDetail', (req, res) => {
 			return
 		}
 		responseData.msg = '获取成功'
-		responseData.data = memberPrize
+		responseData.data = memberPrizelist
 		res.json(responseData)
 	})
 })
-/* 添加会员奖品地址 */
-router.post('/AddMemberPrizeAddress', (req, res) => {
-	let memberPrizeId = req.query.memberPrizeId
+/* 设置会员奖品地址 */
+router.post('/memberPrize/setAddress', (req, res) => {
+	let memberPrizeId = req.body.memberPrizeId
+	let consignee = req.body.consignee
+	let mobile = req.body.mobile
 	let address = req.body.address
-	MemberPrize.update({_id: memberPrizeId}, {
-		address: address
-	}, err => {
+	MemberPrize.findOne({_id: memberPrizeId}).exec((err, memberPrize) => {
 		if (err) {
 			responseData.code = 1
 			responseData.msg = '添加失败'
 			res.json(responseData)
 			return
 		}
+		memberPrize.consignee = consignee
+		memberPrize.mobile = mobile
+		memberPrize.address = address
+		memberPrize.save()
 		responseData.msg = '添加成功'
+		res.json(responseData)
+	})
+})
+/* 查看会员地址 */
+router.get('/address', (req, res) => {
+	let token = (req.body && req.body.token) || (req.query && req.query.token) || req.headers['x-access-token']
+	let memberId = jwt.decode(token,secret.jwtTokenSecret).iss
+	Address.find({member: memberId}).sort({_id: -1}).exec((err, addressList) => {
+		if (err) {
+			responseData.code = 1
+			responseData.msg = '获取失败'
+			res.json(responseData)
+			return
+		}
+		responseData.msg = '获取成功'
+		responseData.data = addressList
+		res.json(responseData)
+	})
+})
+/* 查看会员地址详情 */
+router.get('/address/detail', (req, res) => {
+	let addressId = req.query.addressId
+	Address.findOne({_id: addressId}).exec((err, address) => {
+		if (err) {
+			responseData.code = 1
+			responseData.msg = '获取失败'
+			res.json(responseData)
+			return
+		}
+		responseData.msg = '获取成功'
+		responseData.data = address
+		res.json(responseData)
+	})
+})
+/* 添加会员地址 */
+router.post('/address/add', (req, res) => {
+	let token = (req.body && req.body.token) || (req.query && req.query.token) || req.headers['x-access-token']
+	let memberId = jwt.decode(token,secret.jwtTokenSecret).iss
+	let consignee = req.body.consignee
+	let mobile = req.body.mobile
+	let area = req.body.area
+	let detailedAddress = req.body.detailedAddress
+	let isSetDefault = req.body.isSetDefault
+	new Address({
+		member: memberId,
+		consignee: consignee,
+		mobile: mobile,
+		area: area,
+		detailedAddress: detailedAddress
+	}).save(err => {
+		if (err) {
+			responseData.code = 1
+			responseData.msg = '添加失败'
+			res.json(responseData)
+			return
+		}
+		if (isSetDefault) {
+			Address.findOne({
+				member: memberId,
+				consignee: consignee,
+				mobile: mobile,
+				area: area,
+				detailedAddress: detailedAddress
+			}).exec((error, address) => {
+				if (error) {
+					responseData.code = 2
+					responseData.msg = '设置默认失败'
+					res.json(responseData)
+					return
+				}
+				Member.findOne({_id: memberId}).exec((error2, member) => {
+					member.defaultAddress = address._id
+					member.save()
+					responseData.msg = '添加成功'
+					res.json(responseData)
+				})
+			})
+		} else {
+			responseData.msg = '添加成功'
+			res.json(responseData)
+		}
+	}) 
+})
+/* 修改会员地址 */
+router.post('/address/update', (req, res) => {
+	let token = (req.body && req.body.token) || (req.query && req.query.token) || req.headers['x-access-token']
+	let memberId = jwt.decode(token,secret.jwtTokenSecret).iss
+	let addressId = req.body.addressId
+	let consignee = req.body.consignee
+	let mobile = req.body.mobile
+	let area = req.body.area
+	let detailedAddress = req.body.detailedAddress
+	let isSetDefault = req.body.isSetDefault
+	Address.findOne({_id: addressId}).exec((err, address) => {
+		if (err) {
+			responseData.code = 1
+			responseData.msg = '修改失败'
+			res.json(responseData)
+			return
+		}
+		address.consignee = consignee
+		address.mobile = mobile
+		address.area = area
+		address.detailedAddress = detailedAddress
+		address.save()
+		if (isSetDefault) {
+			Member.findOne({_id: memberId}).exec((error, member) => {
+				member.defaultAddress = address._id
+				member.save()
+				responseData.msg = '修改成功'
+				res.json(responseData)
+			})
+		} else {
+			responseData.msg = '修改成功'
+			res.json(responseData)
+		}
+	})
+})
+/* 删除会员地址 */
+router.post('/address/delete', (req, res) => {
+	let addressId = req.body.addressId
+	Address.remove({_id: addressId}, err => {
+		if (err) {
+			responseData.code = 1
+			responseData.msg = '删除失败'
+			res.json(responseData)
+			return
+		}
+		responseData.msg = '删除成功'
+		res.json(responseData)
+	})
+})
+/* 设置默认会员地址 */
+router.post('/address/setDefault', (req, res) => {
+	let token = (req.body && req.body.token) || (req.query && req.query.token) || req.headers['x-access-token']
+	let memberId = jwt.decode(token,secret.jwtTokenSecret).iss
+	let addressId = req.body.addressId
+	Member.update({_id: memberId}, {
+		defaultAddress: addressId
+	}, err => {
+		if (err) {
+			responseData.code = 1
+			responseData.msg = '设置失败'
+			res.json(responseData)
+			return
+		}
+		responseData.msg = '设置成功'
 		res.json(responseData)
 	})
 })

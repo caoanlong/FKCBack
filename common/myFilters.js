@@ -5,7 +5,7 @@ function getdatefromtimestamp(input, bool) {
 	let date = now.getDate() < 10 ? '0' + now.getDate() : now.getDate()
 	let hour = now.getHours() < 10 ? '0' + now.getHours() : now.getHours()
 	let minute = now.getMinutes() < 10 ? '0' + now.getMinutes() : now.getMinutes()
-	let second = now.getSeconds()
+	let second = now.getSeconds() < 10 ? '0' + now.getSeconds() : now.getSeconds()
 	if (bool) {
 		return year + "-" + month + "-" + date + "-"
 	}else {

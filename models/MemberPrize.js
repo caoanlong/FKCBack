@@ -12,6 +12,16 @@ let MemberPrizeSchema = new mongoose.Schema({
 		type: mongoose.Schema.Types.ObjectId,
 		ref: 'Prize'
 	},
+	// 收货人
+	consignee: {
+		type: String,
+		default: ''
+	},
+	// 收货手机
+	mobile: {
+		type: String,
+		default: ''
+	},
 	// 地址
 	address: {
 		type: String,

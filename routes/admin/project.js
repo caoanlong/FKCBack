@@ -304,7 +304,6 @@ router.get('/guess',function(req, res) {
 			if (error) {
 				res.render('error',{message: '查找失败'})
 			}else {
-				console.log(result)
 				res.render('admin/project/guess',{
 					active: 'project/guess',
 					data: {
