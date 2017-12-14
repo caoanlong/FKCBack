@@ -131,6 +131,15 @@
 					</ul>
 				</li>
 				{% endif %}
+				{% if active == "memberPrize" %}
+				<li class="active">
+					<a href="/admin/member/memberPrize">中奖奖品列表</a>
+				</li>
+				{% else %}
+				<li>
+					<a href="/admin/member/memberPrize">中奖奖品列表</a>
+				</li>
+				{% endif %}
 				{% if userInfo.isAdmin %}
 					{% if active == "user" %}
 					<li class="active">

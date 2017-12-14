@@ -27,6 +27,16 @@ let MemberPrizeSchema = new mongoose.Schema({
 		type: String,
 		default: ''
 	},
+	// 运单号
+	waybillNo: {
+		type: String,
+		default: ''
+	},
+	// 发货状态
+	isSend: {
+		type: String,
+		default: ''
+	},
 	// 添加时间
 	addTime: {
 		type: Date,

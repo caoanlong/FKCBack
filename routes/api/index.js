@@ -68,11 +68,10 @@ router.post('/paymentSync', (req, res) => {
 	}
 })
 router.use((req, res, next) => {
-	if (req.url.indexOf('verCode') > -1 || req.url.indexOf('login') > -1) {
+	if (req.url.indexOf('verCode') > -1 || req.url.indexOf('login') > -1 || req.path == '/project' || req.path == '/project/type') {
 		next()
 		return
 	}
-
 	let token = (req.body && req.body.token) || (req.query && req.query.token) || req.headers['x-access-token']
 	if (token) {
 		try {
@@ -83,18 +82,21 @@ router.use((req, res, next) => {
 				responseData.code = '1003'
 				responseData.msg = '非法的Token!'
 				res.json(responseData)
+				return
 			}
 		} catch (err) {
 			if (err) {
 				responseData.code = '1002'
 				responseData.msg = '非法的Token!'
 				res.json(responseData)
+				return
 			}
 		}
 	}else {
 		responseData.code = '1001'
-		responseData.msg = '非法的Token!'
+		responseData.msg = '未登录!'
 		res.json(responseData)
+		return
 	}
 })
 

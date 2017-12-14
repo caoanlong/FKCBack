@@ -4,6 +4,7 @@ const router = express.Router()
 const Member = require('../../models/Member')
 const GuessList = require('../../models/GuessList')
 const AccountDetail = require('../../models/AccountDetail')
+const MemberPrize = require('../../models/MemberPrize')
 
 //统一返回格式
 let responseData;
@@ -242,6 +243,100 @@ router.get('/accountDetails', (req, res) => {
 				})
 			}
 		})
+	})
+})
+
+/* 会员中奖奖品列表 */
+router.get('/memberPrize', (req, res) => {
+	if (!req.session.userInfo) {
+		res.redirect('/admin')
+		return
+	}
+	let pageIndex = Number(req.query.pageIndex || 1)
+	let pageSize = 10
+	let pages = 0
+	MemberPrize.count((err, count) => {
+		//计算总页数
+		pages = Math.ceil(count / pageSize)
+		//取值不能超过pages
+		pageIndex = Math.min( pageIndex, pages )
+		//取值不能小于1
+		pageIndex = Math.max( pageIndex, 1 )
+
+		let skip = (pageIndex - 1) * pageSize
+		let pagesArr = []
+		for (let i = 1; i < pages+1; i++) {
+			pagesArr.push(i)
+		}
+		MemberPrize.find().sort({_id: -1}).limit(pageSize).skip(skip).populate(['member', 'prize']).exec((error, memberPrizeList) => {
+			if (error) {
+				res.render('error',{message: '查找失败'})
+			}else {
+				res.render('admin/memberPrize/memberPrizeList', {
+					active: 'memberPrize',
+					data: {
+						memberPrizeList: memberPrizeList,
+						count: count,
+						pageSize: pageSize,
+						pageIndex: pageIndex,
+						pages: pages,
+						pagesArr: pagesArr
+					},
+					userInfo: req.session.userInfo
+				})
+			}
+		})
+	})
+})
+/* 会员中奖奖品详情 */
+router.get('/memberPrize/detail', (req, res) => {
+	let memberPrizeId = req.query.id
+	MemberPrize.findOne({_id: memberPrizeId}).populate(['member', 'prize']).exec((err, memberPrize) => {
+		if (err) {
+			res.render('error',{message: '查找失败'})
+		}else {
+			res.render('admin/memberPrize/memberPrizeDetail', {
+				active: 'memberPrize',
+				data: memberPrize,
+				userInfo: req.session.userInfo
+			})
+		}
+	})
+})
+
+/* 会员中奖奖品发货 */
+router.post('/memberPrize/send', (req, res) => {
+	let memberPrizeId = req.body.memberPrizeId
+	let waybillNo = req.body.waybillNo
+	MemberPrize.findOne({_id: memberPrizeId}).exec((err, memberPrize) => {
+		if (err) {
+			responseData.code = 1
+			responseData.msg = '发货成功'
+			res.json(responseData)
+		}else {
+			memberPrize.waybillNo = waybillNo
+			memberPrize.isSend = '1'
+			memberPrize.save()
+			responseData.msg = '发货成功'
+			res.json(responseData)
+		}
+	})
+})
+/* 会员中奖奖品取消发货 */
+router.post('/memberPrize/cancel', (req, res) => {
+	let memberPrizeId = req.body.memberPrizeId
+	MemberPrize.findOne({_id: memberPrizeId}).exec((err, memberPrize) => {
+		if (err) {
+			responseData.code = 1
+			responseData.msg = '取消成功'
+			res.json(responseData)
+		}else {
+			memberPrize.waybillNo = ''
+			memberPrize.isSend = ''
+			memberPrize.save()
+			responseData.msg = '取消成功'
+			res.json(responseData)
+		}
 	})
 })
 

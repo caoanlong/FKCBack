@@ -1,0 +1,175 @@
+{% extends '../../layout.html' %}
+{% block main %}
+{% include '../nav.html' %}
+<div class="container-fluid">
+	<ol class="breadcrumb">
+		<li><a href="/admin">首页</a></li>
+		<li><a href="/admin/memberPrize/memberPrizeList">会员中奖管理</a></li>
+		<li class="active">会员中奖列表</li>
+	</ol>
+	<form class="form-inline padding-bottom-15" onsubmit="return false">
+		<div class="form-group">
+			<label for="endDate">中奖时间</label>
+			{% include '../daterangepicker.html' %}
+		</div>
+		<button type="button" class="btn btn-default"><i class="glyphicon glyphicon-search"></i>查询</button>
+	</form>
+	<table class="table table-bordered table-hover" style="table-layout: fixed;">
+		<thead>
+			<tr>
+				<th width="120">中奖会员</th>
+				<th>奖品</th>
+				<th width="120">收货人</th>
+				<th width="120">收获手机</th>
+				<th>地址</th>
+				<th>运单号</th>
+				<th width="160">中奖时间</th>
+				<th width="100">发货状态</th>
+				<th width="150">操作</th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for item in data.memberPrizeList %}
+			<tr>
+				<input type="hidden" class="memberPrizeId" value="{{item._id.toString()}}">
+				<td>{{item.member.mobile}}</td>
+				<td>{{item.prize.prizeName}}</td>
+				<td>{{item.consignee}}</td>
+				<td>{{item.mobile}}</td>
+				<td>{{item.address}}</td>
+				<td>{{item.waybillNo}}</td>
+				<td>{{item.addTime|getdatefromtimestamp}}</td>
+				{% if item.isSend == '1' %}
+				<td class="text-success">已发货</td>
+				{% elseif item.isSend == '2'%}
+				<td>已完成</td>
+				{% else %}
+				<td class="text-danger">未发货</td>
+				{% endif %}
+				<td>
+					<a href="/admin/member/memberPrize/detail?id={{item._id.toString()}}" type="button" class="btn btn-primary btn-xs">查看详情</a>
+					{% if item.isSend %}
+					<button type="button" class="btn btn-default btn-xs cancel">取消发货</button>
+					{% else %}
+					<button type="button" style="width: 60px" class="btn btn-success btn-xs send">发货</button>
+					{% endif %}
+				</td>
+			</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+	{% if data.memberPrizeList.length !=0 %}
+	<nav aria-label="Page navigation">
+		<p class="col-xs-6 pagination" style="height: 34px;line-height: 34px">一共有 {{data.count}} 条数据，每页显示 {{data.pageSize}} 条数据，一共 {{data.pages}} 页，当前第 {{data.pageIndex}} 页</p>
+		<div class="col-xs-6 text-right">
+			<ul class="pagination">
+				{% if data.pageIndex == 1 %}
+				<li class="disabled">
+					<a href="#" aria-label="Previous">
+						<span aria-hidden="true">&laquo;</span>
+					</a>
+				</li>
+				{% else %}
+				<li>
+					<a href="/admin/{{active}}/memberPrizeList?pageIndex={{data.pageIndex-1}}" aria-label="Previous">
+						<span aria-hidden="true">&laquo;</span>
+					</a>
+				</li>
+				{% endif %} {% for item in data.pagesArr %} {% if item == data.pageIndex%}
+				<li class="active">
+					<a href="javascript:;">{{item}}</a>
+				</li>
+				{% else %}
+				<li>
+					<a href="/admin/{{active}}/memberPrizeList?pageIndex={{item}}">{{item}}</a>
+				</li>
+				{% endif %} {% endfor %} {% if data.pageIndex == data.pages %}
+				<li class="disabled">
+					<a href="#" aria-label="Previous">
+						<span aria-hidden="true">&raquo;</span>
+					</a>
+				</li>
+				{% else %}
+				<li>
+					<a href="/admin/{{active}}/memberPrizeList?pageIndex={{data.pageIndex+1}}" aria-label="Previous">
+						<span aria-hidden="true">&raquo;</span>
+					</a>
+				</li>
+			</ul>
+		</div>
+	</nav>
+	{% endif %}
+</div>
+<script type="text/javascript">
+	/**
+	 * 发货
+	 */
+	$('.send').on('click', function() {
+		var index = layer.open({
+			type: 1,
+			title: '发货',
+			skin: 'layui-layer-demo', //样式类名
+			closeBtn: 0, //不显示关闭按钮
+			shadeClose: true, //开启遮罩关闭
+			area: ['500px', '180px'],
+			content: `<div style="width: 470px;padding-top: 20px">
+				<form class="form-horizontal">
+					<div class="form-group">
+						<label for="name" class="col-xs-3 control-label">运单号</label>
+						<div class="col-xs-9">
+							<input type="text" id="waybillNo" class="form-control" name="name" placeholder="运单号" value="">
+						</div>
+					</div>
+				</form>
+			</div>`,
+			btn: ['确定', '取消'],
+			yes: () => {
+				var memberPrizeId = $(this).parent().parent().find('.memberPrizeId').val()
+				var waybillNo = $('#waybillNo').val()
+				var params = {
+					memberPrizeId: memberPrizeId,
+					waybillNo: waybillNo
+				}
+				$.ajax({
+					url: '/admin/member/memberPrize/send',
+					type: 'post',
+					dataType: 'json',
+					data: params,
+					success: function(resbonse,textStatus,jqXHR) {
+						console.log(resbonse)
+						layer.close(index)
+						// layer.msg(resbonse.msg)
+						if (resbonse.code == 0) {
+							location.reload(true)
+						}
+					}
+				})
+			},
+			no: () => {
+
+			}
+		})
+	})
+	/**
+	 * 取消发货
+	 */
+	$('.cancel').on('click', function() {
+		var memberPrizeId = $(this).parent().parent().find('.memberPrizeId').val()
+		var params = {
+			memberPrizeId: memberPrizeId
+		}
+		$.ajax({
+			url: '/admin/member/memberPrize/cancel',
+			type: 'post',
+			dataType: 'json',
+			data: params,
+			success: function(resbonse,textStatus,jqXHR) {
+				console.log(resbonse)
+				layer.msg(resbonse.msg)
+				if (resbonse.code == 0) {
+					location.reload(true)
+				}
+			}
+		})
+	})
+</script>

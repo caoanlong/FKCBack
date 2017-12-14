@@ -267,6 +267,22 @@ router.post('/memberPrize/setAddress', (req, res) => {
 		res.json(responseData)
 	})
 })
+/* 确认收货 */
+router.post('/memberPrize/sure', (req, res) => {
+	let memberPrizeId = req.body.id
+	MemberPrize.findOne({_id: memberPrizeId}).exec((err, memberPrize) => {
+		if (err) {
+			responseData.code = 1
+			responseData.msg = '确认失败'
+			res.json(responseData)
+			return
+		}
+		memberPrize.isSend = '2'
+		memberPrize.save()
+		responseData.msg = '确认成功'
+		res.json(responseData)
+	})
+})
 /* 查看会员地址 */
 router.get('/address', (req, res) => {
 	let token = (req.body && req.body.token) || (req.query && req.query.token) || req.headers['x-access-token']
