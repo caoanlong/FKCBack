@@ -71,7 +71,7 @@
 				</li>
 				{% else %}
 				<li>
-					<a href="/admin/{{active}}/memberPrizeList?pageIndex={{data.pageIndex-1}}" aria-label="Previous">
+					<a href="/admin/member/{{active}}?pageIndex={{data.pageIndex-1}}" aria-label="Previous">
 						<span aria-hidden="true">&laquo;</span>
 					</a>
 				</li>
@@ -81,7 +81,7 @@
 				</li>
 				{% else %}
 				<li>
-					<a href="/admin/{{active}}/memberPrizeList?pageIndex={{item}}">{{item}}</a>
+					<a href="/admin/member/{{active}}?pageIndex={{item}}">{{item}}</a>
 				</li>
 				{% endif %} {% endfor %} {% if data.pageIndex == data.pages %}
 				<li class="disabled">
@@ -91,7 +91,7 @@
 				</li>
 				{% else %}
 				<li>
-					<a href="/admin/{{active}}/memberPrizeList?pageIndex={{data.pageIndex+1}}" aria-label="Previous">
+					<a href="/admin/member/{{active}}?pageIndex={{data.pageIndex+1}}" aria-label="Previous">
 						<span aria-hidden="true">&raquo;</span>
 					</a>
 				</li>

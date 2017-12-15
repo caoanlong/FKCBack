@@ -30,7 +30,7 @@
 				<td>{{item.type}}</td>
 				<td>{{item.info}}</td>
 				<td>{{item.goldBeanChange}}</td>
-				<td>{{item.addTime|date('Y-m-d H:i:s', -8*60)}}</td>
+				<td>{{item.addTime|getdatefromtimestamp}}</td>
 			</tr>
 			{% endfor %}
 		</tbody>
@@ -52,7 +52,9 @@
 						<span aria-hidden="true">&laquo;</span>
 					</a>
 				</li>
-				{% endif %} {% for item in data.pagesArr %} {% if item == data.pageIndex%}
+				{% endif %} 
+				{% for item in data.pagesArr %} 
+				{% if item == data.pageIndex %}
 				<li class="active">
 					<a href="javascript:;">{{item}}</a>
 				</li>
@@ -60,7 +62,9 @@
 				<li>
 					<a href="/admin/{{active}}/accountDetails?memberId={{String(data.accountList[0].member)}}&memberMobile={{memberMobile}}&pageIndex={{item}}">{{item}}</a>
 				</li>
-				{% endif %} {% endfor %} {% if data.pageIndex == data.pages %}
+				{% endif %} 
+				{% endfor %} 
+				{% if data.pageIndex == data.pages %}
 				<li class="disabled">
 					<a href="#" aria-label="Previous">
 						<span aria-hidden="true">&raquo;</span>
@@ -77,3 +81,5 @@
 	</nav>
 	{% endif %}
 </div>
+<script type="text/javascript">
+</script>
