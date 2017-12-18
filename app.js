@@ -5,23 +5,11 @@ const path = require('path')
 const logger = require('morgan')
 const cookieParser = require('cookie-parser')
 const bodyParser = require('body-parser')
-const multer = require('multer')
 const session = require('express-session')
 const schedule = require('node-schedule')
 const FreeReceive = require('./models/FreeReceive')
 
 const app = express()
-
-let storage = multer.diskStorage({
-	destination: function (req, file, cb) {
-		// cb(null, './public/uploads')
-		cb(null, '/mydatadisk/images')
-	},
-	filename: function (req, file, cb) {
-		cb(null, file.fieldname + '-' + Date.now() + '.' + file.mimetype.split('/')[1])
-	}
-})
-let upload = multer({ storage: storage })
 
 // view engine setup
 app.engine('html', swig.renderFile)
@@ -43,7 +31,7 @@ app.use(cookieParser())
 
 app.use(express.static(path.join(__dirname, 'public')))
 // 定时任务
-schedule.scheduleJob({hour: 24, minute: 0, dayOfWeek: 0}, function () {
+schedule.scheduleJob({hour: 0, minute: 0, dayOfWeek: 1}, function () {
 	console.log('remove all  FreeReceive!')
 	FreeReceive.remove()
 })
@@ -60,21 +48,6 @@ app.use(function (req, res, next) {
 	res.header('Access-Control-Allow-Methods', 'PUT, GET, POST, DELETE, OPTIONS')
 	res.header('Access-Control-Allow-Headers', 'Content-Type,Accept,X-Access-Token')
 	next()
-})
-/* 上传单个图片 */
-app.all('/uploadImg', upload.single('file'), function (req, res, next) {
-	if (!req.file) {
-		res.json({
-			code: 1,
-			msg: '图片为空'
-		})
-		return
-	}
-	res.json({
-		code: 0,
-		msg: '上传成功',
-		data: 'http://39.108.245.177:4000'+req.file.path.slice(18)
-	})
 })
 
 // catch 404 and forward to error handler

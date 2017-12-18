@@ -75,7 +75,7 @@
 		var formData = new FormData()
 		formData.append("file",$(this)[0].files[0])
 		$.ajax({
-			url: '/uploadImg',
+			url: 'http://39.108.245.177:3001/uploadImg',
 			type: 'post',
 			processData: false,
 			async: true,
@@ -87,7 +87,7 @@
 				if (res.code == 0) {
 					$('.imgLi').show()
 					$('.addBtn').hide()
-					$('.imgLi img').attr('src',res.data)
+					$('.imgLi img').attr('src', 'http://39.108.245.177:4000' + res.data)
 					imgUrl = res.data
 				}else {
 					return
@@ -113,7 +113,7 @@
 			prizeInfo: $('#prizeInfo').val(),
 			prizeRefPrice: $('#prizeRefPrice').val(),
 			prizeGoldBeanPrice: $('#prizeGoldBeanPrice').val(),
-			prizeImg: $('.imgLi img').attr('src')
+			prizeImg: imgUrl
 		};
 		console.log(JSON.stringify(params))
 		$.ajax({
