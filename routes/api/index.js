@@ -1,5 +1,7 @@
 const express = require('express')
 const router = express.Router()
+const md5 = require('md5')
+const RSAUtil = require('../../common/RSAUtil')
 const jwt = require('jwt-simple')
 const secret =require('../../config').secret
 
@@ -25,23 +27,91 @@ router.use((req, res, next) => {
 	next()
 })
 
-/* 支付同步回调 */
-router.post('/paymentSync', (req, res) => {
-	if (req.body.orderId && req.body.orderNo && req.body.transaction_id && req.body.merNo && req.body.appId && req.body.transAmt && req.body.orderDate && req.body.respCode && req.body.timeEnd && req.body.sign) {
-		let params = {
-			orderId: req.body.orderId,
-			orderNo: req.body.orderNo,
-			transaction_id: req.body.transaction_id,
-			merNo: req.body.merNo,
-			appId: req.body.appId,
-			transAmt: req.body.transAmt,
-			orderDate: req.body.orderDate,
-			respCode: req.body.respCode,
-			timeEnd: req.body.timeEnd,
-			sign: req.body.sign
+/* 支付 */
+router.post('/payOrder', (req, res) => {
+	let token = (req.body && req.body.token) || (req.query && req.query.token) || req.headers['x-access-token']
+	let memberId = jwt.decode(token, secret.jwtTokenSecret).iss
+
+	let appid = req.body.appid
+	let key = req.body.key
+	let subject = req.body.subject
+	let amount = parseInt(Number(req.body.amount))
+	let mchntOrderNo = req.body.mchntOrderNo
+	let body = req.body.body
+	let childAppid = req.body.childAppid
+	let clientIp =req.body.clientIp
+	let payChannelId = req.body.payChannelId
+	let notifyUrl = req.body.notifyUrl
+	let returnUrl = req.body.returnUrl
+	let type = req.body.type
+	let version = 'h5_NoEncrypt'
+	let m = {}
+	m['appid'] = appid
+	m['amount'] = amount
+	m['body'] = body
+	m['clientIp'] = clientIp
+	m['mchntOrderNo'] = mchntOrderNo
+	m['notifyUrl'] = notifyUrl
+
+	m['returnUrl'] = returnUrl
+	m['subject'] = subject
+	m['version'] = version
+	let md5Str = "amount=" + amount + "&appid=" + appid + "&body=" + body
+	if (childAppid != '') {
+		md5Str += "&childAppid=" + childAppid
+		m['childAppid'] = childAppid
+	}
+	md5Str += "&clientIp=" + clientIp + "&mchntOrderNo=" + mchntOrderNo + "&notifyUrl=" + notifyUrl
+	if (payChannelId != '') {
+		md5Str += "&payChannelId=" + payChannelId
+		m['payChannelId'] = payChannelId
+	}
+	md5Str += "&returnUrl=" + returnUrl + "&subject=" + subject + "&version=h5_NoEncrypt&key=" + key
+	console.log(md5Str)
+	let signature =  md5(md5Str)
+	m['signature'] = signature
+	let json = JSON.stringify(m)
+	let onderInfo = RSAUtil.rsaEncrypt(json)
+	console.log(onderInfo)
+
+	Member.findOne({ _id: memberId }).exec(function (err, member) {
+		if (err) {
+			responseData.code = 1
+			responseData.msg = '失败'
+			res.json(responseData)
+			return
 		}
+		new TemporaryOrder({
+			member: memberId,
+			goldBeanNum: amount,
+			orderNo: mchntOrderNo
+		}).save()
+		responseData.msg = '成功'
+		responseData.data = onderInfo
+		res.json(responseData)
+	})
+})
+/* 支付同步回调 */
+router.post('/notifyUtl', (req, res) => {
+	if (req.body.orderNo && req.body.mchntOrderNo && req.body.appid && req.body.amount && req.body.paySt == 2) {
+		let params = {
+			'orderNo': req.body.orderNo,
+			'mchntOrderNo': req.body.mchntOrderNo,
+			'appid': req.body.appid,
+			'amount': req.body.amount,
+			'body': req.body.body,
+			'clientIp': req.body.clientIp,
+			'notifyUrl': req.body.notifyUrl,
+			'payChannelId': req.body.payChannelId,
+			'returnUrl': req.body.returnUrl,
+			'subject': req.body.subject,
+			'childAppid': req.body.childAppid,
+			'paySt': req.body.paySt
+		}
+		console.log(params)
 		// 如果成功，则给对应用户写入其支付的金额-金币
-		TemporaryOrder.findOne({ orderNo: req.body.orderNo }).exec((err, temporaryOrder) => {
+		TemporaryOrder.findOne({ orderNo: req.body.mchntOrderNo }).exec((err, temporaryOrder) => {
+			console.log(temporaryOrder)
 			Member.findOne({_id: temporaryOrder.member}).exec((error, member) => {
 				Member.update({ _id: member._id }, {
 					charm: member.charm + (temporaryOrder.goldBeanNum / 100),
@@ -53,20 +123,13 @@ router.post('/paymentSync', (req, res) => {
 						type: '充值',
 						info: '金豆'
 					}).save()
-					responseData.msg = '成功'
-					responseData.data = 'SUCCESS'
-					res.json(responseData)
+					res.json({'success':'true'})
 				})
 			})
-
 		})
-	} else {
-		responseData.code = 1
-		responseData.msg = '失败'
-		responseData.data = 'EORROR'
-		res.json(responseData)
 	}
 })
+
 router.use((req, res, next) => {
 	if (req.url.indexOf('verCode') > -1 || req.url.indexOf('login') > -1 || req.path == '/project' || req.path == '/project/type') {
 		next()

@@ -48,9 +48,9 @@
 				{% endif %}
 				<td>
 					<a href="/admin/member/memberPrize/detail?id={{item._id.toString()}}" type="button" class="btn btn-primary btn-xs">查看详情</a>
-					{% if item.isSend %}
+					{% if item.isSend == '1' %}
 					<button type="button" class="btn btn-default btn-xs cancel">取消发货</button>
-					{% else %}
+					{% elseif item.isSend == '' %}
 					<button type="button" style="width: 60px" class="btn btn-success btn-xs send">发货</button>
 					{% endif %}
 				</td>

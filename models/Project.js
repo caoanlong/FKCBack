@@ -32,5 +32,9 @@ let ProjectSchema = new mongoose.Schema({
 		default: new Date().getTime()
 	}
 })
+ProjectSchema.pre('save', function (next) {
+	this.addTime = new Date().getTime()
+	next()
+})
 
 module.exports = mongoose.model('Project', ProjectSchema)

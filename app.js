@@ -7,6 +7,8 @@ const cookieParser = require('cookie-parser')
 const bodyParser = require('body-parser')
 const multer = require('multer')
 const session = require('express-session')
+const schedule = require('node-schedule')
+const FreeReceive = require('./models/FreeReceive')
 
 const app = express()
 
@@ -40,6 +42,11 @@ app.use(bodyParser.urlencoded({ extended: true }))
 app.use(cookieParser())
 
 app.use(express.static(path.join(__dirname, 'public')))
+// 定时任务
+schedule.scheduleJob({hour: 24, minute: 0, dayOfWeek: 0}, function () {
+	console.log('remove all  FreeReceive!')
+	FreeReceive.remove()
+})
 
 app.get('/', function (req, res) {
 	res.redirect('/admin')

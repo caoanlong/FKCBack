@@ -10,5 +10,9 @@ let GoldBeanTypeSchema = new mongoose.Schema({
 		default: new Date().getTime()
 	}
 })
+GoldBeanTypeSchema.pre('save', function (next) {
+	this.addTime = new Date().getTime()
+	next()
+})
 
 module.exports = mongoose.model('GoldBeanType', GoldBeanTypeSchema)

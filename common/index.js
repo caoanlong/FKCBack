@@ -55,9 +55,22 @@ function getResult (param, to) {
         }
     })
 }
+// 随机金豆
+function getRandomGold () {
+    if (Math.random() <= 0.5) {
+        return 8
+    } else if (Math.random() > 0.5 && Math.random() <= 0.8) {
+        return 18
+    } else if (Math.random() > 0.8 && Math.random() <= 0.9) {
+        return 38
+    } else if (Math.random() > 0.9) {
+        return 88
+    }
+}
 module.exports = {
 	getVerCode: getVerCode,
 	oneToTwoNum: oneToTwoNum,
 	getTimeNum: getTimeNum,
-	getResult: getResult
+    getResult: getResult,
+	getRandomGold: getRandomGold
 }

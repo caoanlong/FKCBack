@@ -140,6 +140,15 @@
 					<a href="/admin/member/memberPrize">中奖奖品列表</a>
 				</li>
 				{% endif %}
+				{% if active == "payment" %}
+				<li class="active">
+					<a href="/admin/payment">支付管理</a>
+				</li>
+				{% else %}
+				<li>
+					<a href="/admin/payment">支付管理</a>
+				</li>
+				{% endif %}
 				{% if userInfo.isAdmin %}
 					{% if active == "user" %}
 					<li class="active">

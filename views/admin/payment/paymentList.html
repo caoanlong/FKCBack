@@ -1,0 +1,111 @@
+{% extends '../../layout.html' %}
+{% block main %}
+{% include '../nav.html' %}
+<div class="container-fluid">
+	<ol class="breadcrumb">
+		<li><a href="/admin">首页</a></li>
+		<li><a href="/admin/payment">支付管理</a></li>
+		<li class="active">支付列表</li>
+	</ol>
+	<form class="form-inline padding-bottom-15" onsubmit="return false">
+		<div class="form-group">
+			<label for="endDate">充值时间</label>
+			<input type="text" id="paymentTime" class="form-control" placeholder="请选择" style="width: 240px">
+		</div>
+		<a id="search" class="btn btn-default" href="javascript:;"><i class="glyphicon glyphicon-search"></i>查询</a>
+	</form>
+	<table class="table table-bordered table-hover" style="table-layout: fixed;">
+		<thead>
+			<tr>
+				<th>手机号</th>
+				<th>充值金豆</th>
+				<th>充值金额</th>
+				<th>充值时间</th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for item in data.accountList %}
+			<tr>
+				<td>{{item.member.mobile}}</td>
+				<td>{{item.goldBeanChange.split('+')[1]}}</td>
+				<td>{{Number(item.goldBeanChange.split('+')[1])/100}}元</td>
+				<td>{{item.addTime|getdatefromtimestamp}}</td>
+			</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+	{% if data.accountList.length !=0 %}
+	<nav aria-label="Page navigation">
+		<p class="col-xs-6 pagination" style="height: 34px;line-height: 34px">一共有 {{data.count}} 条数据，每页显示 {{data.pageSize}} 条数据，一共 {{data.pages}} 页，当前第 {{data.pageIndex}} 页</p>
+		<div class="col-xs-6 text-right">
+			<ul class="pagination">
+				{% if data.pageIndex == 1 %}
+				<li class="disabled">
+					<a href="#" aria-label="Previous">
+						<span aria-hidden="true">&laquo;</span>
+					</a>
+				</li>
+				{% else %}
+				<li>
+					<a href="/admin/{{active}}?memberId={{String(data.accountList[0].member)}}&memberMobile={{memberMobile}}&pageIndex={{data.pageIndex-1}}" aria-label="Previous">
+						<span aria-hidden="true">&laquo;</span>
+					</a>
+				</li>
+				{% endif %} 
+				{% for item in data.pagesArr %} 
+				{% if item == data.pageIndex %}
+				<li class="active">
+					<a href="javascript:;">{{item}}</a>
+				</li>
+				{% else %}
+				<li>
+					<a href="/admin/{{active}}?pageIndex={{item}}">{{item}}</a>
+				</li>
+				{% endif %} 
+				{% endfor %} 
+				{% if data.pageIndex == data.pages %}
+				<li class="disabled">
+					<a href="#" aria-label="Previous">
+						<span aria-hidden="true">&raquo;</span>
+					</a>
+				</li>
+				{% else %}
+				<li>
+					<a href="/admin/{{active}}?pageIndex={{data.pageIndex+1}}" aria-label="Previous">
+						<span aria-hidden="true">&raquo;</span>
+					</a>
+				</li>
+			</ul>
+		</div>
+	</nav>
+	{% endif %}
+</div>
+<script type="text/javascript">
+	console.log(window.location)
+	var startDate, endDate
+	/**
+	 * 日期选择（范围）
+	 */
+	$('#paymentTime').daterangepicker({
+		locale: {
+			format: 'YYYY-MM-DD',
+			applyLabel: '确认',
+			cancelLabel: '取消',
+			separator : ' 至 ',
+			daysOfWeek: ["日", "一", "二", "三", "四", "五", "六"],
+			monthNames: ["一月", "二月", "三月", "四月", "五月", "六月", "七月", "八月", "九月", "十月", "十一月", "十二月"],
+			firstDay : 1
+		},
+		autoUpdateInput: false,
+	})
+	$('#paymentTime').on('apply.daterangepicker', function(ev, picker) {
+		$(this).val(picker.startDate.format('YYYY-MM-DD') + ' 至 ' + picker.endDate.format('YYYY-MM-DD'))
+		startDate = picker.startDate.unix() + '000'
+		endDate = picker.endDate.unix() + '000'
+		console.log(startDate, endDate)
+		$('#search').attr('href', '/admin/{{active}}?startDate=' + startDate + '&endDate=' + endDate)
+	})
+	$('#paymentTime').on('cancel.daterangepicker', function(ev, picker) {
+		$(this).val('')
+	})
+</script>

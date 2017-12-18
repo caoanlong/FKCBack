@@ -38,27 +38,7 @@ router.get('/goldBeanType', function (req, res) {
 		res.json(responseData)
 	})
 })
-/* 购买金豆 */
-router.post('/buyGoldBean', function (req, res) {
-	let token = (req.body && req.body.token) || (req.query && req.query.token) || req.headers['x-access-token']
-	let memberId = jwt.decode(token, secret.jwtTokenSecret).iss
-	
-	Member.findOne({ _id: memberId }).exec(function (err, member) {
-		if (err) {
-			responseData.code = 1
-			responseData.msg = '失败'
-			res.json(responseData)
-			return
-		}
-		new TemporaryOrder({
-			member: memberId,
-			goldBeanNum: req.body.goldBeanNum,
-			orderNo: req.body.orderNo
-		}).save()
-		responseData.msg = '等待平台...'
-		res.json(responseData)
-	})
-})
+
 /* 奖品列表 */
 router.get('/prize', (req, res) => {
 	let pageIndex = Number(req.query.pageIndex || 1)

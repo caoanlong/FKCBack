@@ -8,6 +8,7 @@ const VerCode = require('../../models/VerCode')
 const AccountDetail = require('../../models/AccountDetail')
 const MemberPrize = require('../../models/MemberPrize')
 const Address = require('../../models/Address')
+const FreeReceive = require('../../models/FreeReceive')
 const secret = require('../../config').secret
 
 //统一返回格式
@@ -451,6 +452,67 @@ router.post('/avatar', (req, res) => {
 			responseData.msg = '获取成功'
 			responseData.data = member
 			res.json(responseData)
+		})
+	})
+})
+/* 免费领豆 */
+// 获取金豆列表
+router.get('/freeReceive', (req, res) => {
+	let token = (req.body && req.body.token) || (req.query && req.query.token) || req.headers['x-access-token']
+	let memberId = jwt.decode(token,secret.jwtTokenSecret).iss
+	FreeReceive.findOne({member: memberId}).exec((err, freeReceive) => {
+		if (err || !freeReceive) {
+			new FreeReceive({
+				member: memberId
+			}).save(() => {
+				FreeReceive.findOne({member: memberId}).exec((error, freeReceive2) => {
+					if (error) {
+						responseData.code = 1
+						responseData.msg = '失败'
+						res.json(responseData)
+						return
+					}
+					responseData.msg = '成功'
+					responseData.data = freeReceive2
+					res.json(responseData)
+					return
+				})
+			})
+			return
+		}
+		responseData.msg = '成功'
+		responseData.data = freeReceive
+		res.json(responseData)
+	})
+})
+// 领取金豆
+router.post('/getSignGold', (req, res) => {
+	let token = (req.body && req.body.token) || (req.query && req.query.token) || req.headers['x-access-token']
+	let memberId = jwt.decode(token,secret.jwtTokenSecret).iss
+	let week = req.body.week
+	let goldNum = Number(req.body.goldNum)
+	FreeReceive.findOne({member: memberId}).exec((err, freeReceive) => {
+		if (err) {
+			responseData.code = 1
+			responseData.msg = '失败'
+			res.json(responseData)
+			return
+		}
+		freeReceive[week].isSign = true
+		freeReceive.save()
+		Member.findOne({_id: memberId}).exec((error, member) => {
+			member.goldBean += goldNum
+			member.save()
+			// 生成账单
+			new AccountDetail({
+				member: memberId,
+				goldBeanChange: '+' + goldNum,
+				type: '免费领豆',
+				info: '免费领取金豆'
+			}).save(() => {
+				responseData.msg = '成功'
+				res.json(responseData)
+			})
 		})
 	})
 })

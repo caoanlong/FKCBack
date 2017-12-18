@@ -43,5 +43,9 @@ let MemberPrizeSchema = new mongoose.Schema({
 		default: new Date().getTime()
 	}
 })
+MemberPrizeSchema.pre('save', function (next) {
+	this.addTime = new Date().getTime()
+	next()
+})
 
 module.exports = mongoose.model('MemberPrize', MemberPrizeSchema)
