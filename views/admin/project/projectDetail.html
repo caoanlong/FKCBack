@@ -85,7 +85,7 @@
 				<div class="col-xs-8">
 					<div class="imgUpload clearfix">
 						<div class="imgLi" style="width:375px;height:180px">
-							<img src="{{projectDetail.imgUrl}}">
+							<img src="{{'http://39.108.245.177:4000' + projectDetail.imgUrl}}">
 							<div class="controller">
 								<div class="controllerBtn">
 									<div class="perviewBtn" id="perviewBtn"></div>
@@ -215,7 +215,7 @@
 			resultContent: result.content,
 			resultOdds: result.odds,
 			endTime: endTime,
-			imgUrl: imgUrl
+			imgUrl: $('.imgLi img').attr('src').split('39.108.245.177:4000')[1]
 		};
 		console.log(JSON.stringify(params))
 		$.ajax({
@@ -228,7 +228,7 @@
 				layer.msg(res.msg)
 				if (res.code == 0) {
 					setTimeout(function() {
-						window.location.href = '/admin/project'
+						window.location = document.referrer
 					},500)
 				}
 			}

@@ -1,7 +1,6 @@
 const express = require('express')
 const router = express.Router()
 const md5 = require('md5')
-const crypto = require('crypto')
 const RSAUtil = require('../../common/RSAUtil')
 const jwt = require('jwt-simple')
 const secret =require('../../config').secret
@@ -26,24 +25,6 @@ router.use((req, res, next) => {
 	res.header('Access-Control-Allow-Methods', 'PUT, GET, POST, DELETE, OPTIONS')
 	res.header('Access-Control-Allow-Headers', 'Content-Type,Accept,X-Access-Token')
 	next()
-})
-
-/* 微信验签 */
-router.get('/', (req, res) => {
-	let signature = req.query.signature
-	let timestamp = req.query.timestamp
-	let nonce = req.query.nonce
-	let echostr = req.query.echostr
-	let token = 'fkc123456'
-	let tmp = [token,timestamp,nonce].sort().join("")
-	let currSign = crypto.createHash("sha1").update(tmp).digest("hex")
-	if (currSign === signature) {
-		res.send(echostr)
-		return
-	} else {
-		res.send("It is not from weixin")
-		return
-	}
 })
 
 /* 支付 */

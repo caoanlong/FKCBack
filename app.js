@@ -41,6 +41,7 @@ app.get('/', function (req, res) {
 })
 app.use('/admin', require('./routes/admin'))
 app.use('/api', require('./routes/api'))
+app.use('/weixin', require('./routes/weixin'))
 
 //设置跨域
 app.use(function (req, res, next) {
