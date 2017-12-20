@@ -90,7 +90,7 @@ router.post('/betting', (req, res) => {
 	let projectId = req.body.projectId
 	let projectOption = req.body.projectOption
 	Member.findOne({_id: memberId}, (err, member) => {
-		if (err) {
+		if (err || member == null) {
 			responseData.code = 1
 			responseData.msg = '服务器错误'
 			res.json(responseData)

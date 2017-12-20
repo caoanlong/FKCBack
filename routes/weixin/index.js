@@ -4,12 +4,29 @@ const router = express.Router()
 const crypto = require('crypto')
 const schedule = require('node-schedule')
 const getAccessToken = require('./common/getAccessToken')
+const getTsapiTicket = require('./common/getTsapiTicket')
 const setMenu = require('./common/setMenu')
 
+//统一返回格式
+let responseData
+router.use((req, res, next) => {
+	responseData = {
+		code: 0,
+		msg: ''
+	}
+	next()
+})
+
 let access_token
+let jsApiTicket
+
 // 获取access_token
 getAccessToken((res_token) => {
 	access_token = res_token
+	// 获取jsapi_ticket
+	getTsapiTicket((res_jsApiTicket) => {
+		jsApiTicket = res_jsApiTicket
+	}, access_token)
 	// 设置菜单
 	setMenu((res_data) => {
 		console.log(res_data)
@@ -51,5 +68,23 @@ router.all('/', (req, res) => {
 		return
 	}
 })
+
+/* 获取JSSDK配置参数 */
+router.post('/config', (req, res) => {
+	let noncestr = 'FKC91fkcCaoanlong'
+	let jsapi_ticket = jsApiTicket
+	let timestamp = Math.round(new Date().getTime()/1000)
+	let url = req.body.url
+	let tmp = `jsapi_ticket=${jsapi_ticket}&noncestr=${noncestr}&timestamp=${timestamp}&url=${url}`
+	let signature = crypto.createHash("sha1").update(tmp).digest("hex")
+	responseData.msg = '成功'
+	responseData.data = {
+		'noncestr': noncestr,
+		'timestamp': timestamp,
+		'signature': signature
+	}
+	res.json(responseData)
+})
+
 
 module.exports = router
