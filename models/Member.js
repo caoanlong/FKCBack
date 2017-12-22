@@ -17,7 +17,7 @@ let MemberSchema = new mongoose.Schema({
 	//金豆
 	goldBean: {
 		type: Number,
-		default: 0
+		default: 100
 	},
 	// 魅力
 	charm: {

@@ -34,11 +34,19 @@ getAccessToken((res_token) => {
 })
 let rule = new schedule.RecurrenceRule()
 rule.hour = [1, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21]
-rule.minute = 0
+rule.minute = 45
 // 定时获取access_token
 schedule.scheduleJob(rule, function () {
 	getAccessToken((res_token) => {
 		access_token = res_token
+		// 获取jsapi_ticket
+		getTsapiTicket((res_jsApiTicket) => {
+			jsApiTicket = res_jsApiTicket
+		}, access_token)
+		// 设置菜单
+		setMenu((res_data) => {
+			console.log(res_data)
+		}, access_token)
 	})
 })
 
