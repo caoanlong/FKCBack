@@ -492,7 +492,7 @@ router.post('/getSignGold', (req, res) => {
 	let week = req.body.week
 	let goldNum = Number(req.body.goldNum)
 	FreeReceive.findOne({member: memberId}).exec((err, freeReceive) => {
-		if (err) {
+		if (err || freeReceive == null || !freeReceive) {
 			responseData.code = 1
 			responseData.msg = '失败'
 			res.json(responseData)
@@ -501,6 +501,12 @@ router.post('/getSignGold', (req, res) => {
 		freeReceive[week].isSign = true
 		freeReceive.save()
 		Member.findOne({_id: memberId}).exec((error, member) => {
+			if (error || member == null || !member) {
+				responseData.code = 2
+				responseData.msg = '失败'
+				res.json(responseData)
+				return
+			}
 			member.goldBean += goldNum
 			member.save()
 			// 生成账单
