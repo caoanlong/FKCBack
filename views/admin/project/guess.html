@@ -4,32 +4,37 @@
 	{% include '../nav.html' %}
 	<div class="container-fluid">
 		<ol class="breadcrumb">
-		  	<li><a href="/admin">首页</a></li>
-		  	<li><a href="/admin">竞猜管理</a></li>
-		  	<li class="active">竞猜列表</li>
+			<li><a href="/admin">首页</a></li>
+			<li><a href="/admin/project/guess">竞猜管理</a></li>
+			<li class="active">竞猜列表</li>
 		</ol>
 		<form class="form-inline padding-bottom-15" onsubmit="return false">
-		  	<div class="form-group">
-			    <label for="keyword">关键字</label>
-			    <input type="text" class="form-control" id="keyword" placeholder="请输入...">
-		  	</div>
-		  	<div class="form-group">
-			    <label for="endDate">创建日期</label>
-			    {% include '../datepicker.html' %}
-		  	</div>
-		  	<button type="button" class="btn btn-default"><i class="glyphicon glyphicon-search"></i>查询</button>
+			<!-- <div class="form-group">
+				<label for="keyword">关键字</label>
+				<input type="text" class="form-control" id="keyword" placeholder="请输入...">
+			</div>
+			<div class="form-group">
+				<label for="endDate">创建日期</label>
+				{% include '../datepicker.html' %}
+			</div> -->
+			<div class="form-group">
+				<label for="from">竞猜人来源</label>
+				<select class="form-control min-width-200" id="from">
+					<option value="">全部</option>
+					<option value="default">默认</option>
+				</select>
+			</div>
+			<a href="/admin/project/guess" id="search" type="button" class="btn btn-default"><i class="glyphicon glyphicon-search"></i>查询</a>
 		</form>
 		<table class="table table-bordered table-hover" style="table-layout: fixed;">
 			<thead>
 				<tr>
-					<th class="text-center" width="40">
-						<input type="checkbox" name="">
-					</th>
-					<th>竞猜人</th>
+					<th width="140">竞猜人</th>
+					<th width="140">竞猜人来源</th>
 					<th>竞猜题目</th>
 					<th>竞猜内容</th>
-					<th>投注金额</th>
-					<th>状态</th>
+					<th width="140">投注金额</th>
+					<th width="100">状态</th>
 					<th>截止时间</th>
 					<th>投注时间</th>
 				</tr>
@@ -37,10 +42,16 @@
 			<tbody>
 				{% for item in data.guessList %}
 				<tr>
-					<td class="text-center">
-						<input type="checkbox" class="projectId" value="{{item._id.toString()}}">
-					</td>
+					{% if userInfo.isAdmin %}
 					<td>{{item.member.mobile}}</td>
+					{% else %}
+					<td>{{item.member.mobile.substr(0, 3)}}*****{{item.member.mobile.substr(8)}}</td>
+					{% endif %}
+					{% if item.member.from == 'default' %}
+					<td>默认</td>
+					{% else %}
+					<td>{{item.member.from}}</td>
+					{% endif %}
 					<td>{{item.project.name}}</td>
 					<td>{{item.projectOption.content}}</td>
 					<td>{{item.goldBeanNum}}</td>
@@ -55,30 +66,70 @@
 				{% endfor %}
 			</tbody>
 		</table>
-		{% include '../page.html' %}
+		<nav aria-label="Page navigation">
+			<input type="hidden" id="count" value="{{data.count}}">
+			<input type="hidden" id="pageSize" value="{{data.pageSize}}">
+			<input type="hidden" id="pages" value="{{data.pages}}">
+			<input type="hidden" id="pageIndex" value="{{data.pageIndex}}">
+			<p class="col-xs-5 pagination" style="height: 34px;line-height: 34px">一共有 {{data.count}} 条数据，每页显示 {{data.pageSize}} 条数据，一共 {{data.pages}} 页，当前第 {{data.pageIndex}} 页</p>
+			<div class="col-xs-7 text-right pagination">
+				<div class="M-box"></div>
+			</div>
+		</nav>
 	</div>
-<script type="text/javascript">
-	/**
-	 * 删除项目
-	 */
-	$('.deleteProject').on('click',function() {
-		var projectId = $(this).parent().parent().find('.projectId').val()
-		var params = {
-			id: projectId
-	    };
-	  	$.ajax({
-		    url: '/admin/project/delete',
-		    type: 'post',
-		    dataType: 'json',
-		    data: params,
-		    success: function(resbonse,textStatus,jqXHR) {
-		      	console.log(resbonse);
-		      	layer.msg(resbonse.msg)
-		      	if (resbonse.code == 0) {
-		      		location.reload(true)
-		      	}
-		    }
-	  	})
-	})
-</script>
+	<script type="text/javascript">
+		var fromData
+		/**
+		 * 获取会员来源
+		 */
+		$.ajax({
+			url: '/admin/system/fromApi',
+			type: 'get',
+			dataType: 'json',
+			success: function(resbonse, textStatus, jqXHR) {
+				if (resbonse.code == 0) {
+					var fromList = resbonse.data
+					for (var i = 0; i < fromList.length; i++) {
+						$('#from').append('<option value="'+fromList[i].key+'">'+ fromList[i].value +'</option>')
+						if (location.search.split('=')[1] == fromList[i].key) {
+							document.getElementById('from')[i+2].selected = true
+						}
+					}
+					if (location.search.split('=')[1] == 'default') {
+						document.getElementById('from')[1].selected = true
+					}
+					if (!location.search.split('=')[1]) {
+						document.getElementById('from')[0].selected = true
+					}
+				}
+			}
+		})
+
+		$('#from').on('change', function(e) {
+			fromData = e.target.value
+			$('#search').attr('href', '/admin/project/guess?from=' + e.target.value)
+		})
+
+		$('.M-box').pagination({
+			coping:true,
+			pageCount: $('#pages').val(),
+			totalData: $('#count').val(),
+			current: $('#pageIndex').val(),
+			showData: $('#pageSize').val(),
+			keepShowPN: true,
+			homePage:'首页',
+			endPage:'末页',
+			prevContent:'上页',
+			nextContent:'下页',
+			callback: function (index) {
+				if (location.search.indexOf('from') > -1 && location.search.indexOf('pageIndex') == -1) {
+					location.href = location.href.split('?')[0] + location.search + '&pageIndex=' + index.getCurrent()
+				} else if (location.search.indexOf('from') > -1 && location.search.indexOf('pageIndex') > -1) {
+					location.href = location.href.split('?')[0] + '?from=' + fromData + '&pageIndex=' + index.getCurrent()
+				} else if (location.search.indexOf('from') == -1) {
+					location.href = location.href.split('?')[0] + '?pageIndex=' + index.getCurrent()
+				}
+			}
+		})
+	</script>
 {% endblock %}

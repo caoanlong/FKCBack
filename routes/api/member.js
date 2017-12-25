@@ -9,6 +9,7 @@ const AccountDetail = require('../../models/AccountDetail')
 const MemberPrize = require('../../models/MemberPrize')
 const Address = require('../../models/Address')
 const FreeReceive = require('../../models/FreeReceive')
+const From = require('../../models/From')
 const secret = require('../../config').secret
 
 //统一返回格式
@@ -84,6 +85,7 @@ router.post('/verCode', (req, res) => {
 /* 会员登录 */
 router.post('/login', (req, res, next) => {
 	let mobile = req.body.mobile||''
+	let from = req.body.from||''
 	let curVerCode = req.body.verCode||''
 	if (!mobile) {
 		responseData.code = 3
@@ -138,31 +140,67 @@ router.post('/login', (req, res, next) => {
 				res.json(responseData)
 				return
 			}
-			//数据库中不存在该用户，可以保存
-			new Member({mobile: mobile}).save((err1) => {
-				if (err1) {
-					responseData.code = 5
-					responseData.msg = '登录失败'
-					res.json(responseData)
-					return
-				}
-				Member.findOne({mobile: mobile}, (err2, mem) => {
-					if (err2) {
-						responseData.code = 6
+			// 判断来源
+			if (from) {
+				From.findOne({key: from}).exec((error1, result) => {
+					if (result && result != null) {
+						//数据库中不存在该用户，可以保存
+						new Member({
+							mobile: mobile,
+							from: from
+						}).save((err1) => {
+							if (err1) {
+								responseData.code = 5
+								responseData.msg = '登录失败'
+								res.json(responseData)
+								return
+							}
+							Member.findOne({mobile: mobile}, (err2, mem) => {
+								if (err2) {
+									responseData.code = 6
+									responseData.msg = '登录失败'
+									res.json(responseData)
+									return
+								}
+								let token = jwt.encode({
+									iss: mem._id,
+									exp: 1000*60*60*24*365
+								},secret.jwtTokenSecret)
+								responseData.msg = '登录成功'
+								responseData.data = mem
+								responseData.token = token
+								res.json(responseData)
+							})
+						})
+					}
+				})
+			} else {
+				//数据库中不存在该用户，可以保存
+				new Member({mobile: mobile}).save((err1) => {
+					if (err1) {
+						responseData.code = 5
 						responseData.msg = '登录失败'
 						res.json(responseData)
 						return
 					}
-					let token = jwt.encode({
-						iss: mem._id,
-						exp: 1000*60*60*24*365
-					},secret.jwtTokenSecret)
-					responseData.msg = '登录成功'
-					responseData.data = mem
-					responseData.token = token
-					res.json(responseData)
+					Member.findOne({mobile: mobile}, (err2, mem) => {
+						if (err2) {
+							responseData.code = 6
+							responseData.msg = '登录失败'
+							res.json(responseData)
+							return
+						}
+						let token = jwt.encode({
+							iss: mem._id,
+							exp: 1000*60*60*24*365
+						},secret.jwtTokenSecret)
+						responseData.msg = '登录成功'
+						responseData.data = mem
+						responseData.token = token
+						res.json(responseData)
+					})
 				})
-			})
+			}
 		})
 	})
 })

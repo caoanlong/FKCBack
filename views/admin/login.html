@@ -26,10 +26,7 @@
 		</form>
 	</div>
 <script type="text/javascript">
-	/**
-	 * 登录
-	 */
-	$('#login').on('click',function() {
+	function login () {
 		var mobile = $('#usermobile').val();
 		var password = $('#userpassword').val();
 		if (!mobile) {
@@ -49,7 +46,7 @@
 		    type: 'post',
 		    dataType: 'json',
 		    data: params,
-		    success: function(resbonse,textStatus,jqXHR) {
+		    success: function (resbonse,textStatus,jqXHR) {
 		      	console.log(resbonse);
 		      	layer.msg(resbonse.msg)
 		      	if (resbonse.code == 0) {
@@ -59,6 +56,17 @@
 		      	}
 		    }
 	  	})
+	}
+	$(document).on('keydown', function (e) {
+		if (e.keyCode == 13) {
+			login()
+		}
+	})
+	/**
+	 * 登录
+	 */
+	$('#login').on('click', function () {
+		login()
 	})
 </script>
 {% endblock %}

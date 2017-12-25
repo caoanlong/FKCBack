@@ -28,9 +28,10 @@
 					</th>
 					<th>ID</th>
 					<th width="140">手机号</th>
-					<th width="120">金豆数量</th>
+					<th width="140">金豆数量</th>
+					<th width="150">来源</th>
 					<th width="200">创建时间</th>
-					<th>操作</th>
+					<th width="300">操作</th>
 				</tr>
 			</thead>
 			<tbody>
@@ -42,6 +43,11 @@
 					<td title="{{item._id.toString()}}">{{item._id.toString()}}</td>
 					<td>{{item.mobile}}</td>
 					<td>{{item.goldBean}}</td>
+					{% if item.from == 'default' %}
+					<td>默认</td>
+					{% else %}
+					<td>{{item.from}}</td>
+					{% endif %}
 					<td>{{item.addTime|getdatefromtimestamp}}</td>
 					<td>
 						<a href="/admin/member/guess?memberId={{item._id.toString()}}&memberMobile={{item.mobile}}" type="button" class="btn btn-default btn-xs">竞猜列表</a>

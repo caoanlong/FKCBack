@@ -24,14 +24,20 @@ let MemberSchema = new mongoose.Schema({
 		type: Number,
 		default: 0
 	},
+	// 默认地址
 	defaultAddress: {
 		type: mongoose.Schema.Types.ObjectId,
 		ref: 'Address'
 	},
-	//是否被禁用
+	// 是否被禁用
 	isDisabled: {
 		type: Boolean,
 		default: false
+	},
+	// 来源
+	from: {
+		type: String,
+		default: 'default'
 	},
 	//添加时间
 	addTime: {
@@ -40,7 +46,9 @@ let MemberSchema = new mongoose.Schema({
 	}
 })
 MemberSchema.pre('save', function (next) {
-	this.addTime = new Date().getTime()
+	if (this.isNew) {
+		this.addTime = new Date().getTime()
+	}
 	next()
 })
 

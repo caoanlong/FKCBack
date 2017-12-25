@@ -27,6 +27,15 @@
 .min-width-1000 {
 	min-width: 1000px
 }
+.min-width-200 {
+	min-width: 200px
+}
+.width-100 {
+	width: 100px !important
+}
+.width-200 {
+	width: 200px !important
+}
 .login-bg {
 	position: absolute;
 	top: 0;

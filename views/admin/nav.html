@@ -15,63 +15,67 @@
 					<a href="/admin">首页</a>
 				</li>
 				{% endif %}
-				{% if active == "member" %}
-				<li class="active">
-					<a href="/admin/member">会员管理</a>
-				</li>
-				{% else %}
-				<li>
-					<a href="/admin/member">会员管理</a>
-				</li>
+				{% if userInfo.isAdmin %}
+					{% if active == "member" %}
+					<li class="active">
+						<a href="/admin/member">会员管理</a>
+					</li>
+					{% else %}
+					<li>
+						<a href="/admin/member">会员管理</a>
+					</li>
+					{% endif %}
 				{% endif %}
-				{% if active == "project" || active == "projectType" %}
-				<li class="dropdown active">
-					<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">项目管理 <span class="caret"></span></a>
-					<ul class="dropdown-menu">
-						{% if active == "project" %}
-						<li class="active">
-							<a href="/admin/project">项目列表</a>
-						</li>
-						{% else %}
-						<li>
-							<a href="/admin/project">项目列表</a>
-						</li>
-						{% endif %}
-						{% if active == "projectType" %}
-						<li class="active">
-							<a href="/admin/project/projectType">分类管理</a>
-						</li>
-						{% else %}
-						<li>
-							<a href="/admin/project/projectType">分类管理</a>
-						</li>
-						{% endif %}
-					</ul>
-				</li>
-				{% else %}
-				<li class="dropdown">
-					<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">项目管理 <span class="caret"></span></a>
-					<ul class="dropdown-menu">
-						{% if active == "project" %}
-						<li class="active">
-							<a href="/admin/project">项目列表</a>
-						</li>
-						{% else %}
-						<li>
-							<a href="/admin/project">项目列表</a>
-						</li>
-						{% endif %}
-						{% if active == "projectType" %}
-						<li class="active">
-							<a href="/admin/project/projectType">分类管理</a>
-						</li>
-						{% else %}
-						<li>
-							<a href="/admin/project/projectType">分类管理</a>
-						</li>
-						{% endif %}
-					</ul>
-				</li>
+				{% if userInfo.isAdmin %}
+					{% if active == "project" || active == "projectType" %}
+					<li class="dropdown active">
+						<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">项目管理<span class="caret"></span></a>
+						<ul class="dropdown-menu">
+							{% if active == "project" %}
+							<li class="active">
+								<a href="/admin/project">项目列表</a>
+							</li>
+							{% else %}
+							<li>
+								<a href="/admin/project">项目列表</a>
+							</li>
+							{% endif %}
+							{% if active == "projectType" %}
+							<li class="active">
+								<a href="/admin/project/projectType">分类管理</a>
+							</li>
+							{% else %}
+							<li>
+								<a href="/admin/project/projectType">分类管理</a>
+							</li>
+							{% endif %}
+						</ul>
+					</li>
+					{% else %}
+					<li class="dropdown">
+						<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">项目管理<span class="caret"></span></a>
+						<ul class="dropdown-menu">
+							{% if active == "project" %}
+							<li class="active">
+								<a href="/admin/project">项目列表</a>
+							</li>
+							{% else %}
+							<li>
+								<a href="/admin/project">项目列表</a>
+							</li>
+							{% endif %}
+							{% if active == "projectType" %}
+							<li class="active">
+								<a href="/admin/project/projectType">分类管理</a>
+							</li>
+							{% else %}
+							<li>
+								<a href="/admin/project/projectType">分类管理</a>
+							</li>
+							{% endif %}
+						</ul>
+					</li>
+					{% endif %}
 				{% endif %}
 				{% if active == "project/guess" %}
 				<li class="active">
@@ -82,63 +86,67 @@
 					<a href="/admin/project/guess">竞猜管理</a>
 				</li>
 				{% endif %}
-				{% if active == "shop/goldBeanType" || active == "shop/prize" %}
-				<li class="dropdown active">
-					<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">商城管理 <span class="caret"></span></a>
-					<ul class="dropdown-menu">
-						{% if active == "shop/goldBeanType" %}
-						<li class="active">
-							<a href="/admin/shop/goldBeanType">金豆列表</a>
-						</li>
-						{% else %}
-						<li>
-							<a href="/admin/shop/goldBeanType">金豆列表</a>
-						</li>
-						{% endif %}
-						{% if active == "shop/prize" %}
-						<li class="active">
-							<a href="/admin/shop/prize">奖品列表</a>
-						</li>
-						{% else %}
-						<li>
-							<a href="/admin/shop/prize">奖品列表</a>
-						</li>
-						{% endif %}
-					</ul>
-				</li>
-				{% else %}
-				<li class="dropdown">
-					<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">商城管理 <span class="caret"></span></a>
-					<ul class="dropdown-menu">
-						{% if active == "shop/goldBeanType" %}
-						<li class="active">
-							<a href="/admin/shop/goldBeanType">金豆列表</a>
-						</li>
-						{% else %}
-						<li>
-							<a href="/admin/shop/goldBeanType">金豆列表</a>
-						</li>
-						{% endif %}
-						{% if active == "shop/prize" %}
-						<li class="active">
-							<a href="/admin/shop/prize">奖品列表</a>
-						</li>
-						{% else %}
-						<li>
-							<a href="/admin/shop/prize">奖品列表</a>
-						</li>
-						{% endif %}
-					</ul>
-				</li>
+				{% if userInfo.isAdmin %}
+					{% if active == "shop/goldBeanType" || active == "shop/prize" %}
+					<li class="dropdown active">
+						<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">商城管理<span class="caret"></span></a>
+						<ul class="dropdown-menu">
+							{% if active == "shop/goldBeanType" %}
+							<li class="active">
+								<a href="/admin/shop/goldBeanType">金豆列表</a>
+							</li>
+							{% else %}
+							<li>
+								<a href="/admin/shop/goldBeanType">金豆列表</a>
+							</li>
+							{% endif %}
+							{% if active == "shop/prize" %}
+							<li class="active">
+								<a href="/admin/shop/prize">奖品列表</a>
+							</li>
+							{% else %}
+							<li>
+								<a href="/admin/shop/prize">奖品列表</a>
+							</li>
+							{% endif %}
+						</ul>
+					</li>
+					{% else %}
+					<li class="dropdown">
+						<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">商城管理<span class="caret"></span></a>
+						<ul class="dropdown-menu">
+							{% if active == "shop/goldBeanType" %}
+							<li class="active">
+								<a href="/admin/shop/goldBeanType">金豆列表</a>
+							</li>
+							{% else %}
+							<li>
+								<a href="/admin/shop/goldBeanType">金豆列表</a>
+							</li>
+							{% endif %}
+							{% if active == "shop/prize" %}
+							<li class="active">
+								<a href="/admin/shop/prize">奖品列表</a>
+							</li>
+							{% else %}
+							<li>
+								<a href="/admin/shop/prize">奖品列表</a>
+							</li>
+							{% endif %}
+						</ul>
+					</li>
+					{% endif %}
 				{% endif %}
-				{% if active == "memberPrize" %}
-				<li class="active">
-					<a href="/admin/member/memberPrize">中奖奖品列表</a>
-				</li>
-				{% else %}
-				<li>
-					<a href="/admin/member/memberPrize">中奖奖品列表</a>
-				</li>
+				{% if userInfo.isAdmin %}
+					{% if active == "memberPrize" %}
+					<li class="active">
+						<a href="/admin/member/memberPrize">中奖奖品列表</a>
+					</li>
+					{% else %}
+					<li>
+						<a href="/admin/member/memberPrize">中奖奖品列表</a>
+					</li>
+					{% endif %}
 				{% endif %}
 				{% if active == "payment" %}
 				<li class="active">
@@ -148,6 +156,39 @@
 				<li>
 					<a href="/admin/payment">支付管理</a>
 				</li>
+				{% endif %}
+				{% if userInfo.isAdmin %}
+					{% if active == "from" %}
+					<li class="dropdown active">
+						<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">系统常量<span class="caret"></span></a>
+						<ul class="dropdown-menu">
+							{% if active == "from" %}
+							<li class="active">
+								<a href="/admin/system/from">会员来源</a>
+							</li>
+							{% else %}
+							<li>
+								<a href="/admin/system/from">会员来源</a>
+							</li>
+							{% endif %}
+						</ul>
+					</li>
+					{% else %}
+					<li class="dropdown">
+						<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">系统常量<span class="caret"></span></a>
+						<ul class="dropdown-menu">
+							{% if active == "from" %}
+							<li class="active">
+								<a href="/admin/system/from">会员来源</a>
+							</li>
+							{% else %}
+							<li>
+								<a href="/admin/system/from">会员来源</a>
+							</li>
+							{% endif %}
+						</ul>
+					</li>
+					{% endif %}
 				{% endif %}
 				{% if userInfo.isAdmin %}
 					{% if active == "user" %}

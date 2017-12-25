@@ -15,7 +15,7 @@ router.use(function(req, res, next) {
 
 /* 用户列表 */
 router.get('/',function(req, res) {
-    if (!req.session.userInfo) {
+    if (!req.session.userInfo || !req.session.userInfo.isAdmin) {
         res.redirect('/admin')
         return
     }
@@ -58,12 +58,20 @@ router.get('/',function(req, res) {
 })
 /* 用户添加 */
 router.get('/add',function(req, res) {
+    if (!req.session.userInfo || !req.session.userInfo.isAdmin) {
+        res.redirect('/admin')
+        return
+    }
 	res.render('admin/user/userAdd',{
         active: 'user',
         userInfo: req.session.userInfo
     })
 })
 router.post('/add',function(req, res) {
+    if (!req.session.userInfo || !req.session.userInfo.isAdmin) {
+        res.redirect('/admin')
+        return
+    }
     //数据库中是否已经存在相同手机号用户
     User.findOne({
     	mobile: req.body.mobile
@@ -87,6 +95,10 @@ router.post('/add',function(req, res) {
 })
 /* 用户删除 */
 router.post('/delete',function(req, res) {
+    if (!req.session.userInfo || !req.session.userInfo.isAdmin) {
+        res.redirect('/admin')
+        return
+    }
     User.remove({_id: req.body.id},function(err) {
         if (err) {
             responseData.code = 1
@@ -100,6 +112,10 @@ router.post('/delete',function(req, res) {
 })
 /* 用户修改 */
 router.get('/edit',function(req, res) {
+    if (!req.session.userInfo || !req.session.userInfo.isAdmin) {
+        res.redirect('/admin')
+        return
+    }
     User.findOne({_id:req.query.id},function(err,result) {
         if (err) {
             res.render('error', {message: '用户不存在'})

@@ -19,7 +19,7 @@ router.use(function(req, res, next) {
 
 /* 会员列表 */
 router.get('/', (req, res, next) => {
-	if (!req.session.userInfo) {
+	if (!req.session.userInfo || !req.session.userInfo.isAdmin) {
 		res.redirect('/admin')
 		return
 	}
@@ -248,7 +248,7 @@ router.get('/accountDetails', (req, res) => {
 
 /* 会员中奖奖品列表 */
 router.get('/memberPrize', (req, res) => {
-	if (!req.session.userInfo) {
+	if (!req.session.userInfo || !req.session.userInfo.isAdmin) {
 		res.redirect('/admin')
 		return
 	}

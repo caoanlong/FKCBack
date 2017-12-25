@@ -19,7 +19,7 @@ router.use((req, res, next) => {
 
 /* 项目列表 */
 router.get('/', function(req, res) {
-	if (!req.session.userInfo) {
+	if (!req.session.userInfo || !req.session.userInfo.isAdmin) {
 		res.redirect('/admin')
 		return
 	}
@@ -144,20 +144,21 @@ router.post('/edit',function(req, res) {
 					for (let i = 0; i < guess.length; i++) {
 						// 判断是否中奖(如果中奖)
 						if (guess[i].projectOption.content == req.body.resultContent && guess[i].projectOption.odds == req.body.resultOdds) {
+							let bonus = Number((Number(guess[i].projectOption.odds)*Number(guess[i].goldBeanNum)).toFixed())
 							// 更新所有未开奖的竞猜
 							GuessList.update({_id: guess[i]._id}, {
 								isLottery: true,
 								isWin: true,
-								bonus: Number(guess[i].projectOption.odds)*Number(guess[i].goldBeanNum)
+								bonus: bonus
 							}, (error1) => {
 								// 更新会员账户
 								Member.update({_id: guess[i].member._id},{
-									goldBean: Number(guess[i].member.goldBean) + Number(guess[i].projectOption.odds)*Number(guess[i].goldBeanNum)
+									goldBean: Number(guess[i].member.goldBean) + bonus
 								}, (error2) => {
 									// 生成账单
 									new AccountDetail({
 										member: guess[i].member._id,
-										goldBeanChange: '+' + Number(guess[i].projectOption.odds)*Number(guess[i].goldBeanNum),
+										goldBeanChange: '+' + bonus,
 										type: '中奖',
 										info: guess[i].projectOption.content
 									}).save()
@@ -167,7 +168,7 @@ router.post('/edit',function(req, res) {
 							GuessList.update({_id: guess[i]._id}, {
 								isLottery: true
 							}, () => {
-								console.log('nonononono')
+								console.log('未中奖')
 							})
 						}
 					}
@@ -283,31 +284,18 @@ router.get('/guess',function(req, res) {
 		res.redirect('/admin')
 		return
 	}
+	let from = req.query.from || ''
 	let pageIndex = Number(req.query.pageIndex || 1)
 	let pageSize = 10
 	let pages = 0
 	let memberCondition = req.query.memberId ? {member: req.query.memberId} : {}
-	GuessList.count(memberCondition, function(err,count) {
-		//计算总页数
-		pages = Math.ceil(count / pageSize)
-		//取值不能超过pages
-		pageIndex = Math.min( pageIndex, pages )
-		//取值不能小于1
-		pageIndex = Math.max( pageIndex, 1 )
-
-		let skip = (pageIndex - 1) * pageSize
-		let pagesArr = []
-		for (let i = 1; i < pages+1; i++) {
-			pagesArr.push(i)
-		}
-		GuessList.find(memberCondition).sort({_id: -1}).limit(pageSize).skip(skip).populate(['member','project']).exec(function(error,result) {
-			if (error) {
-				res.render('error',{message: '查找失败'})
-			}else {
+	if (from) {
+		Member.find({from: from}).exec((err1, member) => {
+			if (err1 || member == null) {
 				res.render('admin/project/guess',{
 					active: 'project/guess',
 					data: {
-						guessList: result,
+						guessList: [],
 						count: count,
 						pageSize: pageSize,
 						pageIndex: pageIndex,
@@ -316,9 +304,76 @@ router.get('/guess',function(req, res) {
 					},
 					userInfo: req.session.userInfo
 				})
+				return
 			}
+			let memberIds = member.map(item => item._id)
+			GuessList.count({member: {$in: memberIds}}, function(err,count) {
+				//计算总页数
+				pages = Math.ceil(count / pageSize)
+				//取值不能超过pages
+				pageIndex = Math.min( pageIndex, pages )
+				//取值不能小于1
+				pageIndex = Math.max( pageIndex, 1 )
+
+				let skip = (pageIndex - 1) * pageSize
+				let pagesArr = []
+				for (let i = 1; i < pages+1; i++) {
+					pagesArr.push(i)
+				}
+				GuessList.find({member: {$in: memberIds}}).sort({_id: -1}).limit(pageSize).skip(skip).populate(['member','project']).exec(function(error,result) {
+					if (error) {
+						res.render('error',{message: '查找失败'})
+					}else {
+						res.render('admin/project/guess',{
+							active: 'project/guess',
+							data: {
+								guessList: result,
+								count: count,
+								pageSize: pageSize,
+								pageIndex: pageIndex,
+								pages: pages,
+								pagesArr: pagesArr
+							},
+							userInfo: req.session.userInfo
+						})
+					}
+				})
+			})
 		})
-	})
+	} else {
+		GuessList.count(memberCondition, function(err,count) {
+			//计算总页数
+			pages = Math.ceil(count / pageSize)
+			//取值不能超过pages
+			pageIndex = Math.min( pageIndex, pages )
+			//取值不能小于1
+			pageIndex = Math.max( pageIndex, 1 )
+
+			let skip = (pageIndex - 1) * pageSize
+			let pagesArr = []
+			for (let i = 1; i < pages+1; i++) {
+				pagesArr.push(i)
+			}
+			GuessList.find(memberCondition).sort({_id: -1}).limit(pageSize).skip(skip).populate(['member','project']).exec(function(error,result) {
+				if (error) {
+					res.render('error',{message: '查找失败'})
+				}else {
+					res.render('admin/project/guess',{
+						active: 'project/guess',
+						data: {
+							guessList: result,
+							count: count,
+							pageSize: pageSize,
+							pageIndex: pageIndex,
+							pages: pages,
+							pagesArr: pagesArr
+						},
+						userInfo: req.session.userInfo
+					})
+				}
+			})
+		})
+	}
 })
 
 module.exports = router;

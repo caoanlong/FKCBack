@@ -16,7 +16,7 @@ router.use((req, res, next) => {
 
 /* 金豆列表 */
 router.get('/goldBeanType', (req, res) => {
-	if (!req.session.userInfo) {
+	if (!req.session.userInfo || !req.session.userInfo.isAdmin) {
 		res.redirect('/admin')
 		return
 	}
@@ -120,7 +120,7 @@ router.post('/goldBeanType/edit', (req, res) => {
 
 /* 奖品列表 */
 router.get('/prize', (req, res) => {
-	if (!req.session.userInfo) {
+	if (!req.session.userInfo || !req.session.userInfo.isAdmin) {
 		res.redirect('/admin')
 		return
 	}

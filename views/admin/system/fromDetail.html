@@ -1,0 +1,62 @@
+{% extends '../../layout.html' %}
+
+{% block main %}
+	{% include '../nav.html' %}
+	<div class="container-fluid">
+		<ol class="breadcrumb">
+			<li><a href="/admin">首页</a></li>
+			<li><a href="/admin/system/from">系统常量</a></li>
+			<li><a href="/admin/system/from">会员来源</a></li>
+			<li class="active">会员来源编辑</li>
+		</ol>
+		<form class="form-horizontal">
+			<input type="hidden" id="fromId" value="{{fromDetail._id.toString()}}">
+			<div class="form-group">
+				<label for="name" class="col-xs-2 control-label">key</label>
+				<div class="col-xs-8">
+					<input type="text" id="key" class="form-control" name="name" value="{{fromDetail.key}}">
+				</div>
+			</div>
+			<div class="form-group">
+				<label for="name" class="col-xs-2 control-label">value</label>
+				<div class="col-xs-8">
+					<input type="text" id="value" class="form-control" name="name" value="{{fromDetail.value}}">
+				</div>
+			</div>
+			<div class="form-group">
+				<div class="col-xs-offset-2 col-xs-8">
+					<a href="/admin/system/from" type="button" class="btn btn-default">返回</a>
+					<button id="addFrom" type="button" class="btn btn-primary">提交</button>
+				</div>
+			</div>
+		</form>
+	</div>
+<script type="text/javascript">
+	/**
+	 * 更新项目分类
+	 */
+	$('#addFrom').on('click',function() {
+		var params = {
+			id: $('#fromId').val(),
+			key: $('#key').val(),
+			value: $('#value').val()
+		};
+		console.log(JSON.stringify(params))
+		$.ajax({
+			url: '/admin/system/from/edit',
+			type: 'post',
+			dataType: 'json',
+			data: params,
+			success: function(res,textStatus,jqXHR) {
+				console.log(res)
+				layer.msg(res.msg)
+				if (res.code == 0) {
+					setTimeout(function() {
+						window.location.href = '/admin/system/from'
+					},500)
+				}
+			}
+		})
+	})
+</script>
+{% endblock %}
