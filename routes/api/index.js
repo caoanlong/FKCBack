@@ -1,5 +1,6 @@
 const express = require('express')
 const router = express.Router()
+const axios = require('axios')
 const md5 = require('md5')
 const RSAUtil = require('../../common/RSAUtil')
 const jwt = require('jwt-simple')
@@ -32,102 +33,98 @@ router.post('/payOrder', (req, res) => {
 	let token = (req.body && req.body.token) || (req.query && req.query.token) || req.headers['x-access-token']
 	let memberId = jwt.decode(token, secret.jwtTokenSecret).iss
 
-	let appid = req.body.appid
-	let key = req.body.key
-	let subject = req.body.subject
-	let amount = parseInt(Number(req.body.amount))
-	let mchntOrderNo = req.body.mchntOrderNo
-	let body = req.body.body
-	let childAppid = req.body.childAppid
-	let clientIp =req.body.clientIp
-	let payChannelId = req.body.payChannelId
-	let notifyUrl = req.body.notifyUrl
-	let returnUrl = req.body.returnUrl
-	let type = req.body.type
-	let version = 'h5_NoEncrypt'
-	let m = {}
-	m['appid'] = appid
-	m['amount'] = amount
-	m['body'] = body
-	m['clientIp'] = clientIp
-	m['mchntOrderNo'] = mchntOrderNo
-	m['notifyUrl'] = notifyUrl
+	let params = {}
+	params.pay_memberid = req.body.pay_memberid
+	params.pay_orderid = req.body.pay_orderid
+	params.pay_applydate = req.body.pay_applydate
+	params.pay_bankcode = req.body.pay_bankcode
+	params.pay_notifyurl = req.body.pay_notifyurl
+	params.pay_callbackurl = req.body.pay_callbackurl
+	params.pay_amount = req.body.pay_amount
 
-	m['returnUrl'] = returnUrl
-	m['subject'] = subject
-	m['version'] = version
-	let md5Str = "amount=" + amount + "&appid=" + appid + "&body=" + body
-	if (childAppid != '') {
-		md5Str += "&childAppid=" + childAppid
-		m['childAppid'] = childAppid
-	}
-	md5Str += "&clientIp=" + clientIp + "&mchntOrderNo=" + mchntOrderNo + "&notifyUrl=" + notifyUrl
-	if (payChannelId != '') {
-		md5Str += "&payChannelId=" + payChannelId
-		m['payChannelId'] = payChannelId
-	}
-	md5Str += "&returnUrl=" + returnUrl + "&subject=" + subject + "&version=h5_NoEncrypt&key=" + key
-	console.log(md5Str)
-	let signature =  md5(md5Str)
-	m['signature'] = signature
-	let json = JSON.stringify(m)
-	let onderInfo = RSAUtil.rsaEncrypt(json)
-	console.log(onderInfo)
+	params.pay_productname = req.body.pay_productname
+	params.sub_openid = req.body.sub_openid
+	params.pay_deviceIp = req.body.pay_deviceIp
+	params.pay_scene =req.body.pay_scene
+	params.pay_productdesc = req.body.pay_productdesc
+	params.pay_producturl = req.body.pay_producturl
 
-	Member.findOne({ _id: memberId }).exec(function (err, member) {
-		if (err) {
-			responseData.code = 1
-			responseData.msg = '失败'
-			res.json(responseData)
-			return
+	let md5Str = "pay_amount=" + params.pay_amount + "&pay_applydate=" + params.pay_applydate + "&pay_bankcode=" + params.pay_bankcode + "&pay_callbackurl=" + params.pay_callbackurl + "&pay_memberid=" + params.pay_memberid + "&pay_notifyurl=" + params.pay_notifyurl + "&pay_orderid=" + params.pay_orderid + "&key=dejda13l9e4ai197i31jldtd4s6o53n3"
+	params.pay_md5sign =  md5(md5Str).toUpperCase()
+	console.log(JSON.stringify(params))
+
+	let dataParams = "pay_memberid=" + params.pay_memberid + "&pay_orderid=" + params.pay_orderid + "&pay_applydate=" + params.pay_applydate + "&pay_bankcode=" + params.pay_bankcode + "&pay_notifyurl=" + params.pay_notifyurl + "&pay_callbackurl=" + params.pay_callbackurl + "&pay_amount=" + params.pay_amount + "&pay_md5sign=" + params.pay_md5sign + "&pay_productname=" + params.pay_productname + "&sub_openid=" + params.sub_openid + "&pay_deviceIp=" + params.pay_deviceIp + "&pay_scene=" + params.pay_scene + "&pay_productdesc=" + params.pay_productdesc + "&pay_producturl=" + params.pay_producturl
+	let URL = 'https://api.qujuhe.com/pay_index'
+	let headers = {'Content-Type': 'application/x-www-form-urlencoded'}
+	axios({
+		method: 'post',
+		url: URL,
+		headers: {
+			'Content-type': 'application/x-www-form-urlencoded'
+		},
+		data: dataParams
+	}).then(response => {
+		console.log(response.data)
+		if (response.data.status == 'success') {
+			Member.findOne({ _id: memberId }).exec(function (err, member) {
+				if (err) {
+					responseData.code = 1
+					responseData.msg = '失败'
+					res.json(responseData)
+					return
+				}
+				new TemporaryOrder({
+					member: memberId,
+					goldBeanNum: params.pay_amount,
+					orderNo: params.pay_orderid
+				}).save()
+				responseData.msg = '成功'
+				responseData.data = response.data.data
+				res.json(responseData)
+			})
 		}
-		new TemporaryOrder({
-			member: memberId,
-			goldBeanNum: amount,
-			orderNo: mchntOrderNo
-		}).save()
-		responseData.msg = '成功'
-		responseData.data = onderInfo
-		res.json(responseData)
 	})
 })
 /* 支付同步回调 */
 router.post('/notifyUtl', (req, res) => {
-	if (req.body.orderNo && req.body.mchntOrderNo && req.body.appid && req.body.amount && req.body.paySt == 2) {
-		let params = {
-			'orderNo': req.body.orderNo,
-			'mchntOrderNo': req.body.mchntOrderNo,
-			'appid': req.body.appid,
-			'amount': req.body.amount,
-			'body': req.body.body,
-			'clientIp': req.body.clientIp,
-			'notifyUrl': req.body.notifyUrl,
-			'payChannelId': req.body.payChannelId,
-			'returnUrl': req.body.returnUrl,
-			'subject': req.body.subject,
-			'childAppid': req.body.childAppid,
-			'paySt': req.body.paySt
-		}
-		console.log(params)
-		// 如果成功，则给对应用户写入其支付的金额-金币
-		TemporaryOrder.findOne({ orderNo: req.body.mchntOrderNo }).exec((err, temporaryOrder) => {
-			console.log(temporaryOrder)
-			Member.findOne({_id: temporaryOrder.member}).exec((error, member) => {
-				Member.update({ _id: member._id }, {
-					charm: member.charm + (temporaryOrder.goldBeanNum / 100),
-					goldBean: member.goldBean + temporaryOrder.goldBeanNum
-				}, (error) => {
-					new AccountDetail({
-						member: member._id,
-						goldBeanChange: '+' + temporaryOrder.goldBeanNum,
-						type: '充值',
-						info: '金豆'
-					}).save()
-					res.json({'success':'true'})
-				})
-			})
-		})
-	}
+	console.log(req.body)
+	console.log(req.query)
+	next()
+	// if (req.body.orderNo && req.body.mchntOrderNo && req.body.appid && req.body.amount && req.body.paySt == 2) {
+	// 	let params = {
+	// 		'orderNo': req.body.orderNo,
+	// 		'mchntOrderNo': req.body.mchntOrderNo,
+	// 		'appid': req.body.appid,
+	// 		'amount': req.body.amount,
+	// 		'body': req.body.body,
+	// 		'clientIp': req.body.clientIp,
+	// 		'notifyUrl': req.body.notifyUrl,
+	// 		'payChannelId': req.body.payChannelId,
+	// 		'returnUrl': req.body.returnUrl,
+	// 		'subject': req.body.subject,
+	// 		'childAppid': req.body.childAppid,
+	// 		'paySt': req.body.paySt
+	// 	}
+	// 	console.log(params)
+	// 	// 如果成功，则给对应用户写入其支付的金额-金币
+	// 	TemporaryOrder.findOne({ orderNo: req.body.mchntOrderNo }).exec((err, temporaryOrder) => {
+	// 		console.log(temporaryOrder)
+	// 		Member.findOne({_id: temporaryOrder.member}).exec((error, member) => {
+	// 			Member.update({ _id: member._id }, {
+	// 				charm: member.charm + (temporaryOrder.goldBeanNum / 100),
+	// 				goldBean: member.goldBean + temporaryOrder.goldBeanNum
+	// 			}, (error) => {
+	// 				new AccountDetail({
+	// 					member: member._id,
+	// 					goldBeanChange: '+' + temporaryOrder.goldBeanNum,
+	// 					type: '充值',
+	// 					info: '金豆'
+	// 				}).save()
+	// 				res.json({'success':'true'})
+	// 			})
+	// 		})
+	// 	})
+	// }
 })
 
 router.use((req, res, next) => {
