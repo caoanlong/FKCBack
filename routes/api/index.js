@@ -8,6 +8,7 @@ const secret =require('../../config').secret
 const TemporaryOrder = require('../../models/TemporaryOrder')
 const Member = require('../../models/Member')
 const AccountDetail = require('../../models/AccountDetail')
+const Prize = require('../../models/Prize')
 
 //统一返回格式
 let responseData
@@ -25,6 +26,22 @@ router.use((req, res, next) => {
 	res.header('Access-Control-Allow-Methods', 'PUT, GET, POST, DELETE, OPTIONS')
 	res.header('Access-Control-Allow-Headers', 'Content-Type,Accept,X-Access-Token')
 	next()
+})
+
+/* 首页奖品列表 */
+router.get('/prize', (req, res) => {
+	let pageSize = Number(req.query.pageSize || 10)
+	Prize.find().sort({ _id: -1 }).limit(pageSize).exec((error, prizeList) => {
+		if (error) {
+			responseData.code = 1
+			responseData.msg = '获取失败' + error
+			res.json(responseData)
+			return
+		}
+		responseData.msg = '获取成功'
+		responseData.data = prizeList
+		res.json(responseData)
+	})
 })
 
 /* 支付 */

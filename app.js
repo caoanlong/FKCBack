@@ -32,8 +32,13 @@ app.use(cookieParser())
 app.use(express.static(path.join(__dirname, 'public')))
 // 定时任务
 schedule.scheduleJob({hour: 0, minute: 0, dayOfWeek: 1}, function () {
-	console.log('remove all  FreeReceive!')
-	FreeReceive.remove()
+	FreeReceive.remove({}, (err) => {
+		if (err) {
+			console.log(err)
+			return
+		}
+		console.log('remove all  FreeReceive!')
+	})
 })
 
 app.get('/', function (req, res) {

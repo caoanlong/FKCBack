@@ -42,7 +42,7 @@ router.get('/goldBeanType', function (req, res) {
 /* 奖品列表 */
 router.get('/prize', (req, res) => {
 	let pageIndex = Number(req.query.pageIndex || 1)
-	let pageSize = 10
+	let pageSize = req.query.pageSize || 10
 	let pages = 0
 	Prize.count((err, count) => {
 		//计算总页数

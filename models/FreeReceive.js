@@ -1,6 +1,10 @@
 const mongoose = require('mongoose')
 let randomGold = require('../common')
-
+let MondayGoldNum = randomGold.getRandomGold()
+let TuesdayGoldNum = randomGold.getRandomGold()
+let ThursdayGoldNum = randomGold.getRandomGold()
+let SaturdayGoldNum = randomGold.getRandomGold()
+let SundayGoldNum = randomGold.getRandomGold()
 // 免费领豆的表结构
 let FreeReceiveSchema = new mongoose.Schema({
 	// 关联会员
@@ -12,7 +16,7 @@ let FreeReceiveSchema = new mongoose.Schema({
 	Monday: {
 		goldNum: {
 			type: Number,
-			default: randomGold.getRandomGold()
+			default: MondayGoldNum
 		},
 		isSign: {
 			type: Boolean,
@@ -27,7 +31,7 @@ let FreeReceiveSchema = new mongoose.Schema({
 	Tuesday: {
 		goldNum: {
 			type: Number,
-			default: randomGold.getRandomGold()
+			default: TuesdayGoldNum
 		},
 		isSign: {
 			type: Boolean,
@@ -57,7 +61,7 @@ let FreeReceiveSchema = new mongoose.Schema({
 	Thursday: {
 		goldNum: {
 			type: Number,
-			default: randomGold.getRandomGold()
+			default: ThursdayGoldNum
 		},
 		isSign: {
 			type: Boolean,
@@ -87,7 +91,7 @@ let FreeReceiveSchema = new mongoose.Schema({
 	Saturday: {
 		goldNum: {
 			type: Number,
-			default: randomGold.getRandomGold()
+			default: SaturdayGoldNum
 		},
 		isSign: {
 			type: Boolean,
@@ -102,7 +106,7 @@ let FreeReceiveSchema = new mongoose.Schema({
 	Sunday: {
 		goldNum: {
 			type: Number,
-			default: randomGold.getRandomGold()
+			default: SundayGoldNum
 		},
 		isSign: {
 			type: Boolean,
