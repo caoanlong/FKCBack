@@ -5,6 +5,7 @@ const crypto = require('crypto')
 const schedule = require('node-schedule')
 const getAccessToken = require('./common/getAccessToken')
 const getTsapiTicket = require('./common/getTsapiTicket')
+const getOpenID = require('./common/getOpenID')
 const setMenu = require('./common/setMenu')
 
 //统一返回格式
@@ -94,5 +95,18 @@ router.post('/config', (req, res) => {
 	res.json(responseData)
 })
 
+/* 获取openID */
+router.get('/getOpenID', (req, res) => {
+	let code = req.query.code
+	let state = req.query.state
+	getOpenID((openid) => {
+		console.log(code, openid)
+		if (state == 'index') {
+			res.redirect('http://m.91fkc.com/?openid='+openid)
+		} else {
+			res.redirect('http://m.91fkc.com/#/my?showSign=true&openid='+openid)
+		}
+	}, code)
+})
 
 module.exports = router
