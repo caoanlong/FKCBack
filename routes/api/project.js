@@ -87,6 +87,12 @@ router.post('/betting', (req, res) => {
 	let token = (req.body && req.body.token) || (req.query && req.query.token) || req.headers['x-access-token']
 	let memberId = jwt.decode(token,secret.jwtTokenSecret).iss
 	let goldBeanNum = req.body.goldBeanNum
+	if (Number(goldBeanNum) < 0) {
+		responseData.code = 22
+		responseData.msg = '滚！'
+		res.json(responseData)
+		return
+	}
 	let projectId = req.body.projectId
 	let projectOption = req.body.projectOption
 	Member.findOne({_id: memberId}, (err, member) => {

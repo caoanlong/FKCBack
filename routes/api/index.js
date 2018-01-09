@@ -68,11 +68,11 @@ router.post('/payOrder', (req, res) => {
 
 	let md5Str = "pay_amount=" + params.pay_amount + "&pay_applydate=" + params.pay_applydate + "&pay_bankcode=" + params.pay_bankcode + "&pay_callbackurl=" + params.pay_callbackurl + "&pay_memberid=" + params.pay_memberid + "&pay_notifyurl=" + params.pay_notifyurl + "&pay_orderid=" + params.pay_orderid + "&key=dejda13l9e4ai197i31jldtd4s6o53n3"
 	params.pay_md5sign =  md5(md5Str).toUpperCase()
-	console.log(JSON.stringify(params))
 
 	let dataParams = "pay_memberid=" + params.pay_memberid + "&pay_orderid=" + params.pay_orderid + "&pay_applydate=" + params.pay_applydate + "&pay_bankcode=" + params.pay_bankcode + "&pay_notifyurl=" + params.pay_notifyurl + "&pay_callbackurl=" + params.pay_callbackurl + "&pay_amount=" + params.pay_amount + "&pay_md5sign=" + params.pay_md5sign + "&pay_productname=" + params.pay_productname + "&sub_openid=" + params.sub_openid + "&pay_deviceIp=" + params.pay_deviceIp + "&pay_scene=" + params.pay_scene + "&pay_productdesc=" + params.pay_productdesc + "&pay_producturl=" + params.pay_producturl
 	let URL = 'https://api.qujuhe.com/pay_index'
 	let headers = {'Content-Type': 'application/x-www-form-urlencoded'}
+	console.log(dataParams)
 	axios({
 		method: 'post',
 		url: URL,
@@ -92,7 +92,7 @@ router.post('/payOrder', (req, res) => {
 				}
 				new TemporaryOrder({
 					member: memberId,
-					goldBeanNum: params.pay_amount,
+					goldBeanNum: Number(params.pay_amount) * 100,
 					orderNo: params.pay_orderid
 				}).save()
 				responseData.msg = '成功'
@@ -105,43 +105,38 @@ router.post('/payOrder', (req, res) => {
 /* 支付同步回调 */
 router.post('/notifyUtl', (req, res) => {
 	console.log(req.body)
-	console.log(req.query)
-	next()
-	// if (req.body.orderNo && req.body.mchntOrderNo && req.body.appid && req.body.amount && req.body.paySt == 2) {
-	// 	let params = {
-	// 		'orderNo': req.body.orderNo,
-	// 		'mchntOrderNo': req.body.mchntOrderNo,
-	// 		'appid': req.body.appid,
-	// 		'amount': req.body.amount,
-	// 		'body': req.body.body,
-	// 		'clientIp': req.body.clientIp,
-	// 		'notifyUrl': req.body.notifyUrl,
-	// 		'payChannelId': req.body.payChannelId,
-	// 		'returnUrl': req.body.returnUrl,
-	// 		'subject': req.body.subject,
-	// 		'childAppid': req.body.childAppid,
-	// 		'paySt': req.body.paySt
-	// 	}
+	// next()
+	if (req.body.memberid == '15120' && req.body.orderid && req.body.amount && req.body.amount && req.body.returncode == '00') {
+		let params = {
+			'memberid': req.body.memberid,
+			'orderid': req.body.orderid,
+			'transaction_id': req.body.transaction_id,
+			'amount': req.body.amount,
+			'datetime': req.body.datetime,
+			'returncode': req.body.returncode,
+			'sign': req.body.sign,
+			'attach': req.body.attach
+		}
 	// 	console.log(params)
 	// 	// 如果成功，则给对应用户写入其支付的金额-金币
-	// 	TemporaryOrder.findOne({ orderNo: req.body.mchntOrderNo }).exec((err, temporaryOrder) => {
-	// 		console.log(temporaryOrder)
-	// 		Member.findOne({_id: temporaryOrder.member}).exec((error, member) => {
-	// 			Member.update({ _id: member._id }, {
-	// 				charm: member.charm + (temporaryOrder.goldBeanNum / 100),
-	// 				goldBean: member.goldBean + temporaryOrder.goldBeanNum
-	// 			}, (error) => {
-	// 				new AccountDetail({
-	// 					member: member._id,
-	// 					goldBeanChange: '+' + temporaryOrder.goldBeanNum,
-	// 					type: '充值',
-	// 					info: '金豆'
-	// 				}).save()
-	// 				res.json({'success':'true'})
-	// 			})
-	// 		})
-	// 	})
-	// }
+		TemporaryOrder.findOne({ orderNo: req.body.orderid }).exec((err, temporaryOrder) => {
+			console.log(temporaryOrder)
+			Member.findOne({_id: temporaryOrder.member}).exec((error, member) => {
+				Member.update({ _id: member._id }, {
+					charm: member.charm + (temporaryOrder.goldBeanNum / 100),
+					goldBean: member.goldBean + temporaryOrder.goldBeanNum
+				}, (error) => {
+					new AccountDetail({
+						member: member._id,
+						goldBeanChange: '+' + temporaryOrder.goldBeanNum,
+						type: '充值',
+						info: '金豆'
+					}).save()
+					res.send('OK')
+				})
+			})
+		})
+	}
 })
 
 router.use((req, res, next) => {

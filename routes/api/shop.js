@@ -92,6 +92,12 @@ router.post('/prizeDraw', (req, res) => {
 	let memberId = jwt.decode(token, secret.jwtTokenSecret).iss
 	let prizeId = req.body.prizeId
 	let prizeGoldBeanPrice = req.body.prizeGoldBeanPrice
+	if (Number(prizeGoldBeanPrice) < 0) {
+		responseData.code = 22
+		responseData.msg = '滚！'
+		res.json(responseData)
+		return
+	}
 	Member.findOne({_id: memberId}).exec((error, member) => {
 		if (error) {
 			responseData.code = 1

@@ -545,7 +545,7 @@ router.post('/getSignGold', (req, res) => {
 				res.json(responseData)
 				return
 			}
-			member.goldBean += goldNum
+			member.goldBean += freeReceive[week].goldNum
 			member.save()
 			// 生成账单
 			new AccountDetail({
