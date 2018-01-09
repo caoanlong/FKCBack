@@ -44,6 +44,7 @@ schedule.scheduleJob({hour: 0, minute: 0, dayOfWeek: 1}, function () {
 app.get('/', function (req, res) {
 	res.redirect('/admin')
 })
+app.use('/boss', require('./routes/boss'))
 app.use('/admin', require('./routes/admin'))
 app.use('/api', require('./routes/api'))
 app.use('/weixin', require('./routes/weixin'))

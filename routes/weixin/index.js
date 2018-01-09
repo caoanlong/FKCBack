@@ -95,6 +95,18 @@ router.post('/config', (req, res) => {
 	res.json(responseData)
 })
 
+/* 获取code */
+router.get('/getOpenIDNew', (req, res) => {
+	let code = req.query.code
+	getOpenID((openid) => {
+		if (openid) {
+			responseData.msg = '成功'
+			responseData.data = openid
+			res.json(responseData)
+		}
+	})
+})
+
 /* 获取openID */
 router.get('/getOpenID', (req, res) => {
 	let code = req.query.code
@@ -102,7 +114,7 @@ router.get('/getOpenID', (req, res) => {
 	getOpenID((openid) => {
 		console.log(code, openid)
 		if (state == 'index') {
-			res.redirect('http://m.91fkc.com/?openid='+openid)
+			res.redirect('http://m.91fkc.com/#/?openid='+openid)
 		} else {
 			res.redirect('http://m.91fkc.com/#/my?showSign=true&openid='+openid)
 		}
