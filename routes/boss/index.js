@@ -22,7 +22,7 @@ router.use((req, res, next) => {
 })
 
 router.use('/user', require('./user'))
-// router.use('/member', require('./member'))
+router.use('/member', require('./member'))
 // router.use('/project', require('./project'))
 // router.use('/shop', require('./shop'))
 // router.use('/system', require('./system'))

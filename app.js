@@ -5,6 +5,7 @@ const path = require('path')
 const logger = require('morgan')
 const cookieParser = require('cookie-parser')
 const bodyParser = require('body-parser')
+require('body-parser-xml')(bodyParser)
 const session = require('express-session')
 const schedule = require('node-schedule')
 const FreeReceive = require('./models/FreeReceive')
@@ -27,6 +28,14 @@ swig.setFilter('isEnd', require('./common/myFilters').isEnd)
 app.use(logger('dev'))
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }))
+app.use(bodyParser.xml({
+	limit: '1MB',
+	xmlParseOptions: {
+		normalize: true,
+		normalizeTags: true,
+		explicitArray: false
+	}
+}))
 app.use(cookieParser())
 
 app.use(express.static(path.join(__dirname, 'public')))

@@ -73,4 +73,100 @@ router.post('/add', (req, res) => {
 	})
 })
 
+/* 用户删除 */
+router.post('/delete', (req, res) => {
+	let id = req.body.id
+	User.remove({_id: id}, (err) => {
+		if (err) {
+			responseData.code = 1
+			responseData.msg = '删除失败'
+			res.json(responseData)
+		}else {
+			responseData.msg = '删除成功'
+			res.json(responseData)
+		}
+	})
+})
+
+/* 用户修改 */
+router.post('/edit', (req, res) => {
+	let id = req.body.id
+	User.update({_id: id},{
+		username: req.body.username,
+		mobile: req.body.mobile,
+		password: req.body.password
+	}, (err) => {
+		if (err) {
+			responseData.code = 1
+			responseData.msg = '修改失败'
+			res.json(responseData)
+		}else {
+			responseData.msg = '修改成功'
+			res.json(responseData)
+		}
+	})
+})
+
+/* 禁用用户 */
+router.post('/disable', (req, res) => {
+	let id = req.body.id
+	User.update({_id: id},{isDisabled: true}, (err) => {
+		if (err) {
+			responseData.code = 1
+			responseData.msg = '禁止失败'
+			res.json(responseData)
+		}else {
+			responseData.msg = '禁止成功'
+			res.json(responseData)
+		}
+	})
+})
+/* 启用用户 */
+router.post('/enable', (req, res) => {
+	let id = req.body.id
+	User.update({_id: id},{isDisabled: false}, (err) => {
+		if (err) {
+			responseData.code = 1
+			responseData.msg = '启用失败'
+			res.json(responseData)
+		}else {
+			responseData.msg = '启用成功'
+			res.json(responseData)
+		}
+	})
+})
+
+/* 用户登录 */
+router.post('/login', (req, res) => {
+	let mobile = req.body.mobile
+	let password = req.body.password
+	//查询数据库中相同用户名和密码的记录是否存在，如果存在则登录成功
+	User.findOne({
+		mobile: mobile,
+		password: password
+	}, (err, user) => {
+		if (err || !user) {
+			responseData.code = 1
+			responseData.msg = '用户名或密码错误'
+			res.json(responseData)
+			return
+		}
+		if (user.isDisabled) {
+			responseData.code = 2
+			responseData.msg = '用户已被禁用'
+			res.json(responseData)
+			return
+		}
+		responseData.msg = '登录成功'
+		responseData.userInfo = {
+			_id: user._id,
+			username: user.username,
+			isAdmin: user.isAdmin,
+			isDisabled: user.isDisabled
+		}
+		req.session.userInfo = responseData.userInfo
+		res.json(responseData)
+	})
+})
+
 module.exports = router

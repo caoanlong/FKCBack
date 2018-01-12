@@ -8,6 +8,8 @@
   "dependencies": {
     "axios": "^0.17.1",
     "body-parser": "~1.18.2",
+    "body-parser-xml": "^1.1.0",
+    "co": "^4.6.0",
     "cookie-parser": "~1.4.3",
     "debug": "~2.6.9",
     "express": "~4.15.5",

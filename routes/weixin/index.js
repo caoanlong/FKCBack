@@ -8,6 +8,7 @@ const getTsapiTicket = require('./common/getTsapiTicket')
 const getOpenID = require('./common/getOpenID')
 const setMenu = require('./common/setMenu')
 
+
 //统一返回格式
 let responseData
 router.use((req, res, next) => {
@@ -61,7 +62,6 @@ router.use((req, res, next) => {
 
 /* 微信验签 */
 router.all('/', (req, res) => {
-	console.log(access_token)
 	let signature = req.query.signature
 	let timestamp = req.query.timestamp
 	let nonce = req.query.nonce
@@ -69,12 +69,47 @@ router.all('/', (req, res) => {
 	let token = 'fkc123456'
 	let tmp = [token,timestamp,nonce].sort().join("")
 	let currSign = crypto.createHash("sha1").update(tmp).digest("hex")
-	if (currSign === signature) {
-		res.send(echostr)
-		return
-	} else {
-		res.send("It is not from weixin")
-		return
+	if (req.method == 'GET') {
+		if (currSign === signature) {
+			res.send('success')
+			return
+		} else {
+			res.send("It is not from weixin")
+			return
+		}
+	} else if (req.method == 'POST') {
+		if (currSign !== signature) {
+			res.send("It is not from weixin")
+			return
+		}
+		let xmlData = req.body.xml
+		if (xmlData.msgtype == 'text') {
+			let resMsg = '<xml>' + 
+			'<ToUserName><![CDATA[' + xmlData.fromusername + ']]></ToUserName>' + 
+			'<FromUserName><![CDATA[' + xmlData.tousername + ']]></FromUserName>' + 
+			'<CreateTime>' + parseInt(new Date().getTime()/1000) + '</CreateTime>' + 
+			'<MsgType><![CDATA[text]]></MsgType>' + 
+			'<Content><![CDATA[你好！呵呵😄]]></Content>' + 
+			'</xml>'
+			res.writeHead(200, {'Content-Type': 'application/xml'})
+			res.end(resMsg)
+		} else if (xmlData.msgtype == 'event') {
+			if (xmlData.event == 'subscribe') {
+				let resMsg = '<xml>' + 
+				'<ToUserName><![CDATA[' + xmlData.fromusername + ']]></ToUserName>' + 
+				'<FromUserName><![CDATA[' + xmlData.tousername + ']]></FromUserName>' + 
+				'<CreateTime>' + parseInt(new Date().getTime()/1000) + '</CreateTime>' + 
+				'<MsgType><![CDATA[text]]></MsgType>' + 
+				'<Content><![CDATA[你好，欢迎关注91疯狂猜（http://m.91fkc.com/）猜足球、篮球、经济、娱乐和电竞事件，预测未来，成就现在。\n\n注册就送100金豆，每日免费领金豆，金豆可抽奖品，中奖率100%。]]></Content>' + 
+				'</xml>'
+				res.writeHead(200, {'Content-Type': 'application/xml'})
+				res.end(resMsg)
+			} else {
+				res.send('')
+			}
+		} else {
+			res.send('')
+		}
 	}
 })
 
@@ -104,7 +139,7 @@ router.get('/getOpenIDNew', (req, res) => {
 			responseData.data = openid
 			res.json(responseData)
 		}
-	})
+	}, code)
 })
 
 /* 获取openID */
