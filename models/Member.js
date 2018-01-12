@@ -34,6 +34,11 @@ let MemberSchema = new mongoose.Schema({
 		type: Boolean,
 		default: false
 	},
+	// 微信公众平台openid
+	openid: {
+		type: String,
+		default: ''
+	},
 	// 来源
 	from: {
 		type: String,

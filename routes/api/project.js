@@ -9,6 +9,8 @@ const GuessList = require('../../models/GuessList')
 const Member = require('../../models/Member')
 const AccountDetail = require('../../models/AccountDetail')
 
+const sendMsgToWechat = require('./common/sendMsgToWechat')
+
 //统一返回格式
 let responseData
 router.use((req, res, next) => {
@@ -86,7 +88,9 @@ router.get('/type', (req, res) => {
 router.post('/betting', (req, res) => {
 	let token = (req.body && req.body.token) || (req.query && req.query.token) || req.headers['x-access-token']
 	let memberId = jwt.decode(token,secret.jwtTokenSecret).iss
+	let openid = req.body.openid
 	let goldBeanNum = req.body.goldBeanNum
+
 	if (Number(goldBeanNum) < 0) {
 		responseData.code = 22
 		responseData.msg = '滚！'
@@ -115,32 +119,27 @@ router.post('/betting', (req, res) => {
 				res.json(responseData)
 				return
 			}
-			Member.update({_id: member._id},{
-				goldBean: member.goldBean - Number(goldBeanNum)
-			}, (error2) => {
-				if (error2) {
-					responseData.code = 4
-					responseData.msg = '服务器错误'
-					res.json(responseData)
-					return
-				}
-				// 生成竞猜
-				new GuessList({
-					member: memberId,
-					projectOption: projectOption,
-					goldBeanNum: Number(goldBeanNum),
-					project: projectId
-				}).save()
-				// 生成账单
-				new AccountDetail({
-					member: memberId,
-					goldBeanChange: -Number(goldBeanNum),
-					type: '投注',
-					info: project.name
-				}).save()
-				responseData.msg = '投注成功'
-				res.json(responseData)
-			})
+			member.goldBean = member.goldBean - Number(goldBeanNum)
+			member.openid = openid
+			member.save()
+			// 生成竞猜
+			new GuessList({
+				member: memberId,
+				projectOption: projectOption,
+				goldBeanNum: Number(goldBeanNum),
+				project: projectId
+			}).save()
+			// 生成账单
+			new AccountDetail({
+				member: memberId,
+				goldBeanChange: -Number(goldBeanNum),
+				type: '投注',
+				info: project.name
+			}).save()
+
+			sendMsgToWechat.betting((response) => {}, openid, project.name, goldBeanNum, projectOption.content)
+			responseData.msg = '投注成功'
+			res.json(responseData)
 		})
 	})
 })

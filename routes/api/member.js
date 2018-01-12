@@ -84,9 +84,9 @@ router.post('/verCode', (req, res) => {
 
 /* 会员登录 */
 router.post('/login', (req, res, next) => {
-	let mobile = req.body.mobile||''
-	let from = req.body.from||''
-	let curVerCode = req.body.verCode||''
+	let mobile = req.body.mobile || ''
+	let from = req.body.from || ''
+	let curVerCode = req.body.verCode || ''
 	if (!mobile) {
 		responseData.code = 3
 		responseData.msg = '手机号不能为空'
@@ -176,7 +176,9 @@ router.post('/login', (req, res, next) => {
 				})
 			} else {
 				//数据库中不存在该用户，可以保存
-				new Member({mobile: mobile}).save((err1) => {
+				new Member({
+					mobile: mobile
+				}).save((err1) => {
 					if (err1) {
 						responseData.code = 5
 						responseData.msg = '登录失败'

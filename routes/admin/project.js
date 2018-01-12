@@ -7,6 +7,9 @@ const GuessList = require('../../models/GuessList')
 const Member = require('../../models/Member')
 const AccountDetail = require('../../models/AccountDetail')
 
+const sendMsgToWechat = require('../api/common/sendMsgToWechat')
+const getdatefromtimestamp = require('../../common/myFilters').getdatefromtimestamp
+
 //统一返回格式
 let responseData
 router.use((req, res, next) => {
@@ -121,14 +124,21 @@ router.get('/edit',function(req, res) {
 	})
 })
 router.post('/edit',function(req, res) {
+	let projectName = req.body.name
+	let projectType = req.body.projectType
+	let endTime = req.body.endTime
+	let imgUrl = req.body.imgUrl
+	let options = req.body.options
+	let resultContent = req.body.resultContent
+	let resultOdds = req.body.resultOdds
 	Project.update({_id: req.body.id},{
-		name: req.body.name,
-		projectType: req.body.projectType,
-		endTime: req.body.endTime,
-		imgUrl: req.body.imgUrl,
-		options: req.body.options,
-		resultContent: req.body.resultContent,
-		resultOdds: req.body.resultOdds
+		name: projectName,
+		projectType: projectType,
+		endTime: endTime,
+		imgUrl: imgUrl,
+		options: options,
+		resultContent: resultContent,
+		resultOdds: resultOdds
 	},function(err) {
 		if (err) {
 			responseData.code = 1
@@ -136,14 +146,14 @@ router.post('/edit',function(req, res) {
 			res.json(responseData)
 		}else {
 			// 如果开奖
-			if (req.body.resultContent && req.body.resultOdds) {
+			if (resultContent && resultOdds) {
 				GuessList.find({
 					project: req.body.id,
 					isLottery: false // 选择未开奖的竞猜
 				}).populate('member').exec(function(error, guess) {
 					for (let i = 0; i < guess.length; i++) {
 						// 判断是否中奖(如果中奖)
-						if (guess[i].projectOption.content == req.body.resultContent && guess[i].projectOption.odds == req.body.resultOdds) {
+						if (guess[i].projectOption.content == resultContent && guess[i].projectOption.odds == resultOdds) {
 							let bonus = Number((Number(guess[i].projectOption.odds)*Number(guess[i].goldBeanNum)).toFixed())
 							// 更新所有未开奖的竞猜
 							GuessList.update({_id: guess[i]._id}, {
@@ -163,12 +173,14 @@ router.post('/edit',function(req, res) {
 										info: guess[i].projectOption.content
 									}).save()
 								})
+								sendMsgToWechat.lottery((response) => {}, guess[i].member.openid, projectName, bonus, guess[i].goldBeanNum, guess[i].projectOption.content, getdatefromtimestamp(guess[i].addTime), "恭喜你，猜对了“91疯狂猜”！赢得"+bonus+"金豆", "如此机智的你简直是竞猜界的大神！")
 							})
 						} else {
 							GuessList.update({_id: guess[i]._id}, {
 								isLottery: true
 							}, () => {
 								console.log('未中奖')
+								sendMsgToWechat.lottery((response) => {}, guess[i].member.openid, projectName, 0, guess[i].goldBeanNum, guess[i].projectOption.content, getdatefromtimestamp(guess[i].addTime), "矮油，这次“91疯狂猜”没猜中！", "长得这么帅，早晚能猜中！")
 							})
 						}
 					}

@@ -25,6 +25,7 @@ let jsApiTicket
 // 获取access_token
 getAccessToken((res_token) => {
 	access_token = res_token
+	global.access_token = res_token
 	// 获取jsapi_ticket
 	getTsapiTicket((res_jsApiTicket) => {
 		jsApiTicket = res_jsApiTicket
@@ -41,6 +42,7 @@ rule.minute = 45
 schedule.scheduleJob(rule, function () {
 	getAccessToken((res_token) => {
 		access_token = res_token
+		global.access_token = res_token
 		// 获取jsapi_ticket
 		getTsapiTicket((res_jsApiTicket) => {
 			jsApiTicket = res_jsApiTicket
