@@ -140,7 +140,7 @@ router.post('/notifyUtl', (req, res) => {
 })
 
 router.use((req, res, next) => {
-	if (req.url.indexOf('verCode') > -1 || req.url.indexOf('login') > -1 || req.path == '/project' || req.path == '/project/type') {
+	if (req.url.indexOf('verCode') > -1 || req.url.indexOf('login') > -1 || req.path == '/project' || req.path == '/project/type' || req.url.indexOf('prize') > -1 || req.url.indexOf('banner') > -1) {
 		next()
 		return
 	}

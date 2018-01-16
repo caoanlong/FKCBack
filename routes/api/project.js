@@ -8,6 +8,7 @@ const ProjectType = require('../../models/ProjectType')
 const GuessList = require('../../models/GuessList')
 const Member = require('../../models/Member')
 const AccountDetail = require('../../models/AccountDetail')
+const Banner = require('../../models/Banner')
 
 const sendMsgToWechat = require('./common/sendMsgToWechat')
 
@@ -238,6 +239,20 @@ router.get('/guess', (req, res) => {
 			})
 		})
 	}
+})
+/* banner列表 */
+router.get('/banner', (req, res) => {
+	Banner.find().exec((err, bannerList) => {
+		if (err) {
+			responseData.code = 1
+			responseData.msg = '获取失败'
+			res.json(responseData)
+			return
+		}
+		responseData.msg = '成功'
+		responseData.data = bannerList
+		res.json(responseData)
+	})
 })
 
 module.exports = router

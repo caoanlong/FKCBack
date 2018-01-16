@@ -158,7 +158,7 @@
 				</li>
 				{% endif %}
 				{% if userInfo.isAdmin %}
-					{% if active == "from" %}
+					{% if active == "from" || active == "banner" %}
 					<li class="dropdown active">
 						<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">系统常量<span class="caret"></span></a>
 						<ul class="dropdown-menu">
@@ -169,6 +169,15 @@
 							{% else %}
 							<li>
 								<a href="/admin/system/from">会员来源</a>
+							</li>
+							{% endif %}
+							{% if active == "banner" %}
+							<li class="active">
+								<a href="/admin/system/banner">banner</a>
+							</li>
+							{% else %}
+							<li>
+								<a href="/admin/system/banner">banner</a>
 							</li>
 							{% endif %}
 						</ul>
@@ -184,6 +193,15 @@
 							{% else %}
 							<li>
 								<a href="/admin/system/from">会员来源</a>
+							</li>
+							{% endif %}
+							{% if active == "banner" %}
+							<li class="active">
+								<a href="/admin/system/banner">banner</a>
+							</li>
+							{% else %}
+							<li>
+								<a href="/admin/system/banner">banner</a>
 							</li>
 							{% endif %}
 						</ul>
