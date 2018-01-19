@@ -71,6 +71,22 @@ router.get('/', (req, res) => {
 		})
 	})
 })
+/* 热门项目(体育第一个) */
+router.get('/hot', (req, res) => {
+	Project.find({
+		projectType: req.query.projectType
+	}).sort({addTime: -1}).limit(1).exec((err, project) => {
+		if (err) {
+			responseData.code = 1
+			responseData.msg = '获取失败'
+			res.json(responseData)
+			return
+		}
+		responseData.msg = '获取成功'
+		responseData.data = project[0]
+		res.json(responseData)
+	})
+})
 /* 项目分类列表 */
 router.get('/type', (req, res) => {
 	ProjectType.find().exec((err, projectType) => {
