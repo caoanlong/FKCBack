@@ -243,7 +243,10 @@ router.get('/projectType/add', function(req, res) {
 })
 router.post('/projectType/add',function(req, res) {
 	new ProjectType({
-		name: req.body.name
+		name: req.body.name,
+		desc: req.body.desc,
+		sort: req.body.sort,
+		icon: req.body.icon
 	}).save()
 	responseData.msg = '成功'
 	res.json(responseData)
@@ -278,7 +281,10 @@ router.get('/projectType/edit',function(req, res) {
 })
 router.post('/projectType/edit',function(req, res) {
 	ProjectType.update({_id:req.body.id},{
-		name: req.body.name
+		name: req.body.name,
+		desc: req.body.desc,
+		sort: req.body.sort,
+		icon: req.body.icon
 	},function(err) {
 		if (err) {
 			responseData.code = 1

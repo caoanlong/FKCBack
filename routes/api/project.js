@@ -17,7 +17,7 @@ let responseData
 router.use((req, res, next) => {
 	responseData = {
 		code: 0,
-		msg: ''
+		msg: '成功'
 	}
 	next()
 })
@@ -71,10 +71,29 @@ router.get('/', (req, res) => {
 		})
 	})
 })
+
+/* 项目详情 */
+router.get('/detail', (req, res) => {
+	let id = req.query.id
+	Project.findOne({_id: id}).exec((err, project) => {
+		if (err) {
+			responseData.code = 1
+			responseData.msg ='失败'
+			res.json(responseData)
+			return
+		}
+		responseData.msg = '获取成功'
+		responseData.data = project
+		res.json(responseData)
+	})
+})
+
 /* 热门项目(体育第一个) */
 router.get('/hot', (req, res) => {
 	Project.find({
-		projectType: req.query.projectType
+		projectType: req.query.projectType,
+		resultOdds: 0,
+		resultContent: ''
 	}).sort({addTime: -1}).limit(1).exec((err, project) => {
 		if (err) {
 			responseData.code = 1
