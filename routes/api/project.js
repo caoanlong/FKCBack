@@ -8,6 +8,7 @@ const ProjectType = require('../../models/ProjectType')
 const GuessList = require('../../models/GuessList')
 const Member = require('../../models/Member')
 const AccountDetail = require('../../models/AccountDetail')
+const Banner = require('../../models/Banner')
 
 const sendMsgToWechat = require('./common/sendMsgToWechat')
 
@@ -16,7 +17,7 @@ let responseData
 router.use((req, res, next) => {
 	responseData = {
 		code: 0,
-		msg: ''
+		msg: '成功'
 	}
 	next()
 })
@@ -68,6 +69,41 @@ router.get('/', (req, res) => {
 			}
 			res.json(responseData)
 		})
+	})
+})
+
+/* 项目详情 */
+router.get('/detail', (req, res) => {
+	let id = req.query.id
+	Project.findOne({_id: id}).exec((err, project) => {
+		if (err) {
+			responseData.code = 1
+			responseData.msg ='失败'
+			res.json(responseData)
+			return
+		}
+		responseData.msg = '获取成功'
+		responseData.data = project
+		res.json(responseData)
+	})
+})
+
+/* 热门项目(体育第一个) */
+router.get('/hot', (req, res) => {
+	Project.find({
+		projectType: req.query.projectType,
+		resultOdds: 0,
+		resultContent: ''
+	}).sort({addTime: -1}).limit(1).exec((err, project) => {
+		if (err) {
+			responseData.code = 1
+			responseData.msg = '获取失败'
+			res.json(responseData)
+			return
+		}
+		responseData.msg = '获取成功'
+		responseData.data = project[0]
+		res.json(responseData)
 	})
 })
 /* 项目分类列表 */
@@ -238,6 +274,20 @@ router.get('/guess', (req, res) => {
 			})
 		})
 	}
+})
+/* banner列表 */
+router.get('/banner', (req, res) => {
+	Banner.find().exec((err, bannerList) => {
+		if (err) {
+			responseData.code = 1
+			responseData.msg = '获取失败'
+			res.json(responseData)
+			return
+		}
+		responseData.msg = '成功'
+		responseData.data = bannerList
+		res.json(responseData)
+	})
 })
 
 module.exports = router

@@ -1,0 +1,113 @@
+{% extends '../../layout.html' %}
+
+{% block main %}
+	{% include '../nav.html' %}
+	<div class="container-fluid">
+		<ol class="breadcrumb">
+			<li><a href="/admin">首页</a></li>
+			<li><a href="/admin/system/from">系统常量</a></li>
+			<li><a href="/admin/system/banner">banner</a></li>
+			<li class="active">新增banner</li>
+		</ol>
+		<form class="form-horizontal">
+			<div class="form-group">
+				<label for="imgUrl" class="col-xs-3 control-label">图片</label>
+				<div class="col-xs-6">
+					<div class="imgUpload clearfix">
+						<div class="imgLi" style="width:375px;height:180px;display:none">
+							<img src="#">
+							<div class="controller">
+								<div class="controllerBtn">
+									<div class="perviewBtn" id="perviewBtn"></div>
+									<div class="delBtn" id="delBtn"></div>
+								</div>
+							</div>
+						</div>
+						<div class="addBtn" style="width:375px;height:180px">
+							<div class="addIcon">
+								<div class="ico"></div>
+								<p>添加</p>
+							</div>
+							<input type="file" id="uploadFile"/>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="form-group">
+				<label for="name" class="col-xs-3 control-label">链接</label>
+				<div class="col-xs-6">
+					<input type="text" id="linkUrl" class="form-control" name="name">
+				</div>
+			</div>
+			<div class="form-group">
+				<div class="col-xs-offset-3 col-xs-6">
+					<a href="/admin/system/banner" type="button" class="btn btn-default">返回</a>
+					<button id="addBanner" type="button" class="btn btn-primary">提交</button>
+				</div>
+			</div>
+		</form>
+	</div>
+<script type="text/javascript">
+	var imgUrl = ''
+	/**
+	 * 添加图片
+	 */
+	$('#uploadFile').on('change',function() {
+		var formData = new FormData()
+		formData.append("file",$(this)[0].files[0])
+		$.ajax({
+			url: 'http://39.108.245.177:3001/uploadImg',
+			type: 'post',
+			processData: false,
+			async: true,
+			contentType: false,
+			data: formData,
+			success: function(res) {
+				console.log(res)
+				layer.msg(res.msg)
+				if (res.code == 0) {
+					$('.imgLi').show()
+					$('.addBtn').hide()
+					$('.imgLi img').attr('src', 'http://39.108.245.177:4000' + res.data)
+					imgUrl = res.data
+				}else {
+					return
+				}
+			}
+		})
+	})
+	/**
+	 * 删除图片
+	 */
+	$('#delBtn').on('click',function() {
+		$('.imgLi').hide()
+		$('.addBtn').show()
+		$('.imgLi img').attr('src','')
+	})
+	/**
+	 * 添加banner
+	 */
+	$('#addBanner').on('click',function() {
+		var params = {
+			img: imgUrl,
+			linkUrl: $('#linkUrl').val(),
+		}
+		console.log(JSON.stringify(params))
+		$.ajax({
+			url: '/admin/system/banner/add',
+			type: 'post',
+			dataType: 'json',
+			data: params,
+			success: function(res, textStatus, jqXHR) {
+				console.log(res)
+				layer.msg(res.msg)
+				if (res.code == 0) {
+					setTimeout(function() {
+						window.location.href = '/admin/system/banner'
+					}, 500)
+				}
+			}
+		})
+	})
+</script>
+{% endblock %}

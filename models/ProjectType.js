@@ -4,6 +4,15 @@ const mongoose = require('mongoose')
 let ProjectTypeSchema = new mongoose.Schema({
 	// 项目分类名称
 	name: String,
+	// 项目分类图标
+	icon: String,
+	// 描述
+	desc: String,
+	// 排序
+	sort: {
+		type: Number,
+		default: 1
+	},
 	// 添加时间
 	addTime: {
 		type: String,

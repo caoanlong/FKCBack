@@ -11,9 +11,44 @@
 		</ol>
 		<form class="form-horizontal">
 			<div class="form-group">
-				<label for="name" class="col-xs-3 control-label">分类名称</label>
+				<label for="name" class="col-xs-3 control-label">名称</label>
 				<div class="col-xs-6">
 					<input type="text" id="name" class="form-control" name="name" placeholder="分类名称">
+				</div>
+			</div>
+			<div class="form-group">
+				<label for="desc" class="col-xs-2 control-label">描述</label>
+				<div class="col-xs-8">
+					<input type="text" id="desc" class="form-control" name="desc" placeholder="描述">
+				</div>
+			</div>
+			<div class="form-group">
+				<label for="sort" class="col-xs-2 control-label">排序</label>
+				<div class="col-xs-8">
+					<input type="number" id="sort" class="form-control" name="sort" placeholder="排序">
+				</div>
+			</div>
+			<div class="form-group">
+				<label for="imgLi" class="col-xs-3 control-label">图标</label>
+				<div class="col-xs-6">
+					<div class="imgUpload clearfix">
+						<div class="imgLi" style="width:180px;height:180px;display:none">
+							<img src="#">
+							<div class="controller">
+								<div class="controllerBtn">
+									<div class="perviewBtn" id="perviewBtn"></div>
+									<div class="delBtn" id="delBtn"></div>
+								</div>
+							</div>
+						</div>
+						<div class="addBtn" style="width:180px;height:180px">
+							<div class="addIcon">
+								<div class="ico"></div>
+								<p>添加</p>
+							</div>
+							<input type="file" id="uploadFile"/>
+						</div>
+					</div>
 				</div>
 			</div>
 			<div class="form-group">
@@ -25,12 +60,16 @@
 		</form>
 	</div>
 <script type="text/javascript">
+	var icon = ''
 	/**
 	 * 添加分类
 	 */
 	$('#addProjectType').on('click',function() {
 		var params = {
-			name: $('#name').val()
+			name: $('#name').val(),
+			desc: $('#desc').val(),
+			sort: $('#sort').val(),
+			icon: icon
 		};
 		console.log(JSON.stringify(params))
 		$.ajax({
@@ -48,6 +87,41 @@
 				}
 			}
 		})
+	})
+	/**
+	 * 添加图片
+	 */
+	$('#uploadFile').on('change',function() {
+		var formData = new FormData()
+		formData.append("file",$(this)[0].files[0])
+		$.ajax({
+			url: 'http://39.108.245.177:3001/uploadImg',
+			type: 'post',
+			processData: false,
+			async: true,
+			contentType: false,
+			data: formData,
+			success: function(res) {
+				console.log(res)
+				layer.msg(res.msg)
+				if (res.code == 0) {
+					$('.imgLi').show()
+					$('.addBtn').hide()
+					$('.imgLi img').attr('src', 'http://39.108.245.177:4000' + res.data)
+					icon = res.data
+				}else {
+					return
+				}
+			}
+		})
+	})
+	/**
+	 * 删除图片
+	 */
+	$('#delBtn').on('click',function() {
+		$('.imgLi').hide()
+		$('.addBtn').show()
+		$('.imgLi img').attr('src','')
 	})
 </script>
 {% endblock %}

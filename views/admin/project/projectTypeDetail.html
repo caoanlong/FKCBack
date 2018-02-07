@@ -18,6 +18,41 @@
 				</div>
 			</div>
 			<div class="form-group">
+				<label for="desc" class="col-xs-2 control-label">描述</label>
+				<div class="col-xs-8">
+					<input type="text" id="desc" class="form-control" name="desc" placeholder="描述" value="{{projectTypeDetail.desc}}">
+				</div>
+			</div>
+			<div class="form-group">
+				<label for="sort" class="col-xs-2 control-label">排序</label>
+				<div class="col-xs-8">
+					<input type="number" id="sort" class="form-control" name="sort" placeholder="排序" value="{{projectTypeDetail.sort}}">
+				</div>
+			</div>
+			<div class="form-group">
+				<label for="imgLi" class="col-xs-2 control-label">图标</label>
+				<div class="col-xs-8">
+					<div class="imgUpload clearfix">
+						<div class="imgLi" style="width:180px;height:180px">
+							<img src="{{'http://39.108.245.177:4000' + projectTypeDetail.icon}}">
+							<div class="controller">
+								<div class="controllerBtn">
+									<div class="perviewBtn" id="perviewBtn"></div>
+									<div class="delBtn" id="delBtn"></div>
+								</div>
+							</div>
+						</div>
+						<div class="addBtn" style="width:180px;height:180px;display:none">
+							<div class="addIcon">
+								<div class="ico"></div>
+								<p>添加</p>
+							</div>
+							<input type="file" id="uploadFile"/>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="form-group">
 				<div class="col-xs-offset-2 col-xs-8">
 					<a href="/admin/project/projectType" type="button" class="btn btn-default">返回</a>
 					<button id="addProjectType" type="button" class="btn btn-primary">提交</button>
@@ -26,13 +61,17 @@
 		</form>
 	</div>
 <script type="text/javascript">
+	var icon = ''
 	/**
 	 * 更新项目分类
 	 */
 	$('#addProjectType').on('click',function() {
 		var params = {
 			id: $('#projectTypeId').val(),
-			name: $('#name').val()
+			name: $('#name').val(),
+			desc: $('#desc').val(),
+			sort: $('#sort').val(),
+			icon: $('.imgLi img').attr('src').split('39.108.245.177:4000')[1]
 		};
 		console.log(JSON.stringify(params))
 		$.ajax({
@@ -50,6 +89,41 @@
 				}
 			}
 		})
+	})
+	/**
+	 * 添加图标
+	 */
+	$('#uploadFile').on('change',function() {
+		var formData = new FormData()
+		formData.append("file",$(this)[0].files[0])
+		$.ajax({
+			url: 'http://39.108.245.177:3001/uploadImg',
+			type: 'post',
+			processData: false,
+			async: true,
+			contentType: false,
+			data: formData,
+			success: function(res) {
+				console.log(res)
+				layer.msg(res.msg)
+				if (res.code == 0) {
+					$('.imgLi').show()
+					$('.addBtn').hide()
+					$('.imgLi img').attr('src', 'http://39.108.245.177:4000' + res.data)
+					icon = res.data
+				}else {
+					return
+				}
+			}
+		})
+	})
+	/**
+	 * 删除图标
+	 */
+	$('#delBtn').on('click',function() {
+		$('.imgLi').hide()
+		$('.addBtn').show()
+		$('.imgLi img').attr('src','')
 	})
 </script>
 {% endblock %}

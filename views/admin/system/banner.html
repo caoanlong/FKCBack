@@ -1,0 +1,69 @@
+{% extends '../../layout.html' %}
+
+{% block main %}
+	{% include '../nav.html' %}
+	<div class="container-fluid">
+		<ol class="breadcrumb">
+			<li><a href="/admin">首页</a></li>
+			<li><a href="/admin/system/from">系统常量</a></li>
+			<li class="active">banner</li>
+		</ol>
+		<form class="form-inline padding-bottom-15" onsubmit="return false">
+			<a href="/admin/system/banner/add" type="button" class="btn btn-success"><i class="glyphicon glyphicon-plus"></i>新增banner</a>
+		</form>
+		<table class="table table-bordered table-hover" style="table-layout: fixed;">
+			<thead>
+				<tr>
+					<th class="text-center" width="40">
+						<input type="checkbox" name="">
+					</th>
+					<th>图片</th>
+					<th>链接</th>
+					<th>创建时间</th>
+					<th>操作</th>
+				</tr>
+			</thead>
+			<tbody>
+				{% for item in data.bannerList %}
+				<tr>
+					<td class="text-center">
+						<input type="checkbox" class="bannerId" value="{{item._id.toString()}}">
+					</td>
+					<td>{{item.img}}</td>
+					<td>{{item.linkUrl}}</td>
+					<td>{{item.addTime|getdatefromtimestamp}}</td>
+					<td>
+						<a href="/admin/system/banner/edit?id={{item._id.toString()}}" type="button" class="btn btn-primary btn-xs">编辑</a>
+						<button type="button" class="btn btn-danger btn-xs deleteBanner">删除</button>
+					</td>
+				</tr>
+				{% endfor %}
+			</tbody>
+		</table>
+		{% include '../page.html' %}
+	</div>
+<script type="text/javascript">
+	/**
+	 * 删除来源
+	 */
+	$('.deleteBanner').on('click',function() {
+		var bannerId = $(this).parent().parent().find('.bannerId').val()
+		var params = {
+			id: bannerId
+		};
+		$.ajax({
+			url: '/admin/system/banner/delete',
+			type: 'post',
+			dataType: 'json',
+			data: params,
+			success: function(resbonse,textStatus,jqXHR) {
+				console.log(resbonse);
+				layer.msg(resbonse.msg)
+				if (resbonse.code == 0) {
+					location.reload(true)
+				}
+			}
+		})
+	})
+</script>
+{% endblock %}
