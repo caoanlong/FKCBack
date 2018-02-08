@@ -26,7 +26,7 @@ var server = http.createServer(app);
  * Listen on provided port, on all network interfaces.
  */
 
-mongoose.connect('mongodb://fkcroot:fkc3141592654@39.108.245.177:27017/fkcDB?authSource=admin', {useMongoClient: true}, function(err) {
+mongoose.connect('mongodb://fkcroot:fkc3141592654@39.108.245.177:27017/fkcDB?authSource=admin', function(err) {
 	if (err) {
 		console.log(err);
 	} else {
