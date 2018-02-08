@@ -64,8 +64,7 @@ router.post('/payOrder', (req, res) => {
 	let returnUrl = req.body.returnUrl
 	let type = req.body.type
 	let openId = req.body.openId
-	// let version = 'h5_NoEncrypt'
-	let version = 'api_NoEncrypt'
+	let version = type + '_NoEncrypt'
 	let m = {}
 	m['appid'] = appid
 	m['amount'] = amount
@@ -83,7 +82,7 @@ router.post('/payOrder', (req, res) => {
 		m['childAppid'] = childAppid
 	}
 	md5Str += "&clientIp=" + clientIp + "&mchntOrderNo=" + mchntOrderNo + "&notifyUrl=" + notifyUrl
-	if (openId) {
+	if (type == 'api' && openId) {
 		md5Str += "&openId=" + openId
 		m['openId'] = openId
 	}
@@ -97,14 +96,33 @@ router.post('/payOrder', (req, res) => {
 	m['signature'] = signature
 	let json = JSON.stringify(m)
 	let orderInfo = RSAUtil.rsaEncrypt(json)
-	// console.log(onderInfo)
+	console.log(orderInfo)
 	let URL = 'http://trans.palmf.cn/sdk/api/v1.0/cli/order_api/0'
 	let data = Qs.stringify({
 		orderInfo: orderInfo
 	})
 	let headers = {'Content-Type': 'application/x-www-form-urlencoded'}
-	axios.post(URL, data, headers).then(response => {
-		console.log(response.data)
+	if (type == 'api') {
+		axios.post(URL, data, headers).then(response => {
+			console.log(response.data)
+			Member.findOne({ _id: memberId }).exec(function (err, member) {
+				if (err) {
+					responseData.code = 1
+					responseData.msg = '失败'
+					res.json(responseData)
+					return
+				}
+				new TemporaryOrder({
+					member: memberId,
+					goldBeanNum: amount,
+					orderNo: mchntOrderNo
+				}).save()
+				responseData.msg = '成功'
+				responseData.data = response.data
+				res.json(responseData)
+			})
+		})
+	} else {
 		Member.findOne({ _id: memberId }).exec(function (err, member) {
 			if (err) {
 				responseData.code = 1
@@ -118,10 +136,10 @@ router.post('/payOrder', (req, res) => {
 				orderNo: mchntOrderNo
 			}).save()
 			responseData.msg = '成功'
-			responseData.data = response.data
+			responseData.data = orderInfo
 			res.json(responseData)
 		})
-	})
+	}
 })
 /* 支付同步回调 */
 router.post('/notifyUtl', (req, res) => {
