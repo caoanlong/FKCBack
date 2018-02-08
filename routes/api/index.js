@@ -1,6 +1,7 @@
 const express = require('express')
 const router = express.Router()
 const axios = require('axios')
+const Qs = require('qs')
 const md5 = require('md5')
 const RSAUtil = require('../../common/RSAUtil')
 const jwt = require('jwt-simple')
@@ -62,7 +63,9 @@ router.post('/payOrder', (req, res) => {
 	let notifyUrl = req.body.notifyUrl
 	let returnUrl = req.body.returnUrl
 	let type = req.body.type
-	let version = 'h5_NoEncrypt'
+	let openId = req.body.openId
+	// let version = 'h5_NoEncrypt'
+	let version = 'api_NoEncrypt'
 	let m = {}
 	m['appid'] = appid
 	m['amount'] = amount
@@ -80,32 +83,44 @@ router.post('/payOrder', (req, res) => {
 		m['childAppid'] = childAppid
 	}
 	md5Str += "&clientIp=" + clientIp + "&mchntOrderNo=" + mchntOrderNo + "&notifyUrl=" + notifyUrl
+	if (openId) {
+		md5Str += "&openId=" + openId
+		m['openId'] = openId
+	}
 	if (payChannelId != '') {
 		md5Str += "&payChannelId=" + payChannelId
 		m['payChannelId'] = payChannelId
 	}
-	md5Str += "&returnUrl=" + returnUrl + "&subject=" + subject + "&version=h5_NoEncrypt&key=" + key
-	console.log(md5Str)
+	md5Str += "&returnUrl=" + returnUrl + "&subject=" + subject + "&version=" + version + "&key=" + key
+	// console.log(md5Str)
 	let signature =  md5(md5Str)
 	m['signature'] = signature
 	let json = JSON.stringify(m)
-	let onderInfo = RSAUtil.rsaEncrypt(json)
-	console.log(onderInfo)
-	Member.findOne({ _id: memberId }).exec(function (err, member) {
-		if (err) {
-			responseData.code = 1
-			responseData.msg = '失败'
+	let orderInfo = RSAUtil.rsaEncrypt(json)
+	// console.log(onderInfo)
+	let URL = 'http://trans.palmf.cn/sdk/api/v1.0/cli/order_api/0'
+	let data = Qs.stringify({
+		orderInfo: orderInfo
+	})
+	let headers = {'Content-Type': 'application/x-www-form-urlencoded'}
+	axios.post(URL, data, headers).then(response => {
+		console.log(response.data)
+		Member.findOne({ _id: memberId }).exec(function (err, member) {
+			if (err) {
+				responseData.code = 1
+				responseData.msg = '失败'
+				res.json(responseData)
+				return
+			}
+			new TemporaryOrder({
+				member: memberId,
+				goldBeanNum: amount,
+				orderNo: mchntOrderNo
+			}).save()
+			responseData.msg = '成功'
+			responseData.data = response.data
 			res.json(responseData)
-			return
-		}
-		new TemporaryOrder({
-			member: memberId,
-			goldBeanNum: amount,
-			orderNo: mchntOrderNo
-		}).save()
-		responseData.msg = '成功'
-		responseData.data = onderInfo
-		res.json(responseData)
+		})
 	})
 })
 /* 支付同步回调 */
