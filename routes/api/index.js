@@ -62,7 +62,8 @@ router.post('/payOrder', (req, res) => {
 	let notifyUrl = req.body.notifyUrl
 	let returnUrl = req.body.returnUrl
 	let type = req.body.type
-	let version = 'h5_NoEncrypt'
+	let openId = req.body.openId
+	let version = 'api_NoEncrypt'
 	let m = {}
 	m['appid'] = appid
 	m['amount'] = amount
@@ -84,7 +85,11 @@ router.post('/payOrder', (req, res) => {
 		md5Str += "&payChannelId=" + payChannelId
 		m['payChannelId'] = payChannelId
 	}
-	md5Str += "&returnUrl=" + returnUrl + "&subject=" + subject + "&version=h5_NoEncrypt&key=" + key
+	if (openId) {
+		md5Str += "&openId=" + openId
+		m['openId'] = openId
+	}
+	md5Str += "&returnUrl=" + returnUrl + "&subject=" + subject + "&version=" + version + "&key=" + key
 	console.log(md5Str)
 	let signature =  md5(md5Str)
 	m['signature'] = signature
