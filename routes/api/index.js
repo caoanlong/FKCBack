@@ -76,6 +76,7 @@ router.post('/payOrder', (req, res) => {
 	m['returnUrl'] = returnUrl
 	m['subject'] = subject
 	m['version'] = version
+	
 	let md5Str = "amount=" + amount + "&appid=" + appid + "&body=" + body
 	if (childAppid != '') {
 		md5Str += "&childAppid=" + childAppid
@@ -90,21 +91,12 @@ router.post('/payOrder', (req, res) => {
 		md5Str += "&payChannelId=" + payChannelId
 		m['payChannelId'] = payChannelId
 	}
-<<<<<<< .mine
 	if (openId) {
 		md5Str += "&openId=" + openId
 		m['openId'] = openId
 	}
 	md5Str += "&returnUrl=" + returnUrl + "&subject=" + subject + "&version=" + version + "&key=" + key
-	console.log(md5Str)
-=======
-	md5Str += "&returnUrl=" + returnUrl + "&subject=" + subject + "&version=" + version + "&key=" + key
-	// console.log(md5Str)
 
-
-
-
->>>>>>> .theirs
 	let signature =  md5(md5Str)
 	m['signature'] = signature
 	let json = JSON.stringify(m)

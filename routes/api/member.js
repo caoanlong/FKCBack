@@ -530,7 +530,7 @@ router.post('/getSignGold', (req, res) => {
 	let token = (req.body && req.body.token) || (req.query && req.query.token) || req.headers['x-access-token']
 	let memberId = jwt.decode(token,secret.jwtTokenSecret).iss
 	let week = req.body.week
-	let goldNum = Number(req.body.goldNum)
+	// let goldNum = Number(req.body.goldNum)
 	FreeReceive.findOne({member: memberId}).exec((err, freeReceive) => {
 		if (err || freeReceive == null || !freeReceive) {
 			responseData.code = 1
@@ -552,7 +552,7 @@ router.post('/getSignGold', (req, res) => {
 			// 生成账单
 			new AccountDetail({
 				member: memberId,
-				goldBeanChange: '+' + goldNum,
+				goldBeanChange: '+' + freeReceive[week].goldNum,
 				type: '免费领豆',
 				info: '免费领取金豆'
 			}).save(() => {
