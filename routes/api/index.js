@@ -91,17 +91,13 @@ router.post('/payOrder', (req, res) => {
 		md5Str += "&payChannelId=" + payChannelId
 		m['payChannelId'] = payChannelId
 	}
-	if (openId) {
-		md5Str += "&openId=" + openId
-		m['openId'] = openId
-	}
 	md5Str += "&returnUrl=" + returnUrl + "&subject=" + subject + "&version=" + version + "&key=" + key
 
 	let signature =  md5(md5Str)
 	m['signature'] = signature
 	let json = JSON.stringify(m)
 	let orderInfo = RSAUtil.rsaEncrypt(json)
-	console.log(orderInfo)
+	console.log(json)
 	let URL = 'http://trans.palmf.cn/sdk/api/v1.0/cli/order_api/0'
 	let data = Qs.stringify({
 		orderInfo: orderInfo
@@ -109,7 +105,7 @@ router.post('/payOrder', (req, res) => {
 	let headers = {'Content-Type': 'application/x-www-form-urlencoded'}
 	if (type == 'api') {
 		axios.post(URL, data, headers).then(response => {
-			console.log(response.data)
+			console.log('paymentResult：' + JSON.stringify(response.data))
 			Member.findOne({ _id: memberId }).exec(function (err, member) {
 				if (err) {
 					responseData.code = 1
