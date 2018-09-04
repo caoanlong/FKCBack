@@ -132,7 +132,7 @@ router.post('/config', (req, res) => {
 	res.json(responseData)
 })
 
-/* 获取code */
+/* 获取openid */
 router.get('/getOpenIDNew', (req, res) => {
 	let code = req.query.code
 	getOpenID((openid) => {
