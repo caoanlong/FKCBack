@@ -64,7 +64,17 @@
 				{% endfor %}
 			</tbody>
 		</table>
-		{% include '../page.html' %}
+		<!-- {% include '../page.html' %} -->
+		<nav aria-label="Page navigation">
+			<input type="hidden" id="count" value="{{data.count}}">
+			<input type="hidden" id="pageSize" value="{{data.pageSize}}">
+			<input type="hidden" id="pages" value="{{data.pages}}">
+			<input type="hidden" id="pageIndex" value="{{data.pageIndex}}">
+			<p class="col-xs-5 pagination" style="height: 34px;line-height: 34px">一共有 {{data.count}} 条数据，每页显示 {{data.pageSize}} 条数据，一共 {{data.pages}} 页，当前第 {{data.pageIndex}} 页</p>
+			<div class="col-xs-7 text-right pagination">
+				<div class="M-box"></div>
+			</div>
+		</nav>
 	</div>
 <script type="text/javascript">
 	/**
@@ -132,6 +142,27 @@
 		      	}
 		    }
 	  	})
+	})
+	$('.M-box').pagination({
+		coping:true,
+		pageCount: $('#pages').val(),
+		totalData: $('#count').val(),
+		current: $('#pageIndex').val(),
+		showData: $('#pageSize').val(),
+		keepShowPN: true,
+		homePage:'首页',
+		endPage:'末页',
+		prevContent:'上页',
+		nextContent:'下页',
+		callback: function (index) {
+			if (location.search.indexOf('from') > -1 && location.search.indexOf('pageIndex') == -1) {
+				location.href = location.href.split('?')[0] + location.search + '&pageIndex=' + index.getCurrent()
+			} else if (location.search.indexOf('from') > -1 && location.search.indexOf('pageIndex') > -1) {
+				location.href = location.href.split('?')[0] + '?from=' + fromData + '&pageIndex=' + index.getCurrent()
+			} else if (location.search.indexOf('from') == -1) {
+				location.href = location.href.split('?')[0] + '?pageIndex=' + index.getCurrent()
+			}
+		}
 	})
 </script>
 {% endblock %}
