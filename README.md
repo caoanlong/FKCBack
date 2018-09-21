@@ -3,7 +3,7 @@
 疯狂猜后台服务
 
 #### 软件架构
-基于express
+基于express、mongoose
 
 #### 使用说明
 1. npm install
